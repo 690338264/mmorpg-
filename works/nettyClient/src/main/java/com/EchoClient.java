@@ -1,17 +1,19 @@
 package com;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.Delimiters;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 
 import java.net.InetSocketAddress;
 
 public class EchoClient {
-    private int port;
+    /*private int port;
     private String host;
     public EchoClient(int port,String host){
         this.port = port;
@@ -42,15 +44,34 @@ public class EchoClient {
             //关闭线程池并且释放所有资源
             group.shutdownGracefully().sync();
         }
-    }
-    public static void main(String[] args) throws InterruptedException{
-        if(args.length !=2){
-            System.err.println("Usages:"+EchoClient.class.getSimpleName()+"<host><port>");
-            return;
-        }
+    }*/
+    public static void main(String[] args){
+        //Bootstrap
+        Bootstrap b = new Bootstrap();
+        //指定channel类型
+        b.channel(NioSocketChannel.class);
+        //指定Handler
+        b.handler(new ChannelInitializer<Channel>() {
 
-        String host = args[0];
+            @Override
+            protected void initChannel(Channel ch) throws Exception{
+             ChannelPipeline pipeline = ch.pipeline();
+
+             pipeline.addLast("framer",new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
+             pipeline.addLast("decoder",new StringDecoder());
+             pipeline.addLast("encoder",new StringEncoder());
+
+             //客户端逻辑
+             pipeline.addLast(new EchoClientHandler());
+            }
+        });
+
+        //指定EventLoopGroup[事件组]
+        b.group(new NioEventLoopGroup());
+        //连接到本地8000端口的服务端
+        b.connect(new InetSocketAddress("127.0.0.1",8000));
+        /*String host = args[0];
         int port = Integer.parseInt(args[1]);
-        new EchoClient(port,host).start();
+        new EchoClient(port,host).start();*/
     }
 }
