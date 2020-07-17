@@ -1,5 +1,6 @@
 package com;
 
+//import com.sun.deploy.util.StringUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -9,17 +10,79 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.internal.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.BufferedReader;
+import java.io.IOError;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 
 public class EchoClient {
-    /*private int port;
-    private String host;
-    public EchoClient(int port,String host){
-        this.port = port;
-        this.host = host;
+    private static String host = "127.0.0.1";
+    public EchoClient(){}
+    public EchoClient(String ip){host = ip;}
+
+    public static Channel channel = null;
+
+    private long restTime =1000L;//重启时间
+
+    private static int Port = 8000;
+
+    public void run(){
+        EventLoopGroup workerGroup = new NioEventLoopGroup();//多线程循环
+        Bootstrap b = new Bootstrap();
+        b.group(workerGroup)
+                .channel(NioSocketChannel.class)
+                .remoteAddress(new InetSocketAddress(host,Port));
+        b.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel ch)throws Exception{
+                ch.pipeline()
+                        .addLast("framer",new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()))
+                        .addLast("decoder",new StringDecoder())
+                        .addLast("encoder",new StringEncoder())
+                        .addLast(new EchoClientHandler());
+                /*Client adapter*/
+                channel = ch;
+            }
+
+        });
+        try {
+            Channel channel = b.connect(host,Port).sync().channel();//连接服务器
+            loop();//循环监听输入
+        }catch (Exception e){
+            try{
+                Thread.sleep(restTime);
+                restTime *= 2;
+            }catch (InterruptedException e1){
+                e1.printStackTrace();
+            }
+            System.out.println("error!!");
+            e.printStackTrace();
+            System.out.println("尝试重连");
+            run();
+        }
     }
-    public void start() throws InterruptedException{
+
+    private void loop() throws IOException{
+        System.out.println("----连接服务器["+host+"]Success!当前连接的是["+channel.id()+"]-----\n");
+        while (true){
+            System.out.println("请输入您的操作：");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String content = reader.readLine();
+            System.out.println("客户端输入："+content);
+            if(StringUtils.isNotEmpty(content)){
+                if(StringUtils.equalsIgnoreCase(content,"q"));{
+                    System.exit(1);
+                }
+                String[] array = content.split("\\s+");
+                /*CMD连接*/
+            }
+        }
+    }
+    /*public void start() throws InterruptedException{
         //事件处理分配，包括创建新的连接以及处理入站和出站数据
         EventLoopGroup group = new NioEventLoopGroup();
         try{
@@ -45,7 +108,7 @@ public class EchoClient {
             group.shutdownGracefully().sync();
         }
     }*/
-    public static void main(String[] args){
+    /*public static void main(String[] args){
         //Bootstrap
         Bootstrap b = new Bootstrap();
         //指定channel类型
@@ -68,10 +131,14 @@ public class EchoClient {
 
         //指定EventLoopGroup[事件组]
         b.group(new NioEventLoopGroup());
-        //连接到本地8000端口的服务端
+        //连接到本地8000端口的服务端0
         b.connect(new InetSocketAddress("127.0.0.1",8000));
-        /*String host = args[0];
-        int port = Integer.parseInt(args[1]);
-        new EchoClient(port,host).start();*/
+
+    }*/
+    public static void main(String[] args){
+        if(args.length>0){
+             host = args[0];
+        }
+        new EchoClient(host).run();
     }
 }
