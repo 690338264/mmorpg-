@@ -140,5 +140,6 @@ public class EchoClient {
              host = args[0];
         }
         new EchoClient(host).run();
+        
     }
 }

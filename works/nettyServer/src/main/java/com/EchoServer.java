@@ -14,6 +14,7 @@ import io.netty.handler.codec.string.StringEncoder;
 public class EchoServer {
 
     public void bind(int port){
+
         EventLoopGroup bossGroup = new NioEventLoopGroup();//逻辑
         EventLoopGroup workerGroup = new NioEventLoopGroup();//工作
 
