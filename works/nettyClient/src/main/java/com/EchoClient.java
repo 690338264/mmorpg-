@@ -1,6 +1,7 @@
 package com;
 
 //import com.sun.deploy.util.StringUtils;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -21,28 +22,33 @@ import java.net.InetSocketAddress;
 
 public class EchoClient {
     private static String host = "127.0.0.1";
-    public EchoClient(){}
-    public EchoClient(String ip){host = ip;}
+
+    public EchoClient() {
+    }
+
+    public EchoClient(String ip) {
+        host = ip;
+    }
 
     public static Channel channel = null;
 
-    private long restTime =1000L;//重启时间
+    private long restTime = 1000L;//重启时间
 
     private static int Port = 8000;
 
-    public void run(){
+    public void run() {
         EventLoopGroup workerGroup = new NioEventLoopGroup();//多线程循环
         Bootstrap b = new Bootstrap();
         b.group(workerGroup)
                 .channel(NioSocketChannel.class)
-                .remoteAddress(new InetSocketAddress(host,Port));
+                .remoteAddress(new InetSocketAddress(host, Port));
         b.handler(new ChannelInitializer<SocketChannel>() {
             @Override
-            protected void initChannel(SocketChannel ch)throws Exception{
+            protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline()
-                        .addLast("framer",new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()))
-                        .addLast("decoder",new StringDecoder())
-                        .addLast("encoder",new StringEncoder())
+                        .addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()))
+                        .addLast("decoder", new StringDecoder())
+                        .addLast("encoder", new StringEncoder())
                         .addLast(new EchoClientHandler());
                 /*Client adapter*/
                 channel = ch;
@@ -50,13 +56,13 @@ public class EchoClient {
 
         });
         try {
-            Channel channel = b.connect(host,Port).sync().channel();//连接服务器
+            Channel channel = b.connect(host, Port).sync().channel();//连接服务器
             loop();//循环监听输入
-        }catch (Exception e){
-            try{
+        } catch (Exception e) {
+            try {
                 Thread.sleep(restTime);
                 restTime *= 2;
-            }catch (InterruptedException e1){
+            } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
             System.out.println("error!!");
@@ -66,22 +72,28 @@ public class EchoClient {
         }
     }
 
-    private void loop() throws IOException{
-        System.out.println("----连接服务器["+host+"]Success!当前连接的是["+channel.id()+"]-----\n");
-        while (true){
+    private void loop() throws IOException {
+        System.out.println("----连接服务器[" + host + "]Success!当前连接的是[" + channel.id() + "]-----\n");
+        while (true) {
             System.out.println("请输入您的操作：");
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String content = reader.readLine();
-            System.out.println("客户端输入："+content);
-            if(StringUtils.isNotEmpty(content)){
-                if(StringUtils.equalsIgnoreCase(content,"q"));{
+            System.out.println("客户端输入：" + content);
+            if (StringUtils.isNotEmpty(content)) {
+                if (StringUtils.equalsIgnoreCase(content, "q")) {
                     System.exit(1);
+
+                    //String[] array = content.split(" ");
+                    //CMD连接
+
                 }
-                String[] array = content.split("\\s+");
-                /*CMD连接*/
+                else {
+                    channel.writeAndFlush(content+'\n');
+                }
             }
         }
     }
+
     /*public void start() throws InterruptedException{
         //事件处理分配，包括创建新的连接以及处理入站和出站数据
         EventLoopGroup group = new NioEventLoopGroup();
@@ -135,11 +147,11 @@ public class EchoClient {
         b.connect(new InetSocketAddress("127.0.0.1",8000));
 
     }*/
-    public static void main(String[] args){
-        if(args.length>0){
-             host = args[0];
+    public static void main(String[] args) {
+        if (args.length > 0) {
+            host = args[0];
         }
         new EchoClient(host).run();
-        
+
     }
 }

@@ -1,0 +1,48 @@
+package com;
+
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+public enum Cmd {
+    USER_CREATE("user_create",1000),
+    USER_LOGIN("user_login",1001),
+    UNKNOWN("unknown",9999);
+
+    private String cmd;
+    private Integer cmdID;
+
+    private static final Map<Integer,Cmd> id_Map = new HashMap<>();
+    private static final Map<String, Cmd> COMMAND_MAP = new  HashMap<>();
+    Cmd(String cmd,Integer cmdID){
+        this.cmd = cmd;
+        this.cmdID = cmdID;
+    }
+
+    //将字符串命令与枚举对象通过map关联
+    static {
+        for(Cmd e : EnumSet.allOf(Cmd.class)){
+            COMMAND_MAP.put(e.cmd,e);
+            id_Map.put(e.cmdID,e);
+        }
+    }
+
+    public static Cmd find(int cmdID,Cmd defaultvalue){
+        Cmd value = id_Map.get(cmdID);
+        if(value == null){
+            return defaultvalue;
+        }
+        return value;
+    }
+    public String getcmd(){
+        return cmd;
+    }
+    public Integer getcmdID(){
+        return cmdID;
+    }
+
+    @Override
+    public String toString(){
+        return "Cmd{"+"cmd = [" + cmd + ']' +",cmdID = " + cmdID+'}';
+    }
+}

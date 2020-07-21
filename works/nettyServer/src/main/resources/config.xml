@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration >
+    <!-- 指定数据连接驱动jar地址 -->
+    <classPathEntry location="D:\Workspace\MavenRepository\mysql\mysql-connector-java\8.0.11"/>
+    <!-- 一个数据库一个context -->
+    <context id="msql" targetRuntime="MyBatis3" >
+        <!-- generate entity时，生成serialVersionUID -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+        <!-- genenat entity时,生成toString -->
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
+        <!-- 注释 -->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/><!-- 是否取消注释 -->
+            <property name="supperssDate" value="false"/><!-- 是否生成注释代码时间戳 -->
+        </commentGenerator>
+        <!-- jdbc连接 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/mmorpg"
+                        userId="root"
+                        password="690338264" />
+        <!-- 类型转换 -->
+        <javaTypeResolver>
+            <!-- 是否使用bigDecimals,false可自动转化以下类型(Long,Integer,Short,ets..) -->
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        <!-- 生成实体类地址 -->
+        <javaModelGenerator targetPackage="com.database.entity" targetProject="src/main/java">
+            <!-- 是否在当前路径下新加一层schema-->
+            <property name="enableSubPackages" value="true"/>
+            <!-- 是否针对string类型的字段在set的时候进行trim调用 -->
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- 生成mapxml文件 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
+            <!-- 是否在当前路径下新加一层schema,eg:
+            fase路径：com.sky.ssm.mapper ； true路径：com.sky.ssm.mapper.[shemaName]
+             -->
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+        <!-- 生成mapxml对应client，也就是接口dao -->
+        <javaClientGenerator targetPackage="com.database.mapper" targetProject="src/main/java"
+                             type="XMLMAPPER" >
+            <!-- 是否在当前路径下新加一层schema-->
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+        <!-- 指定数据库表，要生成哪些表，就写哪些表，要和数据库中对应，不能写错！ -->
+        <table tableName="user"/>
+        <table tableName="bag">
+            <columnOverride column="items"  jdbcType="VARCHAR" />
+        </table>
+        <table tableName="player">
+            <columnOverride column="friends"  jdbcType="VARCHAR" />
+            <columnOverride column="equipment" javaType="VARCHAR" />
+        </table>
+
+
+    </context>
+</generatorConfiguration>
