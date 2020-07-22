@@ -7,6 +7,6 @@ import util.Msg;
 public interface controller {
 
     //接收数据处理业务
-    void handle(ChannelHandlerContext cxt, Msg msg,Object obj);
+    void handle(ChannelHandlerContext cxt, Msg message);
 
 }

@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
 <generatorConfiguration >
     <!-- 指定数据连接驱动jar地址 -->
-    <classPathEntry location="D:\Workspace\MavenRepository\mysql\mysql-connector-java\8.0.11"/>
+    <classPathEntry location="D:\Workspace\MavenRepository\mysql\mysql-connector-java\8.0.11\mysql-connector-java-8.0.11.jar"/>
     <!-- 一个数据库一个context -->
     <context id="msql" targetRuntime="MyBatis3" >
         <!-- generate entity时，生成serialVersionUID -->
@@ -17,9 +17,9 @@
         </commentGenerator>
         <!-- jdbc连接 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/mmorpg"
+                        connectionURL="jdbc:mysql://localhost:3306/mmorpg?serverTimezone=GMT"
                         userId="root"
-                        password="690338264" />
+                        password="password" />
         <!-- 类型转换 -->
         <javaTypeResolver>
             <!-- 是否使用bigDecimals,false可自动转化以下类型(Long,Integer,Short,ets..) -->
@@ -48,6 +48,7 @@
         </javaClientGenerator>
         <!-- 指定数据库表，要生成哪些表，就写哪些表，要和数据库中对应，不能写错！ -->
         <table tableName="user"/>
+
         <table tableName="bag">
             <columnOverride column="items"  jdbcType="VARCHAR" />
         </table>
@@ -55,6 +56,7 @@
             <columnOverride column="friends"  jdbcType="VARCHAR" />
             <columnOverride column="equipment" javaType="VARCHAR" />
         </table>
+        <table tableName="sect"></table>
 
 
     </context>

@@ -6,6 +6,7 @@ import com.handler.errorController;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import util.Msg;
 
 import javax.annotation.Resource;
 import java.net.InetAddress;
@@ -19,21 +20,25 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     private controllerManager contrManager;
     @Resource
     private errorController errController;
-
+    private String cmd;
+    private int cmdID;
 
     @Override
         public void channelRead(ChannelHandlerContext ctx,Object msg) {
         ctx.writeAndFlush("server Received your message !\n");
         Channel ch = ctx.channel();
-        String cmd = msg.toString();
+        cmd = msg.toString();
         String[] split = cmd.split(" ");
         String cmdIDs = split[0];
-        int cmdID = Integer.parseInt(cmdIDs.trim());
+        cmdID = Integer.parseInt(cmdIDs.trim());
         ctx.writeAndFlush("yeooo"+cmdID+'\n');
         controller contr = contrManager.get(cmdID);
+        Msg message = new Msg();
+        message.setCmdId(cmdID);
+        message.setContent(cmd);
 
         if (contr == null){
-            errController.handle(ctx);
+            errController.handle(ctx,message);
         }else{
             contrManager.execute(contr,ctx);
         }
@@ -59,5 +64,21 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx,Throwable cause){
         log.error("服务器异常");
         /*保存角色信息*/
+    }
+
+    public void setCmdID(int cmdID) {
+        this.cmdID = cmdID;
+    }
+
+    public int getCmdID() {
+        return cmdID;
+    }
+
+    public String getCmd() {
+        return cmd;
+    }
+
+    public void setCmd(String cmd) {
+        this.cmd = cmd;
     }
 }

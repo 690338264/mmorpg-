@@ -23,15 +23,15 @@ public class userController {
         controllerManager.add(Cmd.USER_LOGIN,this::userLogin);
     }
 
-    private void userCreate(ChannelHandlerContext ctx, Msg msg,Object message){
-        String[] params = ParamNumCheck.numCheck(ctx,message,msg,3);
+    private void userCreate(ChannelHandlerContext ctx, Msg msg){
+        String[] params = ParamNumCheck.numCheck(ctx,msg,3);
         String username = params[1];
         String psw = params[2];
         userservice.register(ctx,username,psw);
     }
 
-    private void userLogin(ChannelHandlerContext ctx,Msg msg,Object message){
-        String[] params = ParamNumCheck.numCheck(ctx,message,msg,3);
+    private void userLogin(ChannelHandlerContext ctx,Msg msg){
+        String[] params = ParamNumCheck.numCheck(ctx,msg,3);
         long userId = Long.valueOf(params[1]);
         String psw = params[2];
         userservice.login(userId,psw,ctx);
