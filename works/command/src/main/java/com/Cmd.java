@@ -7,6 +7,13 @@ import java.util.Map;
 public enum Cmd {
     USER_CREATE("user_create",1000),
     USER_LOGIN("user_login",1001),
+    USER_LISTPLAYER("user_listPlayer",1002),
+    PLAYER_LOG("player_log",1003),
+    BAG_LIST("bag_list",1004),
+    BAG_INORDER("bag_inorder",1005),
+    ITEM_USE("item_use",1006),
+    ITEM_DROP("item_drop",1007),
+    ITEM_SELL("item_sell",1008),
     UNKNOWN("unknown",9999);
 
     private String cmd;

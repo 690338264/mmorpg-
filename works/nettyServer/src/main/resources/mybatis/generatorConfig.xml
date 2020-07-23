@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
 <generatorConfiguration >
     <!-- 指定数据连接驱动jar地址 -->
-    <classPathEntry location="D:\Workspace\MavenRepository\mysql\mysql-connector-java\8.0.11\mysql-connector-java-8.0.11.jar"/>
+    <classPathEntry location="D:\mysql-connector-java-8.0.21\mysql-connector-java-8.0.21.jar"/>
     <!-- 一个数据库一个context -->
     <context id="msql" targetRuntime="MyBatis3" >
         <!-- generate entity时，生成serialVersionUID -->
@@ -19,7 +19,9 @@
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://localhost:3306/mmorpg?serverTimezone=GMT"
                         userId="root"
-                        password="password" />
+                        password="password" >
+        <property name="useInformationSchema" value="true"/>
+        </jdbcConnection>
         <!-- 类型转换 -->
         <javaTypeResolver>
             <!-- 是否使用bigDecimals,false可自动转化以下类型(Long,Integer,Short,ets..) -->

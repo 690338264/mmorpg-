@@ -1,6 +1,6 @@
 package com.handler;
 
-import com.Function.Player.PlayerDataServer;
+import com.Function.Player.service.playerService;
 import com.Cmd;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class controllerManager{
     @Resource
-    private PlayerDataServer playerDataServer;
+    private playerService playerDataServer;
 
     private final static Map<Cmd,controller> CONTROLLER_MAP = new ConcurrentHashMap<>();
 
