@@ -3,8 +3,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import java.lang.Object;
 public class Msg {
-    private int CmdId;
-    private String content;
+    private static int CmdId;
+    private static String content;
 
     public void setCmdId(int value) {
 //        Channel ch = ctx.channel();
@@ -12,7 +12,7 @@ public class Msg {
 //        String[] split = cmd.split(" ");
 //        String cmdIDs = split[0];
 //        CmdId = Integer.parseInt(cmdIDs.trim());
-        CmdId = value;
+        this.CmdId = value;
     }
 
 //    public String setContent(ChannelHandlerContext ctx,Object message) {

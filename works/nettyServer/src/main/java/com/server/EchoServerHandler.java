@@ -1,11 +1,11 @@
 package com.server;
 
-import com.handler.controller;
-import com.handler.controllerManager;
-import com.handler.errorController;
+import com.handler.Controller;
+import com.handler.ControllerManager;
+import com.handler.ErrorController;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.stereotype.Component;
 import util.Msg;
 
 import javax.annotation.Resource;
@@ -14,12 +14,13 @@ import java.net.InetAddress;
 
 @Slf4j
 @ChannelHandler.Sharable
+@Component
 
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     @Resource
-    private controllerManager contrManager;
+    private ControllerManager contrManager;
     @Resource
-    private errorController errController;
+    private ErrorController errController;
     private String cmd;
     private int cmdID;
 
@@ -32,7 +33,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         String cmdIDs = split[0];
         cmdID = Integer.parseInt(cmdIDs.trim());
         ctx.writeAndFlush("yeooo"+cmdID+'\n');
-        controller contr = contrManager.get(cmdID);
+        Controller contr = contrManager.get(cmdID);
         Msg message = new Msg();
         message.setCmdId(cmdID);
         message.setContent(cmd);
@@ -60,11 +61,11 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         log.info("客户端已离线");
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx,Throwable cause){
-        log.error("服务器异常");
-        /*保存角色信息*/
-    }
+//    @Override
+//    public void exceptionCaught(ChannelHandlerContext ctx,Throwable cause){
+//        log.error("服务器异常");
+//        /*保存角色信息*/
+//    }
 
     public void setCmdID(int cmdID) {
         this.cmdID = cmdID;

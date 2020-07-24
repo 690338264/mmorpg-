@@ -9,11 +9,14 @@ public enum Cmd {
     USER_LOGIN("user_login",1001),
     USER_LISTPLAYER("user_listPlayer",1002),
     PLAYER_LOG("player_log",1003),
-    BAG_LIST("bag_list",1004),
-    BAG_INORDER("bag_inorder",1005),
-    ITEM_USE("item_use",1006),
-    ITEM_DROP("item_drop",1007),
-    ITEM_SELL("item_sell",1008),
+    PLAYER_CREATE("player_create",1004),
+    AOI("aoi",1005),
+    MOVE_TO("move_to",1006),
+    BAG_LIST("bag_list",1007),
+    BAG_INORDER("bag_inorder",1008),
+    ITEM_USE("item_use",1009),
+    ITEM_DROP("item_drop",1010),
+    ITEM_SELL("item_sell",1011),
     UNKNOWN("unknown",9999);
 
     private String cmd;
