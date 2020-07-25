@@ -6,9 +6,11 @@ import com.database.mapper.PlayerMapper;
 import com.function.player.model.PlayerModel;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class PlayerService {
     private PlayerMapper playerMapper;
     public void roleCreate(ChannelHandlerContext ctx,String roleName,Integer roleType,Long userId){

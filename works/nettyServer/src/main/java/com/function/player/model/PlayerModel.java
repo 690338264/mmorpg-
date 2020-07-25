@@ -16,4 +16,5 @@ public class PlayerModel extends Player {
     private ChannelHandlerContext channelHandlerContext;//当前通道上下文
     private Scene nowScene;
     private Integer level;
+
 }

@@ -1,5 +1,6 @@
 package com.server;
 
+import com.database.entity.Player;
 import com.handler.Controller;
 import com.handler.ControllerManager;
 import com.handler.ErrorController;
@@ -15,14 +16,11 @@ import java.net.InetAddress;
 @Slf4j
 @ChannelHandler.Sharable
 @Component
-
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
-    @Resource
-    private ControllerManager contrManager;
-    @Resource
-    private ErrorController errController;
     private String cmd;
     private int cmdID;
+//    @Resource
+//    private ControllerManager controllerManager;
 
     @Override
         public void channelRead(ChannelHandlerContext ctx,Object msg) {
@@ -33,16 +31,17 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         String cmdIDs = split[0];
         cmdID = Integer.parseInt(cmdIDs.trim());
         ctx.writeAndFlush("yeooo"+cmdID+'\n');
-        Controller contr = contrManager.get(cmdID);
+        Controller contr = ControllerManager.getSelf().get(cmdID);
+        //Controller contr = controllerManager.get(cmdID);
         Msg message = new Msg();
         message.setCmdId(cmdID);
         message.setContent(cmd);
-
-        if (contr == null){
-            errController.handle(ctx,message);
-        }else{
-            contrManager.execute(contr,ctx);
-        }
+//        if (contr == null){
+//            ErrorController errorController = new ErrorController();
+//            errorController.handle(ctx,message);
+//        }else{
+            contr.handle(ctx,message);
+//        }
 
 //        System.out.println(cmd);
     }

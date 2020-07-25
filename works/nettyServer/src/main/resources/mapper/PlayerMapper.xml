@@ -271,6 +271,275 @@
     where name = #{name,jdbcType=CHAR}
   </update>
   <resultMap id="BaseResultMap" type="com.database.entity.Player">
+    <id column="name" jdbcType="CHAR" property="name" />
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="exp" jdbcType="INTEGER" property="exp" />
+    <result column="loc" jdbcType="INTEGER" property="loc" />
+    <result column="occupation" jdbcType="INTEGER" property="occupation" />
+    <result column="equip" jdbcType="CHAR" property="equip" />
+    <result column="money" jdbcType="INTEGER" property="money" />
+    <result column="friend" jdbcType="CHAR" property="friend" />
+    <result column="roleId" jdbcType="BIGINT" property="roleid" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    name, id, exp, loc, occupation, equip, money, friend, roleId
+  </sql>
+  <select id="selectByExample" parameterType="com.database.entity.PlayerExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from player
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from player
+    where name = #{name,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from player
+    where name = #{name,jdbcType=CHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.database.entity.PlayerExample">
+    delete from player
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.database.entity.Player">
+    insert into player (name, id, exp, loc, 
+      occupation, equip, money, 
+      friend, roleId)
+    values (#{name,jdbcType=CHAR}, #{id,jdbcType=BIGINT}, #{exp,jdbcType=INTEGER}, #{loc,jdbcType=INTEGER}, 
+      #{occupation,jdbcType=INTEGER}, #{equip,jdbcType=CHAR}, #{money,jdbcType=INTEGER}, 
+      #{friend,jdbcType=CHAR}, #{roleid,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.database.entity.Player">
+    insert into player
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        name,
+      </if>
+      <if test="id != null">
+        id,
+      </if>
+      <if test="exp != null">
+        exp,
+      </if>
+      <if test="loc != null">
+        loc,
+      </if>
+      <if test="occupation != null">
+        occupation,
+      </if>
+      <if test="equip != null">
+        equip,
+      </if>
+      <if test="money != null">
+        money,
+      </if>
+      <if test="friend != null">
+        friend,
+      </if>
+      <if test="roleid != null">
+        roleId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        #{name,jdbcType=CHAR},
+      </if>
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="exp != null">
+        #{exp,jdbcType=INTEGER},
+      </if>
+      <if test="loc != null">
+        #{loc,jdbcType=INTEGER},
+      </if>
+      <if test="occupation != null">
+        #{occupation,jdbcType=INTEGER},
+      </if>
+      <if test="equip != null">
+        #{equip,jdbcType=CHAR},
+      </if>
+      <if test="money != null">
+        #{money,jdbcType=INTEGER},
+      </if>
+      <if test="friend != null">
+        #{friend,jdbcType=CHAR},
+      </if>
+      <if test="roleid != null">
+        #{roleid,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.database.entity.PlayerExample" resultType="java.lang.Long">
+    select count(*) from player
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update player
+    <set>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=CHAR},
+      </if>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.exp != null">
+        exp = #{record.exp,jdbcType=INTEGER},
+      </if>
+      <if test="record.loc != null">
+        loc = #{record.loc,jdbcType=INTEGER},
+      </if>
+      <if test="record.occupation != null">
+        occupation = #{record.occupation,jdbcType=INTEGER},
+      </if>
+      <if test="record.equip != null">
+        equip = #{record.equip,jdbcType=CHAR},
+      </if>
+      <if test="record.money != null">
+        money = #{record.money,jdbcType=INTEGER},
+      </if>
+      <if test="record.friend != null">
+        friend = #{record.friend,jdbcType=CHAR},
+      </if>
+      <if test="record.roleid != null">
+        roleId = #{record.roleid,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update player
+    set name = #{record.name,jdbcType=CHAR},
+      id = #{record.id,jdbcType=BIGINT},
+      exp = #{record.exp,jdbcType=INTEGER},
+      loc = #{record.loc,jdbcType=INTEGER},
+      occupation = #{record.occupation,jdbcType=INTEGER},
+      equip = #{record.equip,jdbcType=CHAR},
+      money = #{record.money,jdbcType=INTEGER},
+      friend = #{record.friend,jdbcType=CHAR},
+      roleId = #{record.roleid,jdbcType=BIGINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.database.entity.Player">
+    update player
+    <set>
+      <if test="id != null">
+        id = #{id,jdbcType=BIGINT},
+      </if>
+      <if test="exp != null">
+        exp = #{exp,jdbcType=INTEGER},
+      </if>
+      <if test="loc != null">
+        loc = #{loc,jdbcType=INTEGER},
+      </if>
+      <if test="occupation != null">
+        occupation = #{occupation,jdbcType=INTEGER},
+      </if>
+      <if test="equip != null">
+        equip = #{equip,jdbcType=CHAR},
+      </if>
+      <if test="money != null">
+        money = #{money,jdbcType=INTEGER},
+      </if>
+      <if test="friend != null">
+        friend = #{friend,jdbcType=CHAR},
+      </if>
+      <if test="roleid != null">
+        roleId = #{roleid,jdbcType=BIGINT},
+      </if>
+    </set>
+    where name = #{name,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.database.entity.Player">
+    update player
+    set id = #{id,jdbcType=BIGINT},
+      exp = #{exp,jdbcType=INTEGER},
+      loc = #{loc,jdbcType=INTEGER},
+      occupation = #{occupation,jdbcType=INTEGER},
+      equip = #{equip,jdbcType=CHAR},
+      money = #{money,jdbcType=INTEGER},
+      friend = #{friend,jdbcType=CHAR},
+      roleId = #{roleid,jdbcType=BIGINT}
+    where name = #{name,jdbcType=CHAR}
+  </update>
+  <resultMap id="BaseResultMap" type="com.database.entity.Player">
     <result column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="CHAR" property="name" />
     <result column="exp" jdbcType="INTEGER" property="exp" />

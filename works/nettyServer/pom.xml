@@ -39,7 +39,35 @@
                     <overwrite>true</overwrite>
                 </configuration>
             </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                       <mainClass>com.util.ServerApplication</mainClass>
+                   </configuration>
+                </plugin>
         </plugins>
+        <!-- 如果不添加此节点，mybatis的maper.xml文件会被漏掉 -->
+            <resources>
+                <resource>
+                    <directory>src/main/resources</directory>
+                    <includes>
+                        <include>**/mapper/*.xml</include>
+                    </includes>
+                    <filtering>false</filtering>
+                </resource>
+                <resource>
+                    <directory>src/main/resources</directory>
+                    <includes>
+                        <include>**/application.yml</include>
+                        <include>**/applicationContext.xml</include>
+                    </includes>
+                    <filtering>false</filtering>
+                </resource>
+
+            </resources>
+
+
     </build>
 
     <!--<properties>
@@ -165,11 +193,13 @@
             <version>5.2.7.RELEASE</version>
         </dependency>
 
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>26.0-jre</version>
         </dependency>
     </dependencies>
+
 
 </project>

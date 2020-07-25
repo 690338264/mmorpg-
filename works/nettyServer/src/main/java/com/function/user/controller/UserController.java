@@ -9,13 +9,15 @@ import com.handler.ControllerManager;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import util.Msg;
 import util.ParamNumCheck;
 
 import javax.annotation.Resource;
 import java.util.List;
-
+@Service
 @Slf4j
 @Component
 public class UserController {
@@ -23,8 +25,9 @@ public class UserController {
     private static long userId;
     private static PlayerModel playermodel;
     private static UserModel userModel;
-    @Resource
+    @Autowired
     private UserService userservice;
+
     {
         ControllerManager.add(Cmd.USER_CREATE,this::userCreate);
         ControllerManager.add(Cmd.USER_LOGIN,this::userLogin);

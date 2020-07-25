@@ -9,6 +9,7 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class EchoServer {
 
@@ -49,6 +50,7 @@ public class EchoServer {
         }
     }
     public static void main(String[] args) throws Exception{
+        new ClassPathXmlApplicationContext("applicationContext.xml");
         int port = 8000;
         new EchoServer().bind(port);
     }
@@ -63,3 +65,4 @@ public class EchoServer {
 
 
 }
+

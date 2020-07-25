@@ -11,20 +11,22 @@ import com.database.mapper.UserMapper;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 
-@Slf4j
 @Service
-
+@Slf4j
+@Component
 public class UserService {
-    @Resource
-    private UserMapper userMapper;
 
-    @Resource
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
     private PlayerMapper playerMapper;
 
     //用户注册

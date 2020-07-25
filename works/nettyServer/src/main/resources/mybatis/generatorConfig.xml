@@ -17,7 +17,7 @@
         </commentGenerator>
         <!-- jdbc连接 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/mmorpg?serverTimezone=GMT"
+                        connectionURL="jdbc:mysql://localhost:3306/mmorpg?serverTimezone=GMT&amp;characterEncoding=utf8"
                         userId="root"
                         password="password" >
         <property name="useInformationSchema" value="true"/>
