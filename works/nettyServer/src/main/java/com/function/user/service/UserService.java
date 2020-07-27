@@ -1,6 +1,9 @@
 package com.function.user.service;
 
+import com.function.player.model.PlayerModel;
 import com.function.user.controller.UserController;
+import com.function.user.map.PlayerMap;
+import com.function.user.map.UserMap;
 import com.function.user.model.UserModel;
 import com.database.entity.Player;
 import com.database.entity.PlayerExample;
@@ -28,6 +31,8 @@ public class UserService {
     private UserMapper userMapper;
     @Autowired
     private PlayerMapper playerMapper;
+    @Autowired
+    private PlayerMap playerMap;
 
     //用户注册
     public void register(ChannelHandlerContext ctx,String userName,String psw){
@@ -37,7 +42,7 @@ public class UserService {
         try {
             userMapper.insertSelective(u);
         }catch (DuplicateKeyException e){
-            ctx.writeAndFlush("用户名已存在");
+            ctx.writeAndFlush("用户名已存在\n");
             return;
         }
         UserExample userExample = new UserExample();
@@ -47,10 +52,10 @@ public class UserService {
         List<User> newUserList = userMapper.selectByExample(userExample);
         if(newUserList.size()>0){//判断是否添加成功
             User newUser = newUserList.get(0);//获取第0位（自己）
-            ctx.writeAndFlush("注册成功，您的id为"+newUser.getId()+"用户名为"+newUser.getName());
+            ctx.writeAndFlush("注册成功，您的id为"+newUser.getId()+"用户名为"+newUser.getName()+'\n');
         }
         else{
-            ctx.writeAndFlush("注册失败~请重试");
+            ctx.writeAndFlush("注册失败~请重试\n");
         }
     }
 
@@ -63,13 +68,15 @@ public class UserService {
         criteria.andPswEqualTo(psw);
         List<User> UserList = userMapper.selectByExample(userExample);
         if(UserList.size()>0){
-            ctx.writeAndFlush("正在登陆......");
+            ctx.writeAndFlush("正在登陆......\n");
         }
         else{
-            ctx.writeAndFlush("请输入正确的用户名和密码！");
+            ctx.writeAndFlush("请输入正确的用户名和密码！\n");
+            return;
         }
        BeanUtils.copyProperties(UserList.get(0),usermodel);
-        usermodel.setChannelHandlerContext(ctx);
+       UserMap.putUserctx(ctx,usermodel);
+       usermodel.setChannelHandlerContext(ctx);
     }
 
     //用户游戏角色列表
@@ -82,26 +89,40 @@ public class UserService {
         return PlayerList;
     }
 
-    public Player logPlayer(Long playerId,Long userId){
+    public boolean hasPlayer(Long playerId,ChannelHandlerContext ctx){
+        UserModel userModel = getUserByCtx(ctx);
         PlayerExample playerExample = new PlayerExample();
         PlayerExample.Criteria criteria = playerExample.createCriteria();
         criteria.andRoleidEqualTo(playerId);
-        criteria.andRoleidEqualTo(userId);
-        List<Player> playerList = playerMapper.selectByExample(playerExample);
-        if(playerList.size()>0){
-            return playerList.get(0);
-        }
-        else{
-            PlayerExample wrongRole = new PlayerExample();
-            PlayerExample.Criteria criteria1 = playerExample.createCriteria();
-            criteria1.andRoleidEqualTo(9999L);
-            return playerMapper.selectByExample(wrongRole).get(0);
+        criteria.andIdEqualTo(userModel.getId());
+        List<Player> players = playerMapper.selectByExample(playerExample);
+        if(players.size()>0){
+            return true;
+        }else{
+            return false;
         }
     }
+    public PlayerModel logPlayer(Long playerId, ChannelHandlerContext ctx){
+        UserModel userModel = getUserByCtx(ctx);
+        PlayerExample playerExample = new PlayerExample();
+        PlayerExample.Criteria criteria = playerExample.createCriteria();
+        criteria.andRoleidEqualTo(playerId);
+        criteria.andIdEqualTo(userModel.getId());
+        List<Player> playerList = playerMapper.selectByExample(playerExample);
+        PlayerModel playerModel = new PlayerModel();
+        BeanUtils.copyProperties(playerList.get(0),playerModel);
+        playerMap.putPlayerCtx(ctx,playerModel);
+        playerModel.setChannelHandlerContext(ctx);
 
-    public UserModel getUserModel(){
-        UserController getModel = new UserController();
-        return getModel.getUserModel();
+        return playerModel;
+    }
+
+    public UserModel getUserByCtx(ChannelHandlerContext ctx){
+        return UserMap.getUserctx(ctx);
+    }
+
+    public PlayerModel getPlayerByCtx(ChannelHandlerContext ctx){
+        return playerMap.getPlayerCtx(ctx);
     }
 
 

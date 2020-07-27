@@ -23,8 +23,6 @@ import java.util.List;
 public class UserController {
 
     private static long userId;
-    private static PlayerModel playermodel;
-    private static UserModel userModel;
     @Autowired
     private UserService userservice;
 
@@ -52,37 +50,27 @@ public class UserController {
 
     private void playerList(ChannelHandlerContext ctx,Msg msg){
         List< Player > list = userservice.listPlayer(userId);
-        for(int i = 0;i<list.size();i++){
-            ctx.writeAndFlush("角色id："+list.get(i).getRoleid()+'\n');
-            ctx.writeAndFlush("角色名称："+list.get(i).getName()+'\n');
+        if(list.size() == 0){ctx.writeAndFlush("请先创建角色\n");}
+        else {
+            for (int i = 0; i < list.size(); i++) {
+                ctx.writeAndFlush("角色id：" + list.get(i).getRoleid() + '\n');
+                ctx.writeAndFlush("角色名称：" + list.get(i).getName() + '\n');
+            }
+            ctx.writeAndFlush("---请选择您要登陆的角色---" + '\n');
         }
-        ctx.writeAndFlush("---请选择您要登陆的角色---"+'\n');
     }
 
     private void playerLogin(ChannelHandlerContext ctx,Msg msg){
-        PlayerModel playermodel = new PlayerModel();
         String[] params = ParamNumCheck.numCheck(ctx,msg,2);
         Long roleId = Long.valueOf(params[1]);
-        Player player = userservice.logPlayer(roleId,userId);
-        if(player.getRoleid()==9999L){
-            ctx.writeAndFlush("您无该角色！请重新选择！");
+        if(userservice.hasPlayer(roleId,ctx)) {
+            PlayerModel playerModel = userservice.logPlayer(roleId, ctx);
+            //获取场景
+            ctx.writeAndFlush("【"+playerModel.getName()+"】登录成功！\n");
+        }else{
+            ctx.writeAndFlush("无该角色！！！\n");
         }
-        else{
-            BeanUtils.copyProperties(player,playermodel);
-            ctx.writeAndFlush("进入游戏·····");
-            playermodel.setChannelHandlerContext(ctx);
-        }
+
     }
 
-    public static PlayerModel getPlayermodel() {
-        return playermodel;
-    }
-
-    public static long getUserId() {
-        return userId;
-    }
-
-    public static UserModel getUserModel() {
-        return userModel;
-    }
 }

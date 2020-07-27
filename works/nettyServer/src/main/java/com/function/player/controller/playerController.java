@@ -6,27 +6,31 @@ import com.function.user.model.UserModel;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
 import io.netty.channel.ChannelHandlerContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import util.Msg;
 import util.ParamNumCheck;
 
 import javax.annotation.Resource;
 
-public class playerController {
+@Service
+public class PlayerController {
 
-    @Resource
+    @Autowired
     private PlayerService playerService;
 
-    @Resource
+    @Autowired
     private UserService userService;
+
     {
-        ControllerManager.add(Cmd.PLAYER_CREATE,this::createRole);
+        ControllerManager.add(Cmd.PLAYER_CREATE, this::createRole);
     }
 
-    private void createRole(ChannelHandlerContext ctx, Msg msg){
-        UserModel userModel = userService.getUserModel();
-        String[] params = ParamNumCheck.numCheck(ctx,msg,3);
+    private void createRole(ChannelHandlerContext ctx, Msg msg) {
+        UserModel userModel = userService.getUserByCtx(ctx);
+        String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
         String roleName = params[1];
         Integer roleType = Integer.valueOf(params[2]);
-        playerService.roleCreate(ctx,roleName,roleType,userModel.getId());
+        playerService.roleCreate(ctx, roleName, roleType, userModel.getId());
     }
 }
