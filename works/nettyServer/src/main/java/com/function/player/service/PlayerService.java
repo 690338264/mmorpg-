@@ -47,6 +47,14 @@ public class PlayerService {
         }
 
     }
+    public void updateLoc(Integer loc,PlayerModel playerModel) {
+        PlayerExample playerExample = new PlayerExample();
+        PlayerExample.Criteria criteria = playerExample.createCriteria();
+        criteria.andRoleidEqualTo(playerModel.getRoleid());
+        Player newPlayer = new Player();
+        newPlayer.setLoc(loc);
+        playerMapper.updateByExampleSelective(newPlayer,playerExample);
+    }
 
     public void initLevel(PlayerModel playerModel){
         playerModel.setLevel(playerModel.getExp()/2000);

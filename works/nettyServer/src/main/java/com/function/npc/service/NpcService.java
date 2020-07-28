@@ -1,11 +1,12 @@
 package com.function.npc.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.function.npc.model.NpcResource;
+import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Service;
 
 @Service
 public class NpcService {
-//    @Autowired
-//    private NpcMap npcMap;
-
+    public void talkToNpc(ChannelHandlerContext ctx,int npcId){
+        ctx.writeAndFlush(NpcResource.getNpcById(npcId).getName()+"对你说："+NpcResource.getNpcById(npcId).getText());
+    }
 }

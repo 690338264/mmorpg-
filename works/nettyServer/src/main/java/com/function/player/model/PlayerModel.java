@@ -10,11 +10,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ToString(exclude = {"channelHandlerContext",""})
+@ToString(exclude = {"channelHandlerContext", ""})
 @Slf4j
 public class PlayerModel extends Player {
     private ChannelHandlerContext channelHandlerContext;//当前通道上下文
     private Scene nowScene;
     private Integer level;
+
+    public void setLoc(int loc) {
+        super.setLoc(loc);
+    }
 
 }

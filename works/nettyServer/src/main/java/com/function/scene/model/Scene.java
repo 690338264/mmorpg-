@@ -13,5 +13,5 @@ public class Scene {
 
     private String npc;
 
-    private Integer type;
+    private String monster;
 }
