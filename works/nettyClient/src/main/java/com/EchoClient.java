@@ -74,6 +74,7 @@ public class EchoClient {
 
     private void loop() throws IOException {
         System.out.println("----连接服务器[" + host + "]Success!当前连接的是[" + channel.id() + "]-----\n");
+        System.out.println(("请输入1001 id 密码登陆，如无账号请输入1000 用户名 密码来注册\n"));
         while (true) {
             System.out.println("请输入您的操作：");
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));

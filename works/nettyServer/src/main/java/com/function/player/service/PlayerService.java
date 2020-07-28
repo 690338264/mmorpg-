@@ -40,7 +40,7 @@ public class PlayerService {
         if(playerList.size()>0){
             Player newPlayer = playerList.get(0);
 
-            ctx.writeAndFlush("角色创建成功，角色id:"+newPlayer.getRoleid()+"角色昵称为："+newPlayer.getName()+"当前角色在"+newPlayer.getLoc()+'\n');
+            ctx.writeAndFlush("角色创建成功，角色id:"+newPlayer.getRoleid()+"角色昵称为："+newPlayer.getName()+'\n');
         }
         else{
             ctx.writeAndFlush("角色创建失败！\n");

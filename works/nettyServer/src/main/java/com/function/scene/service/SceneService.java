@@ -1,31 +1,46 @@
 package com.function.scene.service;
 
+import com.function.npc.model.NpcResource;
 import com.function.player.model.PlayerModel;
 import com.function.scene.model.Scene;
+import com.function.scene.model.SceneResource;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Service;
-import util.excel.ImportExcel;
-import util.excel.Judge;
 
 import java.util.*;
 
 @Service
 public class SceneService {
-
     public void getNeighbor(PlayerModel playerModel, ChannelHandlerContext ctx) {
         int locId = playerModel.getLoc();
-        ImportExcel sceneExcel = new ImportExcel();
-        List<List<String>> list = sceneExcel.read("D:\\javaweb\\nettyjoin\\nettyServer\\src\\main\\resources\\excels\\scene.xlsx");
-        String[] sid = list.get(locId).get(2).split(",");
-        ctx.writeAndFlush("您想在所在场景为：" + list.get(locId).get(1) + '\n');
-        for (int i = 0; i < sid.length; i++) {
-            int canTo = Integer.parseInt(sid[i]);
-            ctx.writeAndFlush("您可到达的地点有：" + list.get(canTo).get(1) + '\n');
+        String neighbors = SceneResource.getSceneById(locId).getNeighbor();
+        String[] strs = neighbors.split(",");
+        ctx.writeAndFlush("您现在所在场景为：" + SceneResource.getSceneById(locId).getName() + "\n您可到达的地点有：");
+        for (int i = 0; i < strs.length; i++) {
+            int canTo = Integer.parseInt(strs[i]);
+            ctx.writeAndFlush(SceneResource.getSceneById(canTo).getName() + "代号为："+SceneResource.getSceneById(canTo).getId()+'\n');
         }
     }
 
-    public void moveTo(PlayerModel playerModel,int sceneId){
+    public Scene moveTo(PlayerModel playerModel, int sceneId) {
+        playerModel.setNowScene(SceneResource.getSceneById(sceneId));
         playerModel.setLoc(sceneId);
+        return SceneResource.getSceneById(sceneId);
+    }
+
+    public void aoi(PlayerModel playerModel,ChannelHandlerContext ctx){
+        Scene scene = playerModel.getNowScene();
+        String[] npcs = scene.getNpc().split(",");
+        ctx.writeAndFlush("您所在场景有:\n");
+        for (int i = 0;i<npcs.length;i++){
+            int npc = Integer.parseInt(npcs[i]);
+            ctx.writeAndFlush("【"+NpcResource.getNpcById(npc).getName()+"】说："+NpcResource.getNpcById(npc).getText()+"\n[Npc状态]");
+            if(NpcResource.getNpcById(npc).getStatus()==1){
+                ctx.writeAndFlush("存活！\n");
+            }else {
+                ctx.writeAndFlush("已死亡\n");
+            }
+        }
     }
 
 }

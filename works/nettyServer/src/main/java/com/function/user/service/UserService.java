@@ -1,6 +1,7 @@
 package com.function.user.service;
 
 import com.function.player.model.PlayerModel;
+import com.function.scene.model.SceneResource;
 import com.function.user.controller.UserController;
 import com.function.user.map.PlayerMap;
 import com.function.user.map.UserMap;
@@ -113,6 +114,7 @@ public class UserService {
         BeanUtils.copyProperties(playerList.get(0),playerModel);
         playerMap.putPlayerCtx(ctx,playerModel);
         playerModel.setChannelHandlerContext(ctx);
+        playerModel.setNowScene(SceneResource.getSceneById(playerModel.getLoc()));
 
         return playerModel;
     }
