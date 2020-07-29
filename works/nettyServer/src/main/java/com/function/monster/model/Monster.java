@@ -1,24 +1,25 @@
 package com.function.monster.model;
 
+import com.function.skill.model.Skill;
 import lombok.Data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Data
-public class Monster {
-    private int id;
+public class Monster{
+    private Integer id;
 
-    private String name;
+    private Integer selfHp;
 
-    private int hp;
+    private Integer sceneId;
 
-    private int mp;
+    //private MonsterExcel monsterExcel;
 
-    private int aggr;
+    private Integer status;
 
-    private int skill;
+    public MonsterExcel getMonsterExcel(){
+        return MonsterResource.getMonById(id);
+    }
 
-    private int reviveTime;
-
-    private int drop;
-
-    private int status;
 }

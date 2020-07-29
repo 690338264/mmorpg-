@@ -1,6 +1,8 @@
 package com.function.user.service;
 
 import com.function.player.model.PlayerModel;
+import com.function.player.service.PlayerService;
+import com.function.scene.model.Scene;
 import com.function.scene.model.SceneResource;
 import com.function.user.controller.UserController;
 import com.function.user.map.PlayerMap;
@@ -34,8 +36,10 @@ public class UserService {
     private PlayerMapper playerMapper;
     @Autowired
     private PlayerMap playerMap;
+    @Autowired
+    private PlayerService playerService;
 
-    //用户注册
+
     public void register(ChannelHandlerContext ctx,String userName,String psw){
         User u = new User();
         u.setName(userName);
@@ -49,10 +53,9 @@ public class UserService {
         UserExample userExample = new UserExample();
         UserExample.Criteria criteria = userExample.createCriteria();
         criteria.andNameEqualTo(userName);
-        //userExample.or().andNameEqualTo(userName);
         List<User> newUserList = userMapper.selectByExample(userExample);
-        if(newUserList.size()>0){//判断是否添加成功
-            User newUser = newUserList.get(0);//获取第0位（自己）
+        if(newUserList.size()>0){
+            User newUser = newUserList.get(0);
             ctx.writeAndFlush("注册成功，您的id为"+newUser.getId()+"用户名为"+newUser.getName()+'\n');
         }
         else{
@@ -112,10 +115,13 @@ public class UserService {
         List<Player> playerList = playerMapper.selectByExample(playerExample);
         PlayerModel playerModel = new PlayerModel();
         BeanUtils.copyProperties(playerList.get(0),playerModel);
-        playerMap.putPlayerCtx(ctx,playerModel);
+        PlayerMap.putPlayerCtx(ctx,playerModel);
+        PlayerMap.putCtxId(playerId,ctx);
         playerModel.setChannelHandlerContext(ctx);
-        playerModel.setNowScene(SceneResource.getSceneById(playerModel.getLoc()));
-
+        Scene scene = SceneResource.getSceneById(playerModel.getLoc());
+        playerModel.setNowScene(scene);
+        scene.getPlayers().put(playerModel.getRoleid(),playerModel);
+        playerService.initPlayer(playerModel);
         return playerModel;
     }
 
@@ -124,7 +130,7 @@ public class UserService {
     }
 
     public PlayerModel getPlayerByCtx(ChannelHandlerContext ctx){
-        return playerMap.getPlayerCtx(ctx);
+        return PlayerMap.getPlayerCtx(ctx);
     }
 
 

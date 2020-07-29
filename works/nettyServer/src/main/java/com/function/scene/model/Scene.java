@@ -1,6 +1,11 @@
 package com.function.scene.model;
 
+import com.function.monster.model.Monster;
+import com.function.player.model.PlayerModel;
 import lombok.Data;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public class Scene {
@@ -14,4 +19,10 @@ public class Scene {
     private String npc;
 
     private String monster;
+
+    private Map<Long, PlayerModel> players = new HashMap<Long, PlayerModel>();
+
+    private Map<Integer, Monster> monsters = new HashMap<Integer, Monster>();
+
+
 }

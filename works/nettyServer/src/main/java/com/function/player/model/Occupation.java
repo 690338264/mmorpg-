@@ -9,6 +9,10 @@ public class Occupation {
 
     private String name;
 
+    private Integer hp;
+
+    private Integer mp;
+
     private Integer atk;
 
     private Integer def;

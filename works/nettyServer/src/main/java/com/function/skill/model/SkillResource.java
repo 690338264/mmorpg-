@@ -30,7 +30,7 @@ public class SkillResource {
         }
     }
 
-    public Skill getSkillById(int id){
+    public static Skill getSkillById(int id){
         return skillMap.get(id);
     }
 }

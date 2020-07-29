@@ -14,11 +14,12 @@ public enum Cmd {
     TALK_TO("talk_to",1006),
     WHERE_CAN_GO("where_can_go",1007),
     MOVE_TO("move_to",1008),
-    BAG_LIST("bag_list",1009),
-    BAG_INORDER("bag_inorder",1010),
-    ITEM_USE("item_use",10011),
-    ITEM_DROP("item_drop",1012),
-    ITEM_SELL("item_sell",1013),
+    ATTACK("attack",1009),
+    BAG_LIST("bag_list",1010),
+    BAG_INORDER("bag_inorder",1011),
+    ITEM_USE("item_use",10012),
+    ITEM_DROP("item_drop",1013),
+    ITEM_SELL("item_sell",1014),
     UNKNOWN("unknown",9999);
 
     private String cmd;

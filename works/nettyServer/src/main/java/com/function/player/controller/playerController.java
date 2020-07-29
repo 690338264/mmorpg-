@@ -1,6 +1,7 @@
 package com.function.player.controller;
 
 import com.Cmd;
+import com.function.player.model.PlayerModel;
 import com.function.player.service.PlayerService;
 import com.function.user.model.UserModel;
 import com.function.user.service.UserService;
@@ -24,6 +25,7 @@ public class PlayerController {
 
     {
         ControllerManager.add(Cmd.PLAYER_CREATE, this::createRole);
+        ControllerManager.add(Cmd.ATTACK,this::attackMonster);
     }
 
     private void createRole(ChannelHandlerContext ctx, Msg msg) {
@@ -32,5 +34,13 @@ public class PlayerController {
         String roleName = params[1];
         Integer roleType = Integer.valueOf(params[2]);
         playerService.roleCreate(ctx, roleName, roleType, userModel.getId());
+    }
+
+    private void attackMonster(ChannelHandlerContext ctx,Msg msg){
+        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
+        String[] params = ParamNumCheck.numCheck(ctx,msg,3);
+        Integer skill = Integer.valueOf(params[1]);
+        Integer target = Integer.valueOf(params[2]);
+        playerService.attackMonster(ctx,playerModel,skill,target);
     }
 }

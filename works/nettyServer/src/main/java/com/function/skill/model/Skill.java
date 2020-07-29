@@ -14,4 +14,8 @@ public class Skill {
     private Integer buff;
 
     private Integer cd;
+
+    private Integer status;
+
+    private Long current;
 }

@@ -1,5 +1,6 @@
 package com.function.player.model;
 
+import org.springframework.stereotype.Component;
 import util.excel.ExcelUtils;
 
 import javax.annotation.PostConstruct;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class OccResource {
     private static Map<Integer, Occupation> occupationMap = new HashMap<Integer, Occupation>();
 
@@ -27,7 +29,7 @@ public class OccResource {
         }
     }
 
-    public Occupation getOccById(int id){
+    public static Occupation getOccById(int id){
         return occupationMap.get(id);
     }
 }
