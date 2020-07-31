@@ -1,4 +1,4 @@
-package com.function.scene.model;
+package com.manager;
 
 import com.function.monster.model.Monster;
 import com.function.player.model.PlayerModel;

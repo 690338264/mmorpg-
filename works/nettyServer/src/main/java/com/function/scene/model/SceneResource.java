@@ -1,6 +1,7 @@
 package com.function.scene.model;
 
 import com.function.monster.model.Monster;
+import com.manager.SceneExcel;
 import org.springframework.stereotype.Component;
 import util.excel.ExcelUtils;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @Component
 public class SceneResource{
+
 
     private static Map<Integer, SceneExcel> sceneMap = new HashMap<Integer, SceneExcel>();
 

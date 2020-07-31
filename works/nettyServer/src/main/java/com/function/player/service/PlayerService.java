@@ -8,10 +8,10 @@ import com.function.monster.service.MonsterService;
 import com.function.player.model.OccExcel;
 import com.function.player.model.OccResource;
 import com.function.player.model.PlayerModel;
-import com.function.scene.model.SceneExcel;
-import com.function.skill.model.Skill;
-import com.function.skill.model.SkillResource;
+import com.function.skill.excel.SkillExcel;
+import com.function.skill.excel.SkillResource;
 import com.manager.NotifyScene;
+import com.manager.SceneExcel;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -72,18 +72,18 @@ public class PlayerService {
     public void attackMonster(ChannelHandlerContext ctx, PlayerModel playerModel, int skillId, int target) {
         SceneExcel sceneExcel = playerModel.getNowScene();
         Monster monster = sceneExcel.getMonsters().get(target);
-        Skill skill = playerModel.getSkillMap().get(skillId);
-        skill.setStatus(0);
-        int hurt = playerModel.getAtk() * skill.getBuff();
+        SkillExcel skillExcel = playerModel.getSkillMap().get(skillId);
+//        skillExcel.setStatus(0);
+        int hurt = playerModel.getAtk() * skillExcel.getBuff();
         monster.setSelfHp(monster.getMonsterExcel().getHp() - hurt);
-        playerModel.setMp(playerModel.getMp() - skill.getMp());
+        playerModel.setMp(playerModel.getMp() - skillExcel.getMp());
         if (monsterService.isMonsterDeath(monster)) {
             notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]成功击杀怪物" + monster.getMonsterExcel().getName() + '\n');
         } else {
             notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]对怪物[" + monster.getMonsterExcel().getName() + "]产生伤害:" + hurt + '\n');
         }
         int beHurt = monsterService.monsterAtk(monster);
-        ctx.writeAndFlush("您收到了:["+beHurt+"]点的伤害\n");
+        ctx.writeAndFlush("您收到了:[" + beHurt + "]点的伤害\n");
     }
 
     public boolean isPlayerDeath(PlayerModel playerModel) {
@@ -112,8 +112,8 @@ public class PlayerService {
         String[] str = skills.split(",");
         for (int i = 0; i < str.length; i++) {
             int type = Integer.parseInt(str[i]);
-            Skill skill = SkillResource.getSkillById(type);
-            playerModel.getSkillMap().put(i + 1, skill);
+            SkillExcel skillExcel = SkillResource.getSkillById(type);
+            playerModel.getSkillMap().put(i + 1, skillExcel);
         }
     }
 

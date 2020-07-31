@@ -1,6 +1,6 @@
 package com.function.monster.model;
 
-import com.function.skill.model.Skill;
+import com.function.skill.excel.SkillExcel;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -25,5 +25,5 @@ public class MonsterExcel {
 
     private int drop;
 
-    private Map<Integer, Skill> monsterSkill = new HashMap<Integer, Skill>();
+    private Map<Integer, SkillExcel> monsterSkill = new HashMap<Integer, SkillExcel>();
 }

@@ -1,6 +1,5 @@
 package com.manager;
 
-import com.function.scene.model.SceneExcel;
 import com.function.user.map.PlayerMap;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
