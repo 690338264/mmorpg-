@@ -1,4 +1,4 @@
-package com.function.player.model;
+package com.function.occ.excel;
 
 import lombok.Data;
 

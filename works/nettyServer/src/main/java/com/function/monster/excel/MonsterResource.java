@@ -1,4 +1,4 @@
-package com.function.monster.model;
+package com.function.monster.excel;
 
 import com.function.skill.excel.SkillExcel;
 import com.function.skill.excel.SkillResource;
@@ -14,15 +14,16 @@ import java.util.Map;
 public class MonsterResource {
     @Autowired
     private SkillResource skillResource;
+    @Autowired
+    private ExcelManager excelManager;
 
     private static Map<Integer, MonsterExcel> monsterMap = new HashMap<Integer, MonsterExcel>();
 
     @PostConstruct
     private void init() {
-        ExcelManager excelManager = new ExcelManager();
         int num = excelManager.getMap().get("Monster").size();
         for (int i = 0; i < num; i++) {
-            MonsterExcel monster = (MonsterExcel) excelManager.getMap().get("Monster").get(i);
+            MonsterExcel monster = (MonsterExcel) excelManager.getMap().get("Monster").get(i + 1);
             monsterMap.put(monster.getId(), monster);
             String str = monster.getSkill();
             String[] strs = str.split(",");
@@ -32,24 +33,6 @@ public class MonsterResource {
                 monster.getMonsterSkill().put(j, skillExcel);
             }
         }
-//        File file = new File("C:\\Users\\Dell\\Desktop\\mmorpg-\\works\\nettyServer\\src\\main\\resources\\excels\\monster.xlsx");
-//        FileInputStream in = null;
-//        try {
-//            in = new FileInputStream(file);
-//            List<MonsterExcel> list = ExcelUtils.readExcelToEntity(MonsterExcel.class, in, file.getName());
-//            for (int i = 0; i < list.size(); i++) {
-//                monsterMap.put(list.get(i).getId(),list.get(i));
-//                String str = list.get(i).getSkill();
-//                String[] strs = str.split(",");
-//                for (int j = 0; j < strs.length; j++) {
-//                    int skillId = Integer.parseInt(strs[j]);
-//                    SkillExcel skillExcel = SkillResource.getSkillById(skillId);
-//                    list.get(i).getMonsterSkill().put(j, skillExcel);
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     public static MonsterExcel getMonById(int id) {

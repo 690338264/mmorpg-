@@ -1,4 +1,4 @@
-package com.function.monster.model;
+package com.function.monster.excel;
 
 import com.function.skill.excel.SkillExcel;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.function.npc.model;
+package com.function.npc.excel;
 
 import lombok.Data;
 

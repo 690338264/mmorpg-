@@ -1,8 +1,8 @@
 package com.function.player.model;
 
 import com.database.entity.Player;
+import com.function.scene.excel.SceneExcel;
 import com.function.skill.excel.SkillExcel;
-import com.manager.SceneExcel;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

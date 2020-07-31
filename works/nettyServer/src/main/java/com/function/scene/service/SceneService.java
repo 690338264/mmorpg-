@@ -1,12 +1,12 @@
 package com.function.scene.service;
 
 import com.function.monster.model.Monster;
-import com.function.npc.model.NpcResource;
+import com.function.npc.excel.NpcResource;
 import com.function.player.model.PlayerModel;
 import com.function.player.service.PlayerService;
-import com.function.scene.model.SceneResource;
+import com.function.scene.excel.SceneExcel;
+import com.function.scene.excel.SceneResource;
 import com.manager.NotifyScene;
-import com.manager.SceneExcel;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

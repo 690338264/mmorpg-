@@ -1,6 +1,6 @@
 package com.function.npc.service;
 
-import com.function.npc.model.NpcResource;
+import com.function.npc.excel.NpcResource;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Service;
 

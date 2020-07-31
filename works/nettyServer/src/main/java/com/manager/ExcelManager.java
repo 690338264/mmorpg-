@@ -20,7 +20,7 @@ import java.util.Map;
 public class ExcelManager {
 
     private Map<String, Map<Integer, Object>> map = new HashMap<>();
-    private Map<Integer, Object> classMap = new HashMap<>();
+    private Map<Integer, Object> classMap;
 
 
     @PostConstruct
@@ -28,13 +28,14 @@ public class ExcelManager {
         File directory = new File("C:\\Users\\Dell\\Desktop\\mmorpg-\\works\\nettyServer\\src\\main\\resources\\excels\\");
 
         for (String fileName : directory.list()) {
+            classMap = new HashMap<>();
             FileInputStream in = null;
             File file = new File(directory + "\\" + fileName);
 
             in = new FileInputStream(file);
             String[] s = fileName.split(".xlsx");
             try {
-                List<?> list = ExcelUtils.readExcelToEntity(Class.forName(s[0] + "Excel"), in, fileName);
+                List<?> list = ExcelUtils.readExcelToEntity(Class.forName("com.function." + s[0].toLowerCase() + ".excel." + s[0] + "Excel"), in, fileName);
 
                 for (int i = 0; i < list.size(); i++) {
                     list.get(i);
