@@ -1,6 +1,5 @@
 package com.function.skill.model;
 
-import com.function.scene.model.Scene;
 import org.springframework.stereotype.Component;
 import util.excel.ExcelUtils;
 
@@ -10,6 +9,9 @@ import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+/**
+ * @author Catherine
+ */
 @Component
 public class SkillResource {
 
@@ -22,7 +24,7 @@ public class SkillResource {
         try {
             in = new FileInputStream(file);
             List<Skill> list = ExcelUtils.readExcelToEntity(Skill.class,in,file.getName());
-            for(int i = 0;i<list.size();i++) {
+            for(int i = 0; i<list.size(); i++) {
                 skillMap.put(list.get(i).getId(),list.get(i));
             }
         }catch (Exception e){

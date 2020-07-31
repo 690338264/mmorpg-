@@ -14,15 +14,15 @@ public class BagController {
     private BagService bagservice;
 
     {
-        ControllerManager.add(Cmd.BAG_LIST,this::baglist);
-        ControllerManager.add(Cmd.BAG_INORDER,this::baginOrder);
+        ControllerManager.add(Cmd.BAG_LIST, this::baglist);
+        ControllerManager.add(Cmd.BAG_INORDER, this::baginOrder);
     }
 
-    private void baglist(ChannelHandlerContext ctx, Msg msg){
+    private void baglist(ChannelHandlerContext ctx, Msg msg) {
 
     }
 
-    private void baginOrder(ChannelHandlerContext ctx,Msg msg){
+    private void baginOrder(ChannelHandlerContext ctx, Msg msg) {
 
     }
 

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class NpcService {
-    public void talkToNpc(ChannelHandlerContext ctx,int npcId){
-        ctx.writeAndFlush(NpcResource.getNpcById(npcId).getName()+"对你说："+NpcResource.getNpcById(npcId).getText()+'\n');
+    public void talkToNpc(ChannelHandlerContext ctx, int npcId) {
+        ctx.writeAndFlush(NpcResource.getNpcById(npcId).getName() + "对你说：" + NpcResource.getNpcById(npcId).getText() + '\n');
     }
 }

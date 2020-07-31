@@ -5,7 +5,9 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-
+/**
+ * @author Catherine
+ */
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class UserModel extends User {

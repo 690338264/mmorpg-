@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * @author Catherine
+ */
 @Component
 public class PlayerMap {
     private static Map<ChannelHandlerContext, PlayerModel> playerModelMap = new HashMap<ChannelHandlerContext, PlayerModel>();
@@ -24,7 +26,7 @@ public class PlayerMap {
         ctxIdMap.put(playerId, ctx);
     }
 
-    public static ChannelHandlerContext getCtxId(Long playerId){
+    public static ChannelHandlerContext getCtxId(Long playerId) {
         return ctxIdMap.get(playerId);
     }
 

@@ -1,7 +1,10 @@
 package com.server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -11,6 +14,9 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * @author Catherine
+ */
 public class EchoServer {
 
     public void bind(int port){
@@ -41,19 +47,19 @@ public class EchoServer {
             //7 获取channel的closeFuture，并且阻塞当前线程直到它完成
             f.channel().closeFuture().sync();
             System.out.println("ok");
-        }
-        catch (Exception e){throw new RuntimeException();}
-        finally {
+        } catch (Exception e){throw new RuntimeException();} finally {
             //8 关闭EventLoopGroup释放所有资源
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
     }
+
     public static void main(String[] args) throws Exception{
         new ClassPathXmlApplicationContext("applicationContext.xml");
         int port = 8000;
         new EchoServer().bind(port);
     }
+
     public void start(){
         int port = 8000;
         try{

@@ -21,6 +21,6 @@ public class NpcController {
     private void speak(ChannelHandlerContext ctx, Msg msg) {
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
         int npcId = Integer.valueOf(params[1]);
-        npcService.talkToNpc(ctx,npcId);
+        npcService.talkToNpc(ctx, npcId);
     }
 }

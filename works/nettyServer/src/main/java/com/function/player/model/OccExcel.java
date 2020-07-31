@@ -2,8 +2,11 @@ package com.function.player.model;
 
 import lombok.Data;
 
+/**
+ * @author Catherine
+ */
 @Data
-public class Occupation {
+public class OccExcel {
 
     private Integer id;
 

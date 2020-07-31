@@ -1,7 +1,9 @@
 package com.function.skill.model;
 
 import lombok.Data;
-
+/**
+ * @author Catherine
+ */
 @Data
 public class Skill {
 

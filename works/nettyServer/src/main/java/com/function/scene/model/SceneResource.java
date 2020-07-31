@@ -1,8 +1,6 @@
 package com.function.scene.model;
 
 import com.function.monster.model.Monster;
-import com.function.monster.model.MonsterResource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import util.excel.ExcelUtils;
 
@@ -16,7 +14,7 @@ import java.util.Map;
 @Component
 public class SceneResource{
 
-    private static Map<Integer,Scene> sceneMap = new HashMap<Integer, Scene>();
+    private static Map<Integer, SceneExcel> sceneMap = new HashMap<Integer, SceneExcel>();
 
     @PostConstruct
     private void init(){
@@ -24,7 +22,7 @@ public class SceneResource{
         FileInputStream in = null;
         try {
             in = new FileInputStream(file);
-            List<Scene> list = ExcelUtils.readExcelToEntity(Scene.class,in,file.getName());
+            List<SceneExcel> list = ExcelUtils.readExcelToEntity(SceneExcel.class, in, file.getName());
             for(int i = 0;i<list.size();i++) {
                 sceneMap.put(list.get(i).getId(),list.get(i));
                 String str = list.get(i).getMonster();
@@ -45,7 +43,7 @@ public class SceneResource{
 
     }
 
-    public static Scene getSceneById(int id){
+    public static SceneExcel getSceneById(int id) {
         return sceneMap.get(id);
     }
 }

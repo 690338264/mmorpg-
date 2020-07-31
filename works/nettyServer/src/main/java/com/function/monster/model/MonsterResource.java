@@ -1,9 +1,7 @@
 package com.function.monster.model;
 
-import com.function.npc.model.Npc;
 import com.function.skill.model.Skill;
 import com.function.skill.model.SkillResource;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import util.excel.ExcelUtils;

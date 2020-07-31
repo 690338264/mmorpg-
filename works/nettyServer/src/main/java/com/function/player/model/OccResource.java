@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Component
 public class OccResource {
-    private static Map<Integer, Occupation> occupationMap = new HashMap<Integer, Occupation>();
+    private static Map<Integer, OccExcel> occupationMap = new HashMap<Integer, OccExcel>();
 
     @PostConstruct
     private void init(){
@@ -20,7 +20,7 @@ public class OccResource {
         FileInputStream in = null;
         try {
             in = new FileInputStream(file);
-            List<Occupation> list = ExcelUtils.readExcelToEntity(Occupation.class,in,file.getName());
+            List<OccExcel> list = ExcelUtils.readExcelToEntity(OccExcel.class, in, file.getName());
             for(int i = 0;i<list.size();i++) {
                 occupationMap.put(list.get(i).getId(),list.get(i));
             }
@@ -29,7 +29,7 @@ public class OccResource {
         }
     }
 
-    public static Occupation getOccById(int id){
+    public static OccExcel getOccById(int id) {
         return occupationMap.get(id);
     }
 }

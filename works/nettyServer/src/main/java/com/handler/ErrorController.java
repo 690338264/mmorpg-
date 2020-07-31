@@ -2,7 +2,9 @@ package com.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import util.Msg;
-
+/**
+ * @author Catherine
+ */
 public class ErrorController implements Controller {
     @Override
     public void handle(ChannelHandlerContext ctx, Msg message){

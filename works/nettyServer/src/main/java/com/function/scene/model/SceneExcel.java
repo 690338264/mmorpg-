@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class Scene {
+public class SceneExcel {
 
     private Integer id;
 

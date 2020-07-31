@@ -2,7 +2,9 @@ package com.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import util.Msg;
-
+/**
+ * @author Catherine
+ */
 @FunctionalInterface
 public interface Controller {
 

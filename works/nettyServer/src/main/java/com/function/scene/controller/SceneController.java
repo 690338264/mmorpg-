@@ -1,11 +1,9 @@
 package com.function.scene.controller;
 
 import com.Cmd;
-import com.database.entity.Player;
 import com.function.player.model.PlayerModel;
-import com.function.scene.model.Scene;
+import com.function.scene.model.SceneExcel;
 import com.function.scene.service.SceneService;
-import com.function.user.controller.UserController;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import util.Msg;
 import util.ParamNumCheck;
-
-import javax.annotation.Resource;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -41,8 +36,8 @@ public class SceneController {
         PlayerModel playerModel = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
         int sceneId = Integer.valueOf(params[1]);
-        Scene scene = sceneService.moveTo(playerModel, sceneId);
-        ctx.writeAndFlush("您已到达：" + scene.getName() + '\n');
+        SceneExcel sceneExcel = sceneService.moveTo(playerModel, sceneId);
+        ctx.writeAndFlush("您已到达：" + sceneExcel.getName() + '\n');
     }
 
     private void aoi(ChannelHandlerContext ctx, Msg msg) {

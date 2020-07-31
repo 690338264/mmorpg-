@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import util.Msg;
 import util.ParamNumCheck;
 
-import javax.annotation.Resource;
-
 @Service
 public class PlayerController {
 
@@ -25,7 +23,7 @@ public class PlayerController {
 
     {
         ControllerManager.add(Cmd.PLAYER_CREATE, this::createRole);
-        ControllerManager.add(Cmd.ATTACK,this::attackMonster);
+        ControllerManager.add(Cmd.ATTACK, this::attackMonster);
     }
 
     private void createRole(ChannelHandlerContext ctx, Msg msg) {
@@ -36,11 +34,11 @@ public class PlayerController {
         playerService.roleCreate(ctx, roleName, roleType, userModel.getId());
     }
 
-    private void attackMonster(ChannelHandlerContext ctx,Msg msg){
+    private void attackMonster(ChannelHandlerContext ctx, Msg msg) {
         PlayerModel playerModel = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx,msg,3);
+        String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
         Integer skill = Integer.valueOf(params[1]);
         Integer target = Integer.valueOf(params[2]);
-        playerService.attackMonster(ctx,playerModel,skill,target);
+        playerService.attackMonster(ctx, playerModel, skill, target);
     }
 }

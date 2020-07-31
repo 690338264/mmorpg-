@@ -17,17 +17,19 @@ public class MonsterService {
         }
     }
 
-    public int monsterAtk(Monster monster){
+    public int monsterAtk(Monster monster) {
         Integer[] keys = monster.getMonsterExcel().getMonsterSkill().keySet().toArray(new Integer[0]);
         Skill skill = new Skill();
-        while(true){
+        while (true) {
             Random random = new Random();
             Integer randomKey = keys[random.nextInt(keys.length)];
             skill = monster.getMonsterExcel().getMonsterSkill().get(randomKey);
-            if(skill.getStatus()==1){break;}
+            if (skill.getStatus() == 1) {
+                break;
+            }
         }
         skill.setStatus(0);
-        int hurt = monster.getMonsterExcel().getAggr()*skill.getBuff();
+        int hurt = monster.getMonsterExcel().getAggr() * skill.getBuff();
         return hurt;
 
     }
