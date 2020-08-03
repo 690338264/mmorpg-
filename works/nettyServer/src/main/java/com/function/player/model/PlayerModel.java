@@ -2,7 +2,7 @@ package com.function.player.model;
 
 import com.database.entity.Player;
 import com.function.scene.excel.SceneExcel;
-import com.function.skill.excel.SkillExcel;
+import com.function.skill.model.Skill;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,7 +20,7 @@ public class PlayerModel extends Player {
     private ChannelHandlerContext channelHandlerContext;
     private SceneExcel nowScene;
     private Integer level;
-    private Map<Integer, SkillExcel> skillMap = new HashMap<Integer, SkillExcel>();
+    private Map<Integer, Skill> skillMap = new HashMap<Integer, Skill>();
     private Integer hp;
     private Integer mp;
     private Integer atk;

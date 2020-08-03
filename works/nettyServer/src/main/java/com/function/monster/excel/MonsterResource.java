@@ -1,7 +1,7 @@
 package com.function.monster.excel;
 
-import com.function.skill.excel.SkillExcel;
 import com.function.skill.excel.SkillResource;
+import com.function.skill.model.Skill;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,8 +29,9 @@ public class MonsterResource {
             String[] strs = str.split(",");
             for (int j = 0; j < strs.length; j++) {
                 int skillId = Integer.parseInt(strs[j]);
-                SkillExcel skillExcel = SkillResource.getSkillById(skillId);
-                monster.getMonsterSkill().put(j, skillExcel);
+                Skill skill = new Skill();
+                skill.setSkillId(skillId);
+                monster.getMonsterSkill().put(j, skill);
             }
         }
     }

@@ -9,8 +9,7 @@ import com.function.occ.excel.OccExcel;
 import com.function.occ.excel.OccResource;
 import com.function.player.model.PlayerModel;
 import com.function.scene.excel.SceneExcel;
-import com.function.skill.excel.SkillExcel;
-import com.function.skill.excel.SkillResource;
+import com.function.skill.model.Skill;
 import com.manager.NotifyScene;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,18 +71,26 @@ public class PlayerService {
     public void attackMonster(ChannelHandlerContext ctx, PlayerModel playerModel, int skillId, int target) {
         SceneExcel sceneExcel = playerModel.getNowScene();
         Monster monster = sceneExcel.getMonsters().get(target);
-        SkillExcel skillExcel = playerModel.getSkillMap().get(skillId);
-//        skillExcel.setStatus(0);
-        int hurt = playerModel.getAtk() * skillExcel.getBuff();
-        monster.setSelfHp(monster.getMonsterExcel().getHp() - hurt);
-        playerModel.setMp(playerModel.getMp() - skillExcel.getMp());
-        if (monsterService.isMonsterDeath(monster)) {
-            notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]成功击杀怪物" + monster.getMonsterExcel().getName() + '\n');
+        Skill skill = playerModel.getSkillMap().get(skillId);
+        skill.setNowTime(System.currentTimeMillis());
+        if (skill.getLastTime() == null || skill.getNowTime() - skill.getLastTime() >= skill.getSkillExcel().getCd() * 1000) {
+
+            int hurt = playerModel.getAtk() * skill.getSkillExcel().getBuff();
+            monster.setSelfHp(monster.getSelfHp() - hurt);
+            playerModel.setMp(playerModel.getMp() - skill.getSkillExcel().getMp());
+            skill.setLastTime(System.currentTimeMillis());
+            if (monsterService.isMonsterDeath(monster)) {
+                notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]成功击杀怪物" + monster.getMonsterExcel().getName() + '\n');
+            } else {
+                notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]对怪物[" + monster.getMonsterExcel().getName() + "]产生伤害:" + hurt + '\n');
+            }
+            int beHurt = monsterService.monsterAtk(monster);
+            ctx.writeAndFlush("您受到了:[" + beHurt + "]点的伤害\n");
+
         } else {
-            notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]对怪物[" + monster.getMonsterExcel().getName() + "]产生伤害:" + hurt + '\n');
+            ctx.writeAndFlush("技能[" + skill.getSkillExcel().getName() + "]冷却中\n");
         }
-        int beHurt = monsterService.monsterAtk(monster);
-        ctx.writeAndFlush("您收到了:[" + beHurt + "]点的伤害\n");
+
     }
 
     public boolean isPlayerDeath(PlayerModel playerModel) {
@@ -112,8 +119,10 @@ public class PlayerService {
         String[] str = skills.split(",");
         for (int i = 0; i < str.length; i++) {
             int type = Integer.parseInt(str[i]);
-            SkillExcel skillExcel = SkillResource.getSkillById(type);
-            playerModel.getSkillMap().put(i + 1, skillExcel);
+            Skill skill = new Skill();
+            skill.setSkillId(type);
+            // SkillExcel skillExcel = SkillResource.getSkillById(type);
+            playerModel.getSkillMap().put(i + 1, skill);
         }
     }
 
