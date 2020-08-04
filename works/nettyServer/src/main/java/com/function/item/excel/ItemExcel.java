@@ -28,4 +28,6 @@ public class ItemExcel {
 
     private int type;
 
+    private int space;
+
 }

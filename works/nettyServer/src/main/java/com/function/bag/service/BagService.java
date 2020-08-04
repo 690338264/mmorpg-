@@ -26,7 +26,7 @@ public class BagService {
         BagModel bagModel = new BagModel();
         BeanUtils.copyProperties(bagList.get(0), bagModel);
         playerModel.setBagModel(bagModel);
-        if (bagModel.getItem().equals("")) {
+        if (bagModel.getItem().equals("") && bagModel.getItem() != null) {
             return;
         }
         String[] items = bagModel.getItem().split(",");

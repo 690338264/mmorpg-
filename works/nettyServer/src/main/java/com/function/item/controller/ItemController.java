@@ -26,6 +26,8 @@ public class ItemController {
     {
         ControllerManager.add(Cmd.ITEM_USE, this::itemUse);
         ControllerManager.add(Cmd.EQUIP_ON, this::equipOn);
+        ControllerManager.add(Cmd.ITEM_DROP, this::itemDrop);
+        ControllerManager.add(Cmd.EQUIP_OFF, this::equipOff);
     }
 
     private void itemUse(ChannelHandlerContext ctx, Msg msg) {
@@ -40,6 +42,21 @@ public class ItemController {
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
         Integer index = Integer.parseInt(params[1]);
         itemService.wearEquipment(index, playerModel, ctx);
+    }
 
+    private void itemDrop(ChannelHandlerContext ctx, Msg msg) {
+        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
+        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+        Integer index = Integer.parseInt(params[1]);
+        String name = playerModel.getBagModel().getItemMap().get(index).getItemById().getName();
+        itemService.removeItem(index, playerModel);
+        ctx.writeAndFlush("您已丢弃:[" + name + "]\n");
+    }
+
+    private void equipOff(ChannelHandlerContext ctx, Msg msg) {
+        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
+        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+        Integer index = Integer.parseInt(params[1]);
+        itemService.addItem(index, playerModel, ctx);
     }
 }

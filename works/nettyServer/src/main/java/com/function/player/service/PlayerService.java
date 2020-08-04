@@ -6,6 +6,7 @@ import com.database.entity.PlayerExample;
 import com.database.mapper.BagMapper;
 import com.database.mapper.PlayerMapper;
 import com.function.bag.service.BagService;
+import com.function.item.model.Item;
 import com.function.monster.model.Monster;
 import com.function.monster.service.MonsterService;
 import com.function.occ.excel.OccExcel;
@@ -73,6 +74,9 @@ public class PlayerService {
 
     }
 
+    /**
+     * 更新数据库位置信息
+     */
     public void updateLoc(Integer loc, PlayerModel playerModel) {
         PlayerExample playerExample = new PlayerExample();
         PlayerExample.Criteria criteria = playerExample.createCriteria();
@@ -82,12 +86,30 @@ public class PlayerService {
         playerMapper.updateByExampleSelective(newPlayer, playerExample);
     }
 
+    /**
+     * 更新数据库装备配置
+     */
+    public void updateEquip(Player newPlayer, PlayerModel playerModel) {
+        PlayerExample playerExample = new PlayerExample();
+        PlayerExample.Criteria criteria = playerExample.createCriteria();
+        criteria.andRoleidEqualTo(playerModel.getRoleid());
+//        Player newPlayer = new Player();
+//        newPlayer.setEquip(playerModel.getEquip());
+        playerMapper.updateByExampleSelective(newPlayer, playerExample);
+    }
+
+
     public void showState(ChannelHandlerContext ctx, PlayerModel playerModel) {
         ctx.writeAndFlush("您当前hp:[" + playerModel.getHp() + "]\n" +
                 "您当前mp:[" + playerModel.getMp() + "]\n" +
-                "您当前等级为:[" + playerModel.getLevel() + "]\n");
+                "您当前等级为:[" + playerModel.getLevel() + "]\n" +
+                "您当前攻击力为:[" + playerModel.getAtk() + "]\n" +
+                "您当前防御力为:[" + playerModel.getDef() + "]\n");
     }
 
+    /**
+     * 攻击怪物
+     */
     public void attackMonster(ChannelHandlerContext ctx, PlayerModel playerModel, int skillId, int target) {
         SceneExcel sceneExcel = playerModel.getNowScene();
         Monster monster = sceneExcel.getMonsters().get(target);
@@ -144,15 +166,31 @@ public class PlayerService {
         playerModel.setLevel(playerModel.getExp() / 2000);
     }
 
+    /**
+     * 初始化角色属性
+     */
     public void initAttribute(PlayerModel playerModel) {
         OccExcel occ = OccResource.getOccById(playerModel.getOccupation());
+        String[] equips = playerModel.getEquip().split(",");
+
         playerModel.setHp(occ.getHp());
+        playerModel.setMp(occ.getMp());
         playerModel.setOriHp(occ.getHp() + playerModel.getLevel() * occ.getHp() / 5 * 4);
         playerModel.setOriMp(occ.getMp() + playerModel.getLevel() * occ.getMp() / 5 * 4);
-        playerModel.setMp(occ.getMp());
-        playerModel.setAtk(occ.getAtk());
-        playerModel.setDef(occ.getDef());
-        playerModel.setSpeed(occ.getSpeed());
+
+        playerModel.setAtk(occ.getAtk() + playerModel.getLevel() * occ.getAtk() / 6 * 5);
+        playerModel.setDef(occ.getDef() + playerModel.getLevel() * occ.getDef() / 6 * 5);
+        playerModel.setSpeed(occ.getSpeed() + playerModel.getLevel() * occ.getSpeed() / 6 * 5);
+
+        for (int i = 0; i < equips.length && !playerModel.getEquip().equals("") && playerModel.getEquip() != null; i++) {
+            int equipId = Integer.parseInt(equips[i]);
+            int addAtk = playerModel.getBagModel().getItemMap().get(equipId).getItemById().getAtk();
+            int addDef = playerModel.getBagModel().getItemMap().get(equipId).getItemById().getDef();
+            int addSpeed = playerModel.getBagModel().getItemMap().get(equipId).getItemById().getSpeed();
+            playerModel.setAtk(playerModel.getAtk() + addAtk);
+            playerModel.setDef(playerModel.getDef() + addDef);
+            playerModel.setSpeed(playerModel.getSpeed() + addSpeed);
+        }
     }
 
     public void initSkill(PlayerModel playerModel) {
@@ -166,11 +204,22 @@ public class PlayerService {
         }
     }
 
+    public void initEquipment(PlayerModel playerModel) {
+        String[] equips = playerModel.getEquip().split(",");
+        for (int i = 0; i < equips.length; i++) {
+            int itemId = Integer.parseInt(equips[i]);
+            Item item = new Item();
+            item.setId(itemId);
+            playerModel.getEquipMap().put(item.getItemById().getSpace(), item);
+        }
+    }
+
     public void initPlayer(PlayerModel playerModel) {
         initLevel(playerModel);
-        initAttribute(playerModel);
         initSkill(playerModel);
+        initEquipment(playerModel);
         bagService.initBag(playerModel);
+        initAttribute(playerModel);
     }
 
 }

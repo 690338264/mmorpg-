@@ -20,7 +20,7 @@ public enum Cmd {
     EQUIP_ON("equip_on", 10101),
     ITEM_USE("item_use", 10102),
     ITEM_DROP("item_drop", 10103),
-    ITEM_SELL("item_sell", 10104),
+    EQUIP_OFF("equip_off", 10104),
     PLAYER_STATE("player_state", 888),
     UNKNOWN("unknown", 9999);
 

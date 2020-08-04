@@ -38,7 +38,9 @@ public class UserService {
     @Autowired
     private PlayerService playerService;
 
-
+    /**
+     * 用户注册
+     */
     public void register(ChannelHandlerContext ctx, String userName, String psw) {
         User u = new User();
         u.setName(userName);
@@ -61,7 +63,9 @@ public class UserService {
         }
     }
 
-    //用户登录
+    /**
+     * 用户登录
+     */
     public void login(long userId, String psw, ChannelHandlerContext ctx) {
         UserModel usermodel = new UserModel();
         UserExample userExample = new UserExample();
@@ -80,7 +84,9 @@ public class UserService {
         usermodel.setChannelHandlerContext(ctx);
     }
 
-    //用户游戏角色列表
+    /**
+     * 查看角色列表
+     */
     public List<Player> listPlayer(Long Id) {
         PlayerExample playerExample = new PlayerExample();
         PlayerExample.Criteria criteria = playerExample.createCriteria();
@@ -104,6 +110,9 @@ public class UserService {
         }
     }
 
+    /**
+     * 选择角色进行登录
+     */
     public PlayerModel logPlayer(Long playerId, ChannelHandlerContext ctx) {
         UserModel userModel = getUserByCtx(ctx);
         PlayerExample playerExample = new PlayerExample();
