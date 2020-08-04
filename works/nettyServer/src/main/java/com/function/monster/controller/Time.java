@@ -16,10 +16,6 @@ public class Time extends TimerTask {
 
     private Monster monster;
 
-    //    public void run(Monster monster){
-//        monster.setSelfHp(monster.getMonsterExcel().getHp());
-//        run();
-//    }
     @Override
     public void run() {
         monster.setSelfHp(monster.getMonsterExcel().getHp());

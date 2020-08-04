@@ -24,6 +24,7 @@ public class PlayerController {
     {
         ControllerManager.add(Cmd.PLAYER_CREATE, this::createRole);
         ControllerManager.add(Cmd.ATTACK, this::attackMonster);
+        ControllerManager.add(Cmd.PLAYER_STATE, this::playerState);
     }
 
     private void createRole(ChannelHandlerContext ctx, Msg msg) {
@@ -40,5 +41,10 @@ public class PlayerController {
         Integer skill = Integer.valueOf(params[1]);
         Integer target = Integer.valueOf(params[2]);
         playerService.attackMonster(ctx, playerModel, skill, target);
+    }
+
+    private void playerState(ChannelHandlerContext ctx, Msg msg) {
+        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
+        playerService.showState(ctx, playerModel);
     }
 }

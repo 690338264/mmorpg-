@@ -24,24 +24,23 @@ public class MonsterService {
         }
     }
 
-    public void monsterRevive(Monster monster) {
-        monster.setSelfHp(monster.getMonsterExcel().getHp());
-    }
-
-    public int monsterAtk(Monster monster) {
+    public int[] monsterAtk(Monster monster) {
         Integer[] keys = monster.getMonsterExcel().getMonsterSkill().keySet().toArray(new Integer[0]);
         Skill skill = new Skill();
-//        while (true) {
-        Random random = new Random();
-        Integer randomKey = keys[random.nextInt(keys.length)];
-        skill = monster.getMonsterExcel().getMonsterSkill().get(randomKey);
-//            if (skillExcel.getStatus() == 1) {
-//                break;
-//            }
-//        }
-//        skillExcel.setStatus(0);
+        while (true) {
+            Random random = new Random();
+            Integer randomKey = keys[random.nextInt(keys.length)];
+            skill = monster.getMonsterExcel().getMonsterSkill().get(randomKey);
+            skill.setNowTime(System.currentTimeMillis());
+            if (skill.getLastTime() == null || skill.getNowTime() - skill.getLastTime() >= skill.getSkillExcel().getCd()) {
+                break;
+            }
+        }
+        skill.setLastTime(System.currentTimeMillis());
         int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getBuff();
-        return hurt;
-
+        int[] a = new int[2];
+        a[0] = hurt;
+        a[1] = skill.getSkillId();
+        return a;
     }
 }

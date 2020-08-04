@@ -57,7 +57,11 @@ public class SceneService {
 
         for (Integer key : sceneExcel.getMonsters().keySet()) {
             Monster monster = sceneExcel.getMonsters().get(key);
-            ctx.writeAndFlush("id:[" + key + "]" + monster.getMonsterExcel().getName() + "  Hp[" + monster.getSelfHp() + "]" + '\n');
+            if (monster.getSelfHp() <= 0) {
+                ctx.writeAndFlush("id:[" + key + "]" + monster.getMonsterExcel().getName() + "  [已死亡]" + '\n');
+            } else {
+                ctx.writeAndFlush("id:[" + key + "]" + monster.getMonsterExcel().getName() + "  Hp[" + monster.getSelfHp() + "]" + '\n');
+            }
         }
         ctx.writeAndFlush("可选择怪物进行攻击\n");
     }

@@ -14,8 +14,6 @@ public class Monster {
 
     private Integer status;
 
-    private Long dieTime;
-
     public MonsterExcel getMonsterExcel() {
         return MonsterResource.getMonById(id);
     }
