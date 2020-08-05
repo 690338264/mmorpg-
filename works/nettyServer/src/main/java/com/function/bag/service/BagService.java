@@ -73,8 +73,14 @@ public class BagService {
         BagModel bagModel = playerModel.getBagModel();
         ctx.writeAndFlush("您背包里的物品有：\n");
         for (Integer index : bagModel.getItemMap().keySet()) {
-            ctx.writeAndFlush("[" + index + "]" + bagModel.getItemMap().get(index).getItemById().getName() +
-                    "[" + bagModel.getItemMap().get(index).getNum() + "]\n");
+            StringBuilder sb = new StringBuilder();
+            sb.append("[").append(index).append("]").append(bagModel.getItemMap().get(index).getItemById().getName())
+                    .append("[").append(bagModel.getItemMap().get(index).getNum()).append("]");
+            if (bagModel.getItemMap().get(index).getItemById().getType() == 2) {
+                sb.append("磨损度:[").append(bagModel.getItemMap().get(index).getNowWear()).append("]");
+            }
+            sb.append('\n');
+            ctx.writeAndFlush(sb);
         }
     }
 

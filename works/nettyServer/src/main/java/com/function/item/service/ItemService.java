@@ -58,15 +58,15 @@ public class ItemService {
         if (e.length() > 0) {
             e.deleteCharAt(e.length() - 1);
         }
-
         Item item = new Item();
         item.setId(equipId);
-        playerModel.getEquipMap().remove(item.getItemById().getSpace());
         playerModel.setEquip(e.toString());
         playerService.updateEquip(playerModel);
         changeAttr(-1, item, playerModel);
-        ctx.writeAndFlush("您已摘下[" + item.getItemById().getName() + "]\n");
         addItem(equipId, playerModel, ctx);
+        playerModel.getEquipMap().remove(item.getItemById().getSpace());
+        ctx.writeAndFlush("您已摘下[" + item.getItemById().getName() + "]\n");
+
     }
 
     /**
@@ -76,6 +76,7 @@ public class ItemService {
         Item item = new Item();
         item.setId(itemId);
         item.setNum(1);
+        item.setNowWear(playerModel.getEquipMap().get(item.getItemById().getSpace()).getNowWear());
         BagModel bagModel = playerModel.getBagModel();
         for (int i = 0; i < bagModel.getVolume(); i++) {
             if (bagModel.getItemMap().get(i) == null) {
@@ -143,7 +144,8 @@ public class ItemService {
         ctx.writeAndFlush("您已穿戴:\n");
         for (Integer key : playerModel.getEquipMap().keySet()) {
             ctx.writeAndFlush(playerModel.getEquipMap().get(key).getItemById().getId() +
-                    ":[" + playerModel.getEquipMap().get(key).getItemById().getName() + "]\n");
+                    ":[" + playerModel.getEquipMap().get(key).getItemById().getName() +
+                    "]磨损度:[" + playerModel.getEquipMap().get(key).getNowWear() + "]\n");
         }
     }
 }

@@ -117,40 +117,46 @@ public class PlayerService {
         skill.setNowTime(System.currentTimeMillis());
         if (monster.getSelfHp() <= 0) {
             ctx.writeAndFlush("攻击目标无效，请重新选择！\n");
-        } else {
-            if (skill.getLastTime() == null || skill.getNowTime() - skill.getLastTime() >= skill.getSkillExcel().getCd() * 1000) {
-                if (playerModel.getMp() >= skill.getSkillExcel().getMp()) {
-
-                    int hurt = playerModel.getAtk() * skill.getSkillExcel().getBuff();
-                    monster.setSelfHp(monster.getSelfHp() - hurt);
-                    playerModel.setMp(playerModel.getMp() - skill.getSkillExcel().getMp());
-                    skill.setLastTime(System.currentTimeMillis());
-                    if (monsterService.isMonsterDeath(monster)) {
-                        notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]成功击杀怪物" + monster.getMonsterExcel().getName() + '\n');
-                    } else {
-                        notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]释放了技能[" + skill.getSkillExcel().getName()
-                                + "]对怪物[" + monster.getMonsterExcel().getName() + "]产生伤害:" + hurt + '\n');
-                        int[] param = monsterService.monsterAtk(monster);
-                        int beHurt = param[0];
-                        Skill monSkill = new Skill();
-                        monSkill.setSkillId(param[1]);
-                        ctx.writeAndFlush("[" + monster.getMonsterExcel().getName() + "]使用技能[" + monSkill.getSkillExcel().getName() + "]  您受到了:[" + beHurt + "]点的伤害\n");
-                        playerModel.setHp(playerModel.getHp() - beHurt);
-                        if (isPlayerDeath(playerModel)) {
-                            ctx.writeAndFlush("已阵亡！请复活\n");
-                        }
+            return;
+        }
+        if (skill.getLastTime() == null || skill.getNowTime() - skill.getLastTime() >= skill.getSkillExcel().getCd() * 1000) {
+            if (playerModel.getMp() >= skill.getSkillExcel().getMp()) {
+                for (Integer key : playerModel.getEquipMap().keySet()) {
+                    if (playerModel.getEquipMap().get(key).getNowWear() <= 10) {
+                        ctx.writeAndFlush("装备损坏过于严重！请维修\n");
+                        return;
                     }
-                    Timer timer = new Timer();
-                    Time t = new Time();
-                    t.setPlayerModel(playerModel);
-                    timer.schedule(t, 0, 3000);
-                } else {
-                    ctx.writeAndFlush("技能释放失败！原因：mp不足！\n");
+                    playerModel.getEquipMap().get(key).setNowWear(playerModel.getEquipMap().get(key).getNowWear() - 2);
                 }
-
+                int hurt = playerModel.getAtk() * skill.getSkillExcel().getBuff();
+                monster.setSelfHp(monster.getSelfHp() - hurt);
+                playerModel.setMp(playerModel.getMp() - skill.getSkillExcel().getMp());
+                skill.setLastTime(System.currentTimeMillis());
+                if (monsterService.isMonsterDeath(monster)) {
+                    notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]成功击杀怪物" + monster.getMonsterExcel().getName() + '\n');
+                } else {
+                    notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]释放了技能[" + skill.getSkillExcel().getName()
+                            + "]对怪物[" + monster.getMonsterExcel().getName() + "]产生伤害:" + hurt + '\n');
+                    int[] param = monsterService.monsterAtk(monster);
+                    int beHurt = param[0];
+                    Skill monSkill = new Skill();
+                    monSkill.setSkillId(param[1]);
+                    ctx.writeAndFlush("[" + monster.getMonsterExcel().getName() + "]使用技能[" + monSkill.getSkillExcel().getName() + "]  您受到了:[" + beHurt + "]点的伤害\n");
+                    playerModel.setHp(playerModel.getHp() - beHurt);
+                    if (isPlayerDeath(playerModel)) {
+                        ctx.writeAndFlush("已阵亡！请复活\n");
+                    }
+                }
+                Timer timer = new Timer();
+                Time t = new Time();
+                t.setPlayerModel(playerModel);
+                timer.schedule(t, 0, 3000);
             } else {
-                ctx.writeAndFlush("技能[" + skill.getSkillExcel().getName() + "]冷却中\n");
+                ctx.writeAndFlush("技能释放失败！原因：mp不足！\n");
             }
+
+        } else {
+            ctx.writeAndFlush("技能[" + skill.getSkillExcel().getName() + "]冷却中\n");
         }
     }
 
@@ -208,6 +214,7 @@ public class PlayerService {
             int itemId = Integer.parseInt(equips[i]);
             Item item = new Item();
             item.setId(itemId);
+            item.setNowWear(item.getItemById().getWear());
             playerModel.getEquipMap().put(item.getItemById().getSpace(), item);
         }
     }
