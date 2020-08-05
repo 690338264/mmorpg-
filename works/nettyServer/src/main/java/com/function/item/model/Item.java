@@ -10,9 +10,11 @@ import lombok.Data;
  */
 @Data
 public class Item {
-    private int id;
+    private Integer id;
 
     private int num;
+
+    private int nowWear;
 
     public ItemExcel getItemById() {
         return ItemResource.getItemById(id);

@@ -89,12 +89,12 @@ public class PlayerService {
     /**
      * 更新数据库装备配置
      */
-    public void updateEquip(Player newPlayer, PlayerModel playerModel) {
+    public void updateEquip(PlayerModel playerModel) {
         PlayerExample playerExample = new PlayerExample();
         PlayerExample.Criteria criteria = playerExample.createCriteria();
         criteria.andRoleidEqualTo(playerModel.getRoleid());
-//        Player newPlayer = new Player();
-//        newPlayer.setEquip(playerModel.getEquip());
+        Player newPlayer = new Player();
+        newPlayer.setEquip(playerModel.getEquip());
         playerMapper.updateByExampleSelective(newPlayer, playerExample);
     }
 
@@ -171,7 +171,6 @@ public class PlayerService {
      */
     public void initAttribute(PlayerModel playerModel) {
         OccExcel occ = OccResource.getOccById(playerModel.getOccupation());
-        String[] equips = playerModel.getEquip().split(",");
 
         playerModel.setHp(occ.getHp());
         playerModel.setMp(occ.getMp());
@@ -181,16 +180,15 @@ public class PlayerService {
         playerModel.setAtk(occ.getAtk() + playerModel.getLevel() * occ.getAtk() / 6 * 5);
         playerModel.setDef(occ.getDef() + playerModel.getLevel() * occ.getDef() / 6 * 5);
         playerModel.setSpeed(occ.getSpeed() + playerModel.getLevel() * occ.getSpeed() / 6 * 5);
-
-        for (int i = 0; i < equips.length && !playerModel.getEquip().equals("") && playerModel.getEquip() != null; i++) {
-            int equipId = Integer.parseInt(equips[i]);
-            int addAtk = playerModel.getBagModel().getItemMap().get(equipId).getItemById().getAtk();
-            int addDef = playerModel.getBagModel().getItemMap().get(equipId).getItemById().getDef();
-            int addSpeed = playerModel.getBagModel().getItemMap().get(equipId).getItemById().getSpeed();
+        for (Integer space : playerModel.getEquipMap().keySet()) {
+            int addAtk = playerModel.getEquipMap().get(space).getItemById().getAtk();
+            int addDef = playerModel.getEquipMap().get(space).getItemById().getDef();
+            int addSpeed = playerModel.getEquipMap().get(space).getItemById().getSpeed();
             playerModel.setAtk(playerModel.getAtk() + addAtk);
             playerModel.setDef(playerModel.getDef() + addDef);
             playerModel.setSpeed(playerModel.getSpeed() + addSpeed);
         }
+
     }
 
     public void initSkill(PlayerModel playerModel) {
@@ -206,7 +204,7 @@ public class PlayerService {
 
     public void initEquipment(PlayerModel playerModel) {
         String[] equips = playerModel.getEquip().split(",");
-        for (int i = 0; i < equips.length; i++) {
+        for (int i = 0; i < equips.length && !playerModel.getEquip().equals("") && playerModel.getEquip() != null; i++) {
             int itemId = Integer.parseInt(equips[i]);
             Item item = new Item();
             item.setId(itemId);

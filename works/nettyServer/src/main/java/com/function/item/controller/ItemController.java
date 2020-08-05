@@ -28,6 +28,7 @@ public class ItemController {
         ControllerManager.add(Cmd.EQUIP_ON, this::equipOn);
         ControllerManager.add(Cmd.ITEM_DROP, this::itemDrop);
         ControllerManager.add(Cmd.EQUIP_OFF, this::equipOff);
+        ControllerManager.add(Cmd.EQUIP_LIST, this::equipList);
     }
 
     private void itemUse(ChannelHandlerContext ctx, Msg msg) {
@@ -57,6 +58,12 @@ public class ItemController {
         PlayerModel playerModel = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
         Integer index = Integer.parseInt(params[1]);
-        itemService.addItem(index, playerModel, ctx);
+        itemService.removeEquip(index, playerModel, ctx);
+        //itemService.addItem(index, playerModel, ctx);
+    }
+
+    private void equipList(ChannelHandlerContext ctx, Msg msg) {
+        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
+        itemService.listEquip(playerModel, ctx);
     }
 }

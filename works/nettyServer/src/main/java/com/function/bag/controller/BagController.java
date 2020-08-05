@@ -30,7 +30,8 @@ public class BagController {
     }
 
     private void baginOrder(ChannelHandlerContext ctx, Msg msg) {
-
+        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
+        bagservice.orderBag(playerModel, playerModel.getBagModel().getItemMap());
     }
 
 }

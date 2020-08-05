@@ -22,6 +22,7 @@ public enum Cmd {
     ITEM_DROP("item_drop", 10103),
     EQUIP_OFF("equip_off", 10104),
     PLAYER_STATE("player_state", 888),
+    EQUIP_LIST("equip_list", 999),
     UNKNOWN("unknown", 9999);
 
     private String cmd;

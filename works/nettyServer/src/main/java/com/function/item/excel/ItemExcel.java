@@ -30,4 +30,6 @@ public class ItemExcel {
 
     private int space;
 
+    private int wear;
+
 }
