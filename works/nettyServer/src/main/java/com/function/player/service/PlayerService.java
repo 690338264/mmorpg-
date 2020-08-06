@@ -13,9 +13,9 @@ import com.function.occ.excel.OccExcel;
 import com.function.occ.excel.OccResource;
 import com.function.player.controller.Time;
 import com.function.player.model.PlayerModel;
-import com.function.scene.excel.SceneExcel;
+import com.function.scene.model.Scene;
+import com.function.scene.service.NotifyScene;
 import com.function.skill.model.Skill;
-import com.manager.NotifyScene;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -114,8 +114,8 @@ public class PlayerService {
      * 攻击怪物
      */
     public void attackMonster(ChannelHandlerContext ctx, PlayerModel playerModel, int skillId, int target) {
-        SceneExcel sceneExcel = playerModel.getNowScene();
-        Monster monster = sceneExcel.getMonsters().get(target);
+        Scene scene = playerModel.getNowScene();
+        Monster monster = scene.getSceneExcel().getMonsters().get(target);
         Skill skill = playerModel.getSkillMap().get(skillId);
         skill.setNowTime(System.currentTimeMillis());
         if (monster.getSelfHp() <= 0) {
@@ -136,9 +136,9 @@ public class PlayerService {
                 playerModel.setMp(playerModel.getMp() - skill.getSkillExcel().getMp());
                 skill.setLastTime(System.currentTimeMillis());
                 if (monsterService.isMonsterDeath(monster)) {
-                    notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]成功击杀怪物" + monster.getMonsterExcel().getName() + '\n');
+                    notifyScene.notifyScene(scene, "玩家[" + playerModel.getName() + "]成功击杀怪物" + monster.getMonsterExcel().getName() + '\n');
                 } else {
-                    notifyScene.notifyScene(sceneExcel, "玩家[" + playerModel.getName() + "]释放了技能[" + skill.getSkillExcel().getName()
+                    notifyScene.notifyScene(scene, "玩家[" + playerModel.getName() + "]释放了技能[" + skill.getSkillExcel().getName()
                             + "]对怪物[" + monster.getMonsterExcel().getName() + "]产生伤害:" + hurt + '\n');
                     int[] param = monsterService.monsterAtk(monster);
                     int beHurt = param[0];

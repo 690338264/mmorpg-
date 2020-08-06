@@ -66,7 +66,8 @@ public class UserController {
         if (userservice.hasPlayer(roleId, ctx)) {
             PlayerModel playerModel = userservice.logPlayer(roleId, ctx);
             //获取场景
-            ctx.writeAndFlush("【" + playerModel.getName() + "】登录成功！\n当前所在位置为：" + playerModel.getNowScene().getName() + "您的等级为：" + playerModel.getLevel() + '\n');
+            ctx.writeAndFlush("[" + playerModel.getName() + "]登录成功！\n当前所在位置为："
+                    + playerModel.getNowScene().getSceneExcel().getName() + "您的等级为：" + playerModel.getLevel() + '\n');
         } else {
             ctx.writeAndFlush("无该角色！！！\n");
         }

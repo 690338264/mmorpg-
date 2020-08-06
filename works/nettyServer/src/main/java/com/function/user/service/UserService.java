@@ -8,8 +8,7 @@ import com.database.mapper.PlayerMapper;
 import com.database.mapper.UserMapper;
 import com.function.player.model.PlayerModel;
 import com.function.player.service.PlayerService;
-import com.function.scene.excel.SceneExcel;
-import com.function.scene.excel.SceneResource;
+import com.function.scene.model.Scene;
 import com.function.user.map.PlayerMap;
 import com.function.user.map.UserMap;
 import com.function.user.model.UserModel;
@@ -130,9 +129,10 @@ public class UserService {
         PlayerMap.putCtxId(playerId, ctx);
 
         playerModel.setChannelHandlerContext(ctx);
-        SceneExcel sceneExcel = SceneResource.getSceneById(playerModel.getLoc());
-        playerModel.setNowScene(sceneExcel);
-        sceneExcel.getPlayers().put(playerModel.getRoleid(), playerModel);
+        Scene scene = new Scene();
+        scene.setSceneId(playerModel.getLoc());
+        playerModel.setNowScene(scene);
+        scene.getSceneExcel().getPlayers().put(playerModel.getRoleid(), playerModel);
         playerService.initPlayer(playerModel);
         return playerModel;
     }

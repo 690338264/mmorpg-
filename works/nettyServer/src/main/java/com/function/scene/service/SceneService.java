@@ -6,7 +6,7 @@ import com.function.player.model.PlayerModel;
 import com.function.player.service.PlayerService;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
-import com.manager.NotifyScene;
+import com.function.scene.model.Scene;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,12 +40,13 @@ public class SceneService {
      * 移动场景
      */
     public SceneExcel moveTo(PlayerModel playerModel, int sceneId) {
-        SceneExcel sceneExcel = SceneResource.getSceneById(sceneId);
-        playerModel.setNowScene(sceneExcel);
+        Scene scene = new Scene();
+        scene.setSceneId(sceneId);
+        playerModel.setNowScene(scene);
         playerModel.setLoc(sceneId);
         playerService.updateLoc(sceneId, playerModel);
-        sceneExcel.getPlayers().put(playerModel.getRoleid(), playerModel);
-        notifyScene.notifyScene(sceneExcel, "欢迎玩家" + playerModel.getName() + "来到场景\n");
+        scene.getSceneExcel().getPlayers().put(playerModel.getRoleid(), playerModel);
+        notifyScene.notifyScene(scene, "欢迎玩家" + playerModel.getName() + "来到场景\n");
         return SceneResource.getSceneById(sceneId);
     }
 
@@ -53,8 +54,8 @@ public class SceneService {
      * 查看周围
      */
     public void aoi(PlayerModel playerModel, ChannelHandlerContext ctx) {
-        SceneExcel sceneExcel = playerModel.getNowScene();
-        String[] npcs = sceneExcel.getNpc().split(",");
+        Scene scene = playerModel.getNowScene();
+        String[] npcs = scene.getSceneExcel().getNpc().split(",");
         ctx.writeAndFlush("您所在场景有NPC:\n");
         for (String s : npcs) {
             int npc = Integer.parseInt(s);
@@ -67,8 +68,8 @@ public class SceneService {
         }
         ctx.writeAndFlush("您所在场景有怪物：\n");
 
-        for (Integer key : sceneExcel.getMonsters().keySet()) {
-            Monster monster = sceneExcel.getMonsters().get(key);
+        for (Integer key : scene.getSceneExcel().getMonsters().keySet()) {
+            Monster monster = scene.getSceneExcel().getMonsters().get(key);
             if (monster.getSelfHp() <= 0) {
                 ctx.writeAndFlush("id:[" + key + "]" + monster.getMonsterExcel().getName() + "  [已死亡]" + '\n');
             } else {

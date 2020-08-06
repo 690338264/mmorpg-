@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import util.Msg;
 import util.ParamNumCheck;
 
+/**
+ * @author Catherine
+ */
 @Service
 public class PlayerController {
 
