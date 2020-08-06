@@ -1,5 +1,6 @@
 package com.function.item.service;
 
+import com.alibaba.fastjson.JSON;
 import com.function.bag.model.BagModel;
 import com.function.bag.service.BagService;
 import com.function.item.model.Item;
@@ -45,28 +46,17 @@ public class ItemService {
      * 移除装备
      */
     public void removeEquip(int equipId, PlayerModel playerModel, ChannelHandlerContext ctx) {
-        String[] equips = playerModel.getEquip().split(",");
-        StringBuilder e = new StringBuilder();
-        for (int i = 0; i < equips.length; i++) {
-            int id = Integer.parseInt(equips[i]);
-            if (id == equipId) {
-                continue;
-            }
-            e.append(equips[i]);
-            e.append(",");
-        }
-        if (e.length() > 0) {
-            e.deleteCharAt(e.length() - 1);
-        }
         Item item = new Item();
         item.setId(equipId);
-        playerModel.setEquip(e.toString());
-        playerData.updateEquip(playerModel);
         changeAttr(-1, item, playerModel);
         addItem(equipId, playerModel, ctx);
         playerModel.getEquipMap().remove(item.getItemById().getSpace());
-        ctx.writeAndFlush("您已摘下[" + item.getItemById().getName() + "]\n");
-
+        playerModel.getEquipById().remove(item.getId());
+        String json = JSON.toJSONString(playerModel.getEquipById().keySet());
+        String e = json.substring(1, json.length() - 1);
+        playerModel.setEquip(e);
+        playerData.updateEquip(playerModel);
+        ctx.writeAndFlush(e + "您已摘下[" + item.getItemById().getName() + "]\n");
     }
 
     /**
@@ -108,7 +98,6 @@ public class ItemService {
         int addMp = playerModel.getMp() + item.getItemById().getMp();
         playerModel.setMp(addMp < playerModel.getOriMp() ? addMp : playerModel.getOriMp());
         ctx.writeAndFlush("您成功使用[" + item.getItemById().getName() + "]\n");
-        //移除已使用物品(num)
         removeItem(index, playerModel);
     }
 
@@ -123,6 +112,7 @@ public class ItemService {
         }
         if (playerModel.getEquipMap().get(item.getItemById().getSpace()) != null) {
             removeEquip(playerModel.getEquipMap().get(item.getItemById().getSpace()).getId(), playerModel, ctx);
+            playerModel.getEquipById().remove(item.getId());
         }
         changeAttr(1, item, playerModel);
         StringBuilder newEquip = new StringBuilder(playerModel.getEquip());
@@ -134,6 +124,7 @@ public class ItemService {
         removeItem(index, playerModel);
         playerData.updateEquip(playerModel);
         playerModel.getEquipMap().put(item.getItemById().getSpace(), item);
+        playerModel.getEquipById().put(item.getId(), item);
         ctx.writeAndFlush("您已成功穿戴:[" + item.getItemById().getName() + "]\n");
     }
 

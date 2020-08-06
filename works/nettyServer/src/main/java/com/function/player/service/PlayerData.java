@@ -49,12 +49,12 @@ public class PlayerData {
 
         playerModel.setHp(occ.getHp());
         playerModel.setMp(occ.getMp());
-        playerModel.setOriHp(occ.getHp() + playerModel.getLevel() * occ.getHp() / 5 * 4);
-        playerModel.setOriMp(occ.getMp() + playerModel.getLevel() * occ.getMp() / 5 * 4);
+        playerModel.setOriHp(occ.getHp() + playerModel.getLevel() * occ.getHp() / occ.getMultiple());
+        playerModel.setOriMp(occ.getMp() + playerModel.getLevel() * occ.getMp() / occ.getMultiple());
 
-        playerModel.setAtk(occ.getAtk() + playerModel.getLevel() * occ.getAtk() / 6 * 5);
-        playerModel.setDef(occ.getDef() + playerModel.getLevel() * occ.getDef() / 6 * 5);
-        playerModel.setSpeed(occ.getSpeed() + playerModel.getLevel() * occ.getSpeed() / 6 * 5);
+        playerModel.setAtk(occ.getAtk() + playerModel.getLevel() * occ.getAtk() / occ.getMultiple());
+        playerModel.setDef(occ.getDef() + playerModel.getLevel() * occ.getDef() / occ.getMultiple());
+        playerModel.setSpeed(occ.getSpeed() + playerModel.getLevel() * occ.getSpeed() / occ.getMultiple());
         for (Integer space : playerModel.getEquipMap().keySet()) {
             int addAtk = playerModel.getEquipMap().get(space).getItemById().getAtk();
             int addDef = playerModel.getEquipMap().get(space).getItemById().getDef();
@@ -84,14 +84,18 @@ public class PlayerData {
      * 初始化角色装备
      */
     public void initEquipment(PlayerModel playerModel) {
-        String[] equips = playerModel.getEquip().split(",");
-        for (int i = 0; i < equips.length && !"".equals(playerModel.getEquip()) && playerModel.getEquip() != null; i++) {
-            int itemId = Integer.parseInt(equips[i]);
-            Item item = new Item();
-            item.setId(itemId);
-            item.setNowWear(item.getItemById().getWear());
-            playerModel.getEquipMap().put(item.getItemById().getSpace(), item);
+        if (!"".equals(playerModel.getEquip()) && playerModel.getEquip() != null) {
+            String[] equips = playerModel.getEquip().split(",");
+            for (String equip : equips) {
+                int itemId = Integer.parseInt(equip);
+                Item item = new Item();
+                item.setId(itemId);
+                item.setNowWear(item.getItemById().getWear());
+                playerModel.getEquipMap().put(item.getItemById().getSpace(), item);
+                playerModel.getEquipById().put(item.getId(), item);
+            }
         }
+
     }
 
     /**
@@ -117,7 +121,7 @@ public class PlayerData {
         BeanUtils.copyProperties(bagList.get(0), bagModel);
         playerModel.setBagModel(bagModel);
 
-        if (bagModel.getItem().equals("") && bagModel.getItem() != null) {
+        if ("".equals(bagModel.getItem()) || bagModel.getItem() == null) {
             return;
         }
 

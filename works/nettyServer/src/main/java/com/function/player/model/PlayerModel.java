@@ -23,15 +23,31 @@ import java.util.Map;
 @Slf4j
 public class PlayerModel extends Player {
     private ChannelHandlerContext channelHandlerContext;
+    /**
+     * 玩家当前场景
+     */
     private Scene nowScene;
 
     private Integer level;
-    private Map<Integer, Skill> skillMap = new HashMap<Integer, Skill>();
-    private Map<Integer, Item> equipMap = new HashMap<Integer, Item>();
+    private Map<Integer, Skill> skillMap = new HashMap<>();
+    private Map<Integer, Item> equipMap = new HashMap<>();
+    private Map<Integer, Item> equipById = new HashMap<>();
     private BagModel bagModel;
+    /**
+     * 玩家当前hp
+     */
     private Integer hp;
+    /**
+     * 玩家初始hp
+     */
     private Integer oriHp;
+    /**
+     * 玩家当前mp
+     */
     private Integer mp;
+    /**
+     * 玩家初始mp
+     */
     private Integer oriMp;
     private Integer atk;
     private Integer def;

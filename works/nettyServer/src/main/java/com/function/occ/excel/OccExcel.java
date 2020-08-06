@@ -31,5 +31,9 @@ public class OccExcel {
      * 门派技能
      */
     private String skill;
+    /**
+     * 升级倍数
+     */
+    private Integer multiple;
 
 }
