@@ -9,6 +9,9 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Catherine
+ */
 @Component
 public class SceneResource {
 
@@ -25,6 +28,7 @@ public class SceneResource {
             sceneMap.put(sceneExcel.getId(), sceneExcel);
             String str = sceneExcel.getMonster();
             String[] strs = str.split(",");
+
             for (int j = 0; j < strs.length; j++) {
                 int monsterId = Integer.parseInt(strs[j]);
                 Monster monster = new Monster();

@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import util.Msg;
 
+/**
+ * @author Catherine
+ */
 @Component
 public class BagController {
 
@@ -19,17 +22,17 @@ public class BagController {
     private BagService bagservice;
 
     {
-        ControllerManager.add(Cmd.BAG_LIST, this::baglist);
-        ControllerManager.add(Cmd.BAG_INORDER, this::baginOrder);
+        ControllerManager.add(Cmd.BAG_LIST, this::bagList);
+        ControllerManager.add(Cmd.BAG_INORDER, this::bagInorder);
     }
 
-    private void baglist(ChannelHandlerContext ctx, Msg msg) {
+    private void bagList(ChannelHandlerContext ctx, Msg msg) {
         PlayerModel playerModel = userService.getPlayerByCtx(ctx);
         bagservice.listBag(playerModel, ctx);
 
     }
 
-    private void baginOrder(ChannelHandlerContext ctx, Msg msg) {
+    private void bagInorder(ChannelHandlerContext ctx, Msg msg) {
         PlayerModel playerModel = userService.getPlayerByCtx(ctx);
         bagservice.orderBag(playerModel, playerModel.getBagModel().getItemMap());
     }

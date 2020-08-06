@@ -7,6 +7,9 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Catherine
+ */
 @Data
 public class MonsterExcel {
 
@@ -17,14 +20,24 @@ public class MonsterExcel {
     private int hp;
 
     private int mp;
-
+    /**
+     * 怪物攻击力
+     */
     private int aggr;
-
+    /**
+     * 怪物技能
+     */
     private String skill;
-
+    /**
+     * 复活时间
+     */
     private int reviveTime;
-
+    /**
+     * 掉落
+     */
     private int drop;
-
-    private Map<Integer, Skill> monsterSkill = new HashMap<Integer, Skill>();
+    /**
+     * 技能列表
+     */
+    private Map<Integer, Skill> monsterSkill = new HashMap<>();
 }

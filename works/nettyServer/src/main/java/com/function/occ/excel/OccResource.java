@@ -8,6 +8,9 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Catherine
+ */
 @Component
 public class OccResource {
 

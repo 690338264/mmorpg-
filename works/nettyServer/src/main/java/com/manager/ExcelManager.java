@@ -38,7 +38,6 @@ public class ExcelManager {
                 List<?> list = ExcelUtils.readExcelToEntity(Class.forName("com.function." + s[0].toLowerCase() + ".excel." + s[0] + "Excel"), in, fileName);
 
                 for (int i = 0; i < list.size(); i++) {
-                    list.get(i);
                     classMap.put(i + 1, list.get(i));
                 }
                 map.put(s[0], classMap);

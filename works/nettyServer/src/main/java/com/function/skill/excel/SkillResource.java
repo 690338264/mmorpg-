@@ -16,7 +16,7 @@ public class SkillResource {
     @Autowired
     private ExcelManager excelManager;
 
-    private static Map<Integer, SkillExcel> skillMap = new HashMap<Integer, SkillExcel>();
+    private static Map<Integer, SkillExcel> skillMap = new HashMap<>();
 
     @PostConstruct
     private void init() {

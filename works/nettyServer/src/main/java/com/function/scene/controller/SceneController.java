@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import util.Msg;
 import util.ParamNumCheck;
 
+/**
+ * @author Catherine
+ */
 @Slf4j
 @Component
 public class SceneController {
@@ -35,7 +38,7 @@ public class SceneController {
     private void moveTo(ChannelHandlerContext ctx, Msg msg) {
         PlayerModel playerModel = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
-        int sceneId = Integer.valueOf(params[1]);
+        int sceneId = Integer.parseInt(params[1]);
         SceneExcel sceneExcel = sceneService.moveTo(playerModel, sceneId);
         ctx.writeAndFlush("您已到达：" + sceneExcel.getName() + '\n');
     }

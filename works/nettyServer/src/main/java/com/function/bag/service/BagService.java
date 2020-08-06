@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+/**
+ * @author Catherine
+ */
 @Component
 public class BagService {
     @Autowired
@@ -22,6 +25,7 @@ public class BagService {
      * 加载背包
      */
     public void initBag(PlayerModel playerModel) {
+
         BagExample bagExample = new BagExample();
         BagExample.Criteria criteria = bagExample.createCriteria();
         criteria.andPlayeridEqualTo(playerModel.getRoleid());
@@ -29,9 +33,11 @@ public class BagService {
         BagModel bagModel = new BagModel();
         BeanUtils.copyProperties(bagList.get(0), bagModel);
         playerModel.setBagModel(bagModel);
+
         if (bagModel.getItem().equals("") && bagModel.getItem() != null) {
             return;
         }
+
         String[] items = bagModel.getItem().split(",");
         for (int i = 0; i < items.length; i++) {
             int itemId = Integer.parseInt(items[i]);
@@ -41,6 +47,7 @@ public class BagService {
             item.setNowWear(item.getItemById().getWear());
             bagModel.getItemMap().put(i, item);
         }
+
         orderBag(playerModel, playerModel.getBagModel().getItemMap());
     }
 
@@ -52,6 +59,7 @@ public class BagService {
         BagExample.Criteria criteria = bagExample.createCriteria();
         criteria.andPlayeridEqualTo(playerModel.getRoleid());
         Bag newBag = new Bag();
+
         StringBuilder item = new StringBuilder();
         for (Integer index : playerModel.getBagModel().getItemMap().keySet()) {
             int num = playerModel.getBagModel().getItemMap().get(index).getNum();
@@ -84,14 +92,14 @@ public class BagService {
         }
     }
 
+    /**
+     * 整理背包
+     */
     public void orderBag(PlayerModel playerModel, Map<Integer, Item> itemMap) {
-        List<Map.Entry<Integer, Item>> list = new LinkedList<Map.Entry<Integer, Item>>(itemMap.entrySet());
-        Collections.sort(list, new Comparator<Map.Entry<Integer, Item>>() {
-            @Override
-            public int compare(Map.Entry<Integer, Item> o1, Map.Entry<Integer, Item> o2) {
-                int compare = (o1.getValue().getId()).compareTo(o2.getValue().getId());
-                return compare;
-            }
+        List<Map.Entry<Integer, Item>> list = new LinkedList<>(itemMap.entrySet());
+        Collections.sort(list, (o1, o2) -> {
+            int compare = (o1.getValue().getId()).compareTo(o2.getValue().getId());
+            return compare;
         });
         Map<Integer, Item> result = new HashMap<>();
         int key = 0;

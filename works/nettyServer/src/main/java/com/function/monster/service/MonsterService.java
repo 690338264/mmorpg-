@@ -9,9 +9,14 @@ import java.util.Random;
 import java.util.Timer;
 
 
+/**
+ * @author Catherine
+ */
 @Component
 public class MonsterService {
-
+    /**
+     * 判断怪物是否死亡
+     */
     public boolean isMonsterDeath(Monster monster) {
         if (monster.getSelfHp() <= 0) {
             Timer timer = new Timer();
@@ -24,6 +29,9 @@ public class MonsterService {
         }
     }
 
+    /**
+     * 怪物进行攻击
+     */
     public int[] monsterAtk(Monster monster) {
         Integer[] keys = monster.getMonsterExcel().getMonsterSkill().keySet().toArray(new Integer[0]);
         Skill skill = new Skill();
@@ -36,6 +44,7 @@ public class MonsterService {
                 break;
             }
         }
+
         skill.setLastTime(System.currentTimeMillis());
         int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getBuff();
         int[] a = new int[2];

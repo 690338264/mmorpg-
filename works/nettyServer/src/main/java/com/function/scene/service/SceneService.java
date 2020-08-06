@@ -11,6 +11,9 @@ import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author Catherine
+ */
 @Service
 public class SceneService {
 
@@ -19,17 +22,23 @@ public class SceneService {
     @Autowired
     private NotifyScene notifyScene;
 
+    /**
+     * 相邻场景
+     */
     public void getNeighbor(PlayerModel playerModel, ChannelHandlerContext ctx) {
         int locId = playerModel.getLoc();
         String neighbors = SceneResource.getSceneById(locId).getNeighbor();
         String[] strs = neighbors.split(",");
         ctx.writeAndFlush("您现在所在场景为：" + SceneResource.getSceneById(locId).getName() + "\n您可到达的地点有：");
-        for (int i = 0; i < strs.length; i++) {
-            int canTo = Integer.parseInt(strs[i]);
+        for (String str : strs) {
+            int canTo = Integer.parseInt(str);
             ctx.writeAndFlush(SceneResource.getSceneById(canTo).getName() + "代号为：" + SceneResource.getSceneById(canTo).getId() + '\n');
         }
     }
 
+    /**
+     * 移动场景
+     */
     public SceneExcel moveTo(PlayerModel playerModel, int sceneId) {
         SceneExcel sceneExcel = SceneResource.getSceneById(sceneId);
         playerModel.setNowScene(sceneExcel);
@@ -40,12 +49,15 @@ public class SceneService {
         return SceneResource.getSceneById(sceneId);
     }
 
+    /**
+     * 查看周围
+     */
     public void aoi(PlayerModel playerModel, ChannelHandlerContext ctx) {
         SceneExcel sceneExcel = playerModel.getNowScene();
         String[] npcs = sceneExcel.getNpc().split(",");
         ctx.writeAndFlush("您所在场景有NPC:\n");
-        for (int i = 0; i < npcs.length; i++) {
-            int npc = Integer.parseInt(npcs[i]);
+        for (String s : npcs) {
+            int npc = Integer.parseInt(s);
             ctx.writeAndFlush(NpcResource.getNpcById(npc).getName() + "--id为" + npc + "\n[Npc状态]");
             if (NpcResource.getNpcById(npc).getStatus() == 1) {
                 ctx.writeAndFlush("存活！\n");

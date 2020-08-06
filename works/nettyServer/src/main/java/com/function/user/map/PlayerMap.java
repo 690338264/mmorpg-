@@ -6,13 +6,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+
 /**
  * @author Catherine
  */
 @Component
 public class PlayerMap {
-    private static Map<ChannelHandlerContext, PlayerModel> playerModelMap = new HashMap<ChannelHandlerContext, PlayerModel>();
-    private static Map<Long, ChannelHandlerContext> ctxIdMap = new HashMap<Long, ChannelHandlerContext>();
+    private static Map<ChannelHandlerContext, PlayerModel> playerModelMap = new HashMap<>();
+    private static Map<Long, ChannelHandlerContext> ctxIdMap = new HashMap<>();
 
     public static void putPlayerCtx(ChannelHandlerContext ctx, PlayerModel playerModel) {
         playerModelMap.put(ctx, playerModel);

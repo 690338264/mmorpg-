@@ -59,7 +59,6 @@ public class ItemController {
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
         Integer index = Integer.parseInt(params[1]);
         itemService.removeEquip(index, playerModel, ctx);
-        //itemService.addItem(index, playerModel, ctx);
     }
 
     private void equipList(ChannelHandlerContext ctx, Msg msg) {

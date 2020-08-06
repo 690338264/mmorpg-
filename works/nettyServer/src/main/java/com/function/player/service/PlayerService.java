@@ -38,6 +38,9 @@ public class PlayerService {
     @Autowired
     private NotifyScene notifyScene;
 
+    public PlayerService() {
+    }
+
     public void roleCreate(ChannelHandlerContext ctx, String roleName, Integer roleType, Long userId) {
         Player player = new Player();
         player.setName(roleName);
@@ -48,7 +51,7 @@ public class PlayerService {
         player.setMoney(0);
         Random r = new Random();
         int rom = r.nextInt();
-        Long roleId = new Long((long) rom);
+        Long roleId = (long) rom;
         player.setRoleid(roleId);
         Bag bag = new Bag();
         bag.setPlayerid(roleId);
@@ -161,11 +164,7 @@ public class PlayerService {
     }
 
     public boolean isPlayerDeath(PlayerModel playerModel) {
-        if (playerModel.getHp() <= 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return playerModel.getHp() <= 0;
     }
 
     public void initLevel(PlayerModel playerModel) {
@@ -210,7 +209,7 @@ public class PlayerService {
 
     public void initEquipment(PlayerModel playerModel) {
         String[] equips = playerModel.getEquip().split(",");
-        for (int i = 0; i < equips.length && !playerModel.getEquip().equals("") && playerModel.getEquip() != null; i++) {
+        for (int i = 0; i < equips.length && !"".equals(playerModel.getEquip()) && playerModel.getEquip() != null; i++) {
             int itemId = Integer.parseInt(equips[i]);
             Item item = new Item();
             item.setId(itemId);

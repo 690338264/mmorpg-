@@ -1,6 +1,7 @@
 package com.function.skill.excel;
 
 import lombok.Data;
+
 /**
  * @author Catherine
  */
@@ -10,7 +11,9 @@ public class SkillExcel {
     private Integer id;
 
     private String name;
-
+    /**
+     * 技能消耗mp
+     */
     private Integer mp;
 
     private Integer buff;

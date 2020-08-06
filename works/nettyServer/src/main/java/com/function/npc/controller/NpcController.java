@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import util.Msg;
 import util.ParamNumCheck;
 
+/**
+ * @author Catherine
+ */
 @Component
 public class NpcController {
     {

@@ -35,8 +35,8 @@ public class ControllerManager {
         CONTROLLER_MAP.put(cmd, contr);
     }
 
-    public Controller get(int cmdID) {
-        return CONTROLLER_MAP.get(Cmd.find(cmdID, Cmd.UNKNOWN));
+    public Controller get(int cmdId) {
+        return CONTROLLER_MAP.get(Cmd.find(cmdId, Cmd.UNKNOWN));
     }
 
     /**

@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author Catherine
+ */
 public class ExcelUtils {
     private static final String FULL_DATA_FORMAT = "yyyy/MM/dd  HH:mm:ss";
 

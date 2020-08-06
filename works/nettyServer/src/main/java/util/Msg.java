@@ -4,11 +4,11 @@ package util;
  * @author Catherine
  */
 public class Msg {
-    private int CmdId;
+    private int cmdId;
     private String content;
 
     public void setCmdId(int value) {
-        this.CmdId = value;
+        this.cmdId = value;
     }
 
     public void setContent(String cmd) {
@@ -16,7 +16,7 @@ public class Msg {
     }
 
     public int getCmdId() {
-        return CmdId;
+        return cmdId;
     }
 
     public String getContent() {

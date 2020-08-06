@@ -8,13 +8,16 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Catherine
+ */
 @Component
 public class NpcResource {
 
     @Autowired
     private ExcelManager excelManager;
 
-    private static Map<Integer, NpcExcel> npcMap = new HashMap<Integer, NpcExcel>();
+    private static Map<Integer, NpcExcel> npcMap = new HashMap<>();
 
     @PostConstruct
     private void init() {

@@ -11,9 +11,13 @@ import lombok.Data;
 @Data
 public class Item {
     private Integer id;
-
+    /**
+     * 格子里的数量
+     */
     private int num;
-
+    /**
+     * 实时磨损度
+     */
     private int nowWear;
 
     public ItemExcel getItemById() {

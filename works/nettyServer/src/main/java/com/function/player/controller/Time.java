@@ -20,9 +20,5 @@ public class Time extends TimerTask {
         } else {
             cancel();
         }
-
-//        if(playerModel.getMp()>=playerModel.getOriMp()) {
-//            cancel();
-//        }
     }
 }

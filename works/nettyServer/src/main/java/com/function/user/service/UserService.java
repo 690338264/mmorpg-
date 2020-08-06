@@ -96,6 +96,9 @@ public class UserService {
         return PlayerList;
     }
 
+    /**
+     * 查询是否拥有该角色
+     */
     public boolean hasPlayer(Long playerId, ChannelHandlerContext ctx) {
         UserModel userModel = getUserByCtx(ctx);
         PlayerExample playerExample = new PlayerExample();
@@ -122,8 +125,10 @@ public class UserService {
         List<Player> playerList = playerMapper.selectByExample(playerExample);
         PlayerModel playerModel = new PlayerModel();
         BeanUtils.copyProperties(playerList.get(0), playerModel);
+
         PlayerMap.putPlayerCtx(ctx, playerModel);
         PlayerMap.putCtxId(playerId, ctx);
+
         playerModel.setChannelHandlerContext(ctx);
         SceneExcel sceneExcel = SceneResource.getSceneById(playerModel.getLoc());
         playerModel.setNowScene(sceneExcel);
