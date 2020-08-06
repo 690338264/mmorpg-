@@ -3,7 +3,7 @@ package com.function.scene.service;
 import com.function.monster.model.Monster;
 import com.function.npc.excel.NpcResource;
 import com.function.player.model.PlayerModel;
-import com.function.player.service.PlayerService;
+import com.function.player.service.PlayerData;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
 import com.function.scene.model.Scene;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class SceneService {
 
     @Autowired
-    private PlayerService playerService;
+    private PlayerData playerData;
     @Autowired
     private NotifyScene notifyScene;
 
@@ -44,7 +44,7 @@ public class SceneService {
         scene.setSceneId(sceneId);
         playerModel.setNowScene(scene);
         playerModel.setLoc(sceneId);
-        playerService.updateLoc(sceneId, playerModel);
+        playerData.updateLoc(sceneId, playerModel);
         scene.getSceneExcel().getPlayers().put(playerModel.getRoleid(), playerModel);
         notifyScene.notifyScene(scene, "欢迎玩家" + playerModel.getName() + "来到场景\n");
         return SceneResource.getSceneById(sceneId);

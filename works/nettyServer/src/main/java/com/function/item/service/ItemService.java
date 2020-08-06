@@ -4,7 +4,7 @@ import com.function.bag.model.BagModel;
 import com.function.bag.service.BagService;
 import com.function.item.model.Item;
 import com.function.player.model.PlayerModel;
-import com.function.player.service.PlayerService;
+import com.function.player.service.PlayerData;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class ItemService {
     @Autowired
     private BagService bagService;
     @Autowired
-    private PlayerService playerService;
+    private PlayerData playerData;
 
     /**
      * 移除背包中的物品
@@ -61,7 +61,7 @@ public class ItemService {
         Item item = new Item();
         item.setId(equipId);
         playerModel.setEquip(e.toString());
-        playerService.updateEquip(playerModel);
+        playerData.updateEquip(playerModel);
         changeAttr(-1, item, playerModel);
         addItem(equipId, playerModel, ctx);
         playerModel.getEquipMap().remove(item.getItemById().getSpace());
@@ -132,7 +132,7 @@ public class ItemService {
         newEquip.append(item.getId());
         playerModel.setEquip(newEquip.toString());
         removeItem(index, playerModel);
-        playerService.updateEquip(playerModel);
+        playerData.updateEquip(playerModel);
         playerModel.getEquipMap().put(item.getItemById().getSpace(), item);
         ctx.writeAndFlush("您已成功穿戴:[" + item.getItemById().getName() + "]\n");
     }

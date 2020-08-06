@@ -7,6 +7,7 @@ import com.database.entity.UserExample;
 import com.database.mapper.PlayerMapper;
 import com.database.mapper.UserMapper;
 import com.function.player.model.PlayerModel;
+import com.function.player.service.PlayerData;
 import com.function.player.service.PlayerService;
 import com.function.scene.model.Scene;
 import com.function.user.map.PlayerMap;
@@ -36,6 +37,8 @@ public class UserService {
     private PlayerMap playerMap;
     @Autowired
     private PlayerService playerService;
+    @Autowired
+    private PlayerData playerData;
 
     /**
      * 用户注册
@@ -133,7 +136,7 @@ public class UserService {
         scene.setSceneId(playerModel.getLoc());
         playerModel.setNowScene(scene);
         scene.getSceneExcel().getPlayers().put(playerModel.getRoleid(), playerModel);
-        playerService.initPlayer(playerModel);
+        playerData.initPlayer(playerModel);
         return playerModel;
     }
 

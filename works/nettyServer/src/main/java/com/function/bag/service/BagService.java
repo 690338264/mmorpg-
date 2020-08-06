@@ -5,9 +5,10 @@ import com.database.entity.BagExample;
 import com.database.mapper.BagMapper;
 import com.function.bag.model.BagModel;
 import com.function.item.model.Item;
+import com.function.player.manager.BagInit;
+import com.function.player.manager.InitManager;
 import com.function.player.model.PlayerModel;
 import io.netty.channel.ChannelHandlerContext;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,43 +22,14 @@ public class BagService {
     @Autowired
     private BagMapper bagMapper;
 
-    /**
-     * 加载背包
-     */
-    public void initBag(PlayerModel playerModel) {
-
-        BagExample bagExample = new BagExample();
-        BagExample.Criteria criteria = bagExample.createCriteria();
-        criteria.andPlayeridEqualTo(playerModel.getRoleid());
-        List<Bag> bagList = bagMapper.selectByExample(bagExample);
-        BagModel bagModel = new BagModel();
-        BeanUtils.copyProperties(bagList.get(0), bagModel);
-        playerModel.setBagModel(bagModel);
-
-        if (bagModel.getItem().equals("") && bagModel.getItem() != null) {
-            return;
-        }
-
-        String[] items = bagModel.getItem().split(",");
-        for (int i = 0; i < items.length; i++) {
-            int itemId = Integer.parseInt(items[i]);
-            Item item = new Item();
-            item.setId(itemId);
-            item.setNum(1);
-            item.setNowWear(item.getItemById().getWear());
-            bagModel.getItemMap().put(i, item);
-        }
-
-        orderBag(playerModel, playerModel.getBagModel().getItemMap());
-    }
+    InitManager initManager;
 
     /**
      * 更新背包
      */
     public void updateBag(PlayerModel playerModel) {
-        BagExample bagExample = new BagExample();
-        BagExample.Criteria criteria = bagExample.createCriteria();
-        criteria.andPlayeridEqualTo(playerModel.getRoleid());
+        setInitManager(new BagInit());
+        BagExample bagExample = (BagExample) initData(playerModel);
         Bag newBag = new Bag();
 
         StringBuilder item = new StringBuilder();
@@ -123,6 +95,14 @@ public class BagService {
             }
         }
         playerModel.getBagModel().setItemMap(items);
+    }
+
+    public void setInitManager(InitManager initManager) {
+        this.initManager = initManager;
+    }
+
+    public Object initData(PlayerModel playerModel) {
+        return initManager.init(playerModel);
     }
 
 }

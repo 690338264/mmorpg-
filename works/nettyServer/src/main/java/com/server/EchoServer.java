@@ -44,7 +44,7 @@ public class EchoServer {
                     })
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             //6 异地绑定服务器；调用sync方法阻塞等待直到绑定完成
-            ChannelFuture f = b.bind(port).sync();  //绑定端口
+            ChannelFuture f = b.bind(port).sync();
             //7 获取channel的closeFuture，并且阻塞当前线程直到它完成
             f.channel().closeFuture().sync();
             System.out.println("ok");
