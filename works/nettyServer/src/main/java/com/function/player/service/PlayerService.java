@@ -1,6 +1,5 @@
 package com.function.player.service;
 
-import com.database.entity.Bag;
 import com.database.entity.Player;
 import com.database.entity.PlayerExample;
 import com.database.mapper.BagMapper;
@@ -22,7 +21,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Random;
 import java.util.Timer;
 
 @Component
@@ -49,16 +47,12 @@ public class PlayerService {
         player.setLoc(1);
         player.setExp(1);
         player.setMoney(0);
-        Random r = new Random();
-        int rom = r.nextInt();
-        Long roleId = (long) rom;
-        player.setRoleid(roleId);
-        Bag bag = new Bag();
-        bag.setPlayerid(roleId);
-        bag.setVolume(36);
+//        Bag bag = new Bag();
+//        bag.setPlayerid(roleId);
+//        bag.setVolume(36);
         try {
             playerMapper.insertSelective(player);
-            bagMapper.insertSelective(bag);
+//            bagMapper.insertSelective(bag);
         } catch (DuplicateKeyException e) {
             ctx.writeAndFlush("角色名存在！\n");
             return;
