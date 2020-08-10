@@ -23,7 +23,7 @@ public class NpcResource {
     private void init() {
         int num = excelManager.getMap().get("Npc").size();
         for (int i = 0; i < num; i++) {
-            NpcExcel npcExcel = (NpcExcel) excelManager.getMap().get("Npc").get(i + 1);
+            NpcExcel npcExcel = (NpcExcel) excelManager.getMap().get("Npc").get(i);
             npcMap.put(npcExcel.getId(), npcExcel);
         }
     }

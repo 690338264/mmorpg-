@@ -25,7 +25,7 @@ public class ItemResource {
     public void init() {
         int num = excelManager.getMap().get("Item").size();
         for (int i = 0; i < num; i++) {
-            ItemExcel itemExcel = (ItemExcel) excelManager.getMap().get("Item").get(i + 1);
+            ItemExcel itemExcel = (ItemExcel) excelManager.getMap().get("Item").get(i);
             itemMap.put(itemExcel.getId(), itemExcel);
         }
     }

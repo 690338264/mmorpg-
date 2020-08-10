@@ -46,7 +46,8 @@ public class SceneService {
         playerModel.setLoc(sceneId);
         playerData.updateLoc(sceneId, playerModel);
         scene.getSceneExcel().getPlayers().put(playerModel.getRoleid(), playerModel);
-        notifyScene.notifyScene(scene, "欢迎玩家" + playerModel.getName() + "来到场景\n");
+        StringBuilder welcome = new StringBuilder("欢迎玩家").append(playerModel.getName()).append("来到场景\n");
+        notifyScene.notifyScene(scene, welcome);
         return SceneResource.getSceneById(sceneId);
     }
 

@@ -1,5 +1,6 @@
 package com.function.scene.service;
 
+import com.function.player.model.PlayerModel;
 import com.function.scene.model.Scene;
 import com.function.user.map.PlayerMap;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,11 +15,16 @@ public class NotifyScene {
     @Autowired
     private PlayerMap playerMap;
 
-    public void notifyScene(Scene scene, String notify) {
+    public void notifyScene(Scene scene, StringBuilder notify) {
         scene.getSceneExcel().getPlayers().keySet().forEach(playerId -> {
             ChannelHandlerContext ctx = PlayerMap.getCtxId(playerId);
             ctx.writeAndFlush(notify);
         });
+
+    }
+
+    public void notifyPlayer(PlayerModel playerModel, StringBuilder sb) {
+        playerModel.getChannelHandlerContext().writeAndFlush(sb);
 
     }
 

@@ -24,7 +24,7 @@ public class SceneResource {
     private void init() {
         int num = excelManager.getMap().get("Scene").size();
         for (int i = 0; i < num; i++) {
-            SceneExcel sceneExcel = (SceneExcel) excelManager.getMap().get("Scene").get(i + 1);
+            SceneExcel sceneExcel = (SceneExcel) excelManager.getMap().get("Scene").get(i);
             sceneMap.put(sceneExcel.getId(), sceneExcel);
             String str = sceneExcel.getMonster();
             String[] strs = str.split(",");

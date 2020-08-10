@@ -1,5 +1,7 @@
 package com.function.player.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.database.entity.Bag;
 import com.database.entity.BagExample;
 import com.database.entity.Player;
@@ -11,9 +13,9 @@ import com.function.bag.service.BagService;
 import com.function.item.model.Item;
 import com.function.occ.excel.OccExcel;
 import com.function.occ.excel.OccResource;
-import com.function.player.manager.BagInit;
+import com.function.player.manager.BagManager;
 import com.function.player.manager.InitManager;
-import com.function.player.manager.PlayerInit;
+import com.function.player.manager.PlayerManager;
 import com.function.player.model.PlayerModel;
 import com.function.skill.model.Skill;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Catherine
@@ -34,6 +37,8 @@ public class PlayerData {
     private BagService bagService;
     @Autowired
     private PlayerMapper playerMapper;
+    @Autowired
+    private PlayerManager playerManager;
 
     InitManager initManager;
 
@@ -84,17 +89,10 @@ public class PlayerData {
      * 初始化角色装备
      */
     public void initEquipment(PlayerModel playerModel) {
-        if (!"".equals(playerModel.getEquip()) && playerModel.getEquip() != null) {
-            String[] equips = playerModel.getEquip().split(",");
-            for (String equip : equips) {
-                int itemId = Integer.parseInt(equip);
-                Item item = new Item();
-                item.setId(itemId);
-                item.setNowWear(item.getItemById().getWear());
-                playerModel.getEquipMap().put(item.getItemById().getSpace(), item);
-                playerModel.getEquipById().put(item.getId(), item);
-            }
-        }
+        String json = playerModel.getEquip();
+        Map<Integer, Item> m = JSON.parseObject(json, new TypeReference<Map<Integer, Item>>() {
+        });
+        playerModel.setEquipMap(m);
 
     }
 
@@ -114,26 +112,16 @@ public class PlayerData {
      */
     public void initBag(PlayerModel playerModel) {
 
-        setInitManager(new BagInit());
+        setInitManager(new BagManager());
         BagExample bagExample = (BagExample) initData(playerModel);
         List<Bag> bagList = bagMapper.selectByExample(bagExample);
         BagModel bagModel = new BagModel();
         BeanUtils.copyProperties(bagList.get(0), bagModel);
         playerModel.setBagModel(bagModel);
-
-        if ("".equals(bagModel.getItem()) || bagModel.getItem() == null) {
-            return;
-        }
-
-        String[] items = bagModel.getItem().split(",");
-        for (int i = 0; i < items.length; i++) {
-            int itemId = Integer.parseInt(items[i]);
-            Item item = new Item();
-            item.setId(itemId);
-            item.setNum(1);
-            item.setNowWear(item.getItemById().getWear());
-            bagModel.getItemMap().put(i, item);
-        }
+        String json = bagModel.getItem();
+        Map<Integer, Item> m = JSON.parseObject(json, new TypeReference<Map<Integer, Item>>() {
+        });
+        bagModel.setItemMap(m);
 
         bagService.orderBag(playerModel, playerModel.getBagModel().getItemMap());
     }
@@ -142,7 +130,8 @@ public class PlayerData {
      * 更新数据库位置信息
      */
     public void updateLoc(Integer loc, PlayerModel playerModel) {
-        setInitManager(new PlayerInit());
+        //
+        setInitManager(playerManager);
         PlayerExample playerExample = (PlayerExample) initData(playerModel);
         Player newPlayer = new Player();
         newPlayer.setLoc(loc);
@@ -153,10 +142,11 @@ public class PlayerData {
      * 更新数据库装备配置
      */
     public void updateEquip(PlayerModel playerModel) {
-        setInitManager(new PlayerInit());
+        setInitManager(playerManager);
         PlayerExample playerExample = (PlayerExample) initData(playerModel);
         Player newPlayer = new Player();
-        newPlayer.setEquip(playerModel.getEquip());
+        String json = JSON.toJSONString(playerModel.getEquipMap());
+        newPlayer.setEquip(json);
         playerMapper.updateByExampleSelective(newPlayer, playerExample);
     }
 

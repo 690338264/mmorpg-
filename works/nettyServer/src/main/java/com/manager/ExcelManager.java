@@ -19,35 +19,27 @@ import java.util.Map;
 @Component
 public class ExcelManager {
 
-    private Map<String, Map<Integer, Object>> map = new HashMap<>();
-    private Map<Integer, Object> classMap;
-
+private Map<String, List<Object>> map = new HashMap<>();
 
     @PostConstruct
     public void init() throws FileNotFoundException {
         File directory = new File("C:\\Users\\Dell\\Desktop\\mmorpg-\\works\\nettyServer\\src\\main\\resources\\excels\\");
 
         for (String fileName : directory.list()) {
-            classMap = new HashMap<>();
             FileInputStream in = null;
             File file = new File(directory + "\\" + fileName);
-
             in = new FileInputStream(file);
             String[] s = fileName.split(".xlsx");
             try {
                 List<?> list = ExcelUtils.readExcelToEntity(Class.forName("com.function." + s[0].toLowerCase() + ".excel." + s[0] + "Excel"), in, fileName);
-
-                for (int i = 0; i < list.size(); i++) {
-                    classMap.put(i + 1, list.get(i));
-                }
-                map.put(s[0], classMap);
+                map.put(s[0], (List<Object>) list);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public Map<String, Map<Integer, Object>> getMap() {
+    public Map<String, List<Object>> getMap() {
         return map;
     }
 }

@@ -43,7 +43,7 @@ public class PlayerController {
         String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
         Integer skill = Integer.valueOf(params[1]);
         Integer target = Integer.valueOf(params[2]);
-        playerService.attackMonster(ctx, playerModel, skill, target);
+        playerService.attackMonster(playerModel, skill, target);
     }
 
     private void playerState(ChannelHandlerContext ctx, Msg msg) {

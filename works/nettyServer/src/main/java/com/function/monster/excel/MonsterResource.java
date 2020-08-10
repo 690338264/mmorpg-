@@ -20,13 +20,13 @@ public class MonsterResource {
     @Autowired
     private ExcelManager excelManager;
 
-    private static Map<Integer, MonsterExcel> monsterMap = new HashMap<Integer, MonsterExcel>();
+    private static Map<Integer, MonsterExcel> monsterMap = new HashMap<>();
 
     @PostConstruct
     private void init() {
         int num = excelManager.getMap().get("Monster").size();
         for (int i = 0; i < num; i++) {
-            MonsterExcel monster = (MonsterExcel) excelManager.getMap().get("Monster").get(i + 1);
+            MonsterExcel monster = (MonsterExcel) excelManager.getMap().get("Monster").get(i);
             monsterMap.put(monster.getId(), monster);
             String str = monster.getSkill();
             String[] strs = str.split(",");

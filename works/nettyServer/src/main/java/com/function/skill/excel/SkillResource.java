@@ -22,7 +22,7 @@ public class SkillResource {
     private void init() {
         int num = excelManager.getMap().get("Skill").size();
         for (int i = 0; i < num; i++) {
-            SkillExcel skill = (SkillExcel) excelManager.getMap().get("Skill").get(i + 1);
+            SkillExcel skill = (SkillExcel) excelManager.getMap().get("Skill").get(i);
             skillMap.put(skill.getId(), skill);
         }
     }

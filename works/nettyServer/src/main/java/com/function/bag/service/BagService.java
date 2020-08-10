@@ -1,11 +1,12 @@
 package com.function.bag.service;
 
+import com.alibaba.fastjson.JSON;
 import com.database.entity.Bag;
 import com.database.entity.BagExample;
 import com.database.mapper.BagMapper;
 import com.function.bag.model.BagModel;
 import com.function.item.model.Item;
-import com.function.player.manager.BagInit;
+import com.function.player.manager.BagManager;
 import com.function.player.manager.InitManager;
 import com.function.player.model.PlayerModel;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,6 +22,8 @@ import java.util.*;
 public class BagService {
     @Autowired
     private BagMapper bagMapper;
+    @Autowired
+    private BagManager bagManager;
 
     InitManager initManager;
 
@@ -28,21 +31,12 @@ public class BagService {
      * 更新背包
      */
     public void updateBag(PlayerModel playerModel) {
-        setInitManager(new BagInit());
+        setInitManager(bagManager);
         BagExample bagExample = (BagExample) initData(playerModel);
         Bag newBag = new Bag();
-
-        StringBuilder item = new StringBuilder();
-        for (Integer index : playerModel.getBagModel().getItemMap().keySet()) {
-            int num = playerModel.getBagModel().getItemMap().get(index).getNum();
-            for (int i = 0; i < num; i++) {
-                item.append(playerModel.getBagModel().getItemMap().get(index).getId());
-                item.append(",");
-            }
-        }
-        //去掉最后一个,
-        item.deleteCharAt(item.length() - 1);
-        newBag.setItem(item.toString());
+        String json = JSON.toJSONString(playerModel.getBagModel().getItemMap());
+        playerModel.getBagModel().setItem(json);
+        newBag.setItem(json);
         bagMapper.updateByExampleSelective(newBag, bagExample);
     }
 
@@ -95,6 +89,7 @@ public class BagService {
             }
         }
         playerModel.getBagModel().setItemMap(items);
+        updateBag(playerModel);
     }
 
     public void setInitManager(InitManager initManager) {

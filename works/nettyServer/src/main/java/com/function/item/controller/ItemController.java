@@ -47,10 +47,11 @@ public class ItemController {
 
     private void itemDrop(ChannelHandlerContext ctx, Msg msg) {
         PlayerModel playerModel = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+        String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
         Integer index = Integer.parseInt(params[1]);
+        Integer num = Integer.parseInt(params[2]);
         String name = playerModel.getBagModel().getItemMap().get(index).getItemById().getName();
-        itemService.removeItem(index, playerModel);
+        itemService.removeItem(index, num, playerModel);
         ctx.writeAndFlush("您已丢弃:[" + name + "]\n");
     }
 

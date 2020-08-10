@@ -10,6 +10,13 @@ import lombok.Data;
  */
 @Data
 public class Item {
+    /**
+     * 物品标识
+     */
+    private Long itemId;
+    /**
+     * 物品种类的id
+     */
     private Integer id;
     /**
      * 格子里的数量
@@ -23,4 +30,5 @@ public class Item {
     public ItemExcel getItemById() {
         return ItemResource.getItemById(id);
     }
+
 }

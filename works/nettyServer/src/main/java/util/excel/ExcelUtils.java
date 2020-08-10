@@ -136,7 +136,7 @@ public class ExcelUtils {
 
                 T instance = classzz.newInstance();
 
-                if (CollectionUtils.isEmpty(excelHeads)) {  //非头部映射方式，默认不校验是否为空，提高效率
+                if (CollectionUtils.isEmpty(excelHeads)) {
                     firstCellNum = dataRow.getFirstCellNum();
                     lastCellNum = dataRow.getLastCellNum();
                 }

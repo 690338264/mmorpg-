@@ -35,7 +35,16 @@ public class MonsterExcel {
     /**
      * 掉落
      */
-    private int drop;
+    private String drop;
+    /**
+     * 掉落金币
+     */
+    private int money;
+    /**
+     * 经验值
+     */
+    private int exc;
+
     /**
      * 技能列表
      */

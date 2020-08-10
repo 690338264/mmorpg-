@@ -17,13 +17,13 @@ public class OccResource {
     @Autowired
     private ExcelManager excelManager;
 
-    private static Map<Integer, OccExcel> occupationMap = new HashMap<Integer, OccExcel>();
+    private static Map<Integer, OccExcel> occupationMap = new HashMap<>();
 
     @PostConstruct
     private void init() {
         int num = excelManager.getMap().get("Occ").size();
         for (int i = 0; i < num; i++) {
-            OccExcel occExcel = (OccExcel) excelManager.getMap().get("Occ").get(i + 1);
+            OccExcel occExcel = (OccExcel) excelManager.getMap().get("Occ").get(i);
             occupationMap.put(occExcel.getId(), occExcel);
         }
     }
