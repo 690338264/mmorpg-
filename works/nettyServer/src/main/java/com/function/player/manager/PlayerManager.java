@@ -27,6 +27,7 @@ public class PlayerManager implements InitManager {
         player.setLoc(1);
         player.setExp(1);
         player.setMoney(0);
+        player.setEquip("{}");
         return player;
     }
 

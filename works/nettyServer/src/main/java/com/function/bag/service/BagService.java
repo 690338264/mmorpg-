@@ -37,6 +37,7 @@ public class BagService {
         String json = JSON.toJSONString(playerModel.getBagModel().getItemMap());
         playerModel.getBagModel().setItem(json);
         newBag.setItem(json);
+        newBag.setMaxid(playerModel.getBagModel().getMaxid());
         bagMapper.updateByExampleSelective(newBag, bagExample);
     }
 

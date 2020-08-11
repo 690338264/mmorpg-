@@ -26,6 +26,7 @@ public class BagManager implements InitManager {
         bag.setPlayerid(player.getRoleid());
         bag.setVolume(36);
         bag.setMaxid(0);
+        bag.setItem("{}");
         return bag;
     }
 }

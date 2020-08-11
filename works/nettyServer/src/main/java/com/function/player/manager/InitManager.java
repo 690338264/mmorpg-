@@ -9,6 +9,9 @@ import com.function.player.model.PlayerModel;
 public interface InitManager {
     /**
      * 加载数据库
+     *
+     * @param playerModel
+     * @return
      */
     Object init(PlayerModel playerModel);
 }

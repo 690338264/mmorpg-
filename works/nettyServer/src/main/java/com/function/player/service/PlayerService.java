@@ -116,7 +116,7 @@ public class PlayerService {
                     String[] drops = monster.getMonsterExcel().getDrop().split(",");
                     int index = (int) (Math.random() * drops.length);
                     Item item = new Item();
-                    item.setId(index);
+                    item.setId(Integer.parseInt(drops[index]));
                     item.setNowWear(item.getItemById().getWear());
                     itemService.getItem(item, playerModel);
 
