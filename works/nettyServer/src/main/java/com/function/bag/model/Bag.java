@@ -1,7 +1,7 @@
 package com.function.bag.model;
 
-import com.database.entity.Bag;
 import com.function.item.model.Item;
+import com.jpa.entity.TBag;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.Map;
  */
 @Data
 
-public class BagModel extends Bag {
+public class Bag extends TBag {
 
     private Map<Integer, Item> itemMap = new HashMap<>();
 

@@ -1,10 +1,10 @@
 package com.function.player.model;
 
-import com.database.entity.Player;
-import com.function.bag.model.BagModel;
+import com.function.bag.model.Bag;
 import com.function.item.model.Item;
 import com.function.scene.model.Scene;
 import com.function.skill.model.Skill;
+import com.jpa.entity.TPlayer;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,7 +21,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"channelHandlerContext", ""})
 @Slf4j
-public class PlayerModel extends Player {
+public class Player extends TPlayer {
 
     private ChannelHandlerContext channelHandlerContext;
     /**
@@ -32,7 +32,7 @@ public class PlayerModel extends Player {
     private Integer level;
     private Map<Integer, Skill> skillMap = new HashMap<>();
     private Map<Integer, Item> equipMap = new HashMap<>();
-    private BagModel bagModel;
+    private Bag bag;
     /**
      * 玩家当前hp
      */

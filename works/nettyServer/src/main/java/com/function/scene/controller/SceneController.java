@@ -1,7 +1,7 @@
 package com.function.scene.controller;
 
 import com.Cmd;
-import com.function.player.model.PlayerModel;
+import com.function.player.model.Player;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.service.SceneService;
 import com.function.user.service.UserService;
@@ -31,20 +31,20 @@ public class SceneController {
     private UserService userService;
 
     private void getNeighbor(ChannelHandlerContext ctx, Msg msg) {
-        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
-        sceneService.getNeighbor(playerModel, ctx);
+        Player player = userService.getPlayerByCtx(ctx);
+        sceneService.getNeighbor(player, ctx);
     }
 
     private void moveTo(ChannelHandlerContext ctx, Msg msg) {
-        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
+        Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
         int sceneId = Integer.parseInt(params[1]);
-        SceneExcel sceneExcel = sceneService.moveTo(playerModel, sceneId);
+        SceneExcel sceneExcel = sceneService.moveTo(player, sceneId);
         ctx.writeAndFlush("您已到达：" + sceneExcel.getName() + '\n');
     }
 
     private void aoi(ChannelHandlerContext ctx, Msg msg) {
-        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
-        sceneService.aoi(playerModel, ctx);
+        Player player = userService.getPlayerByCtx(ctx);
+        sceneService.aoi(player, ctx);
     }
 }

@@ -2,7 +2,7 @@ package com.function.scene.service;
 
 import com.function.monster.model.Monster;
 import com.function.npc.excel.NpcResource;
-import com.function.player.model.PlayerModel;
+import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
@@ -25,8 +25,8 @@ public class SceneService {
     /**
      * 相邻场景
      */
-    public void getNeighbor(PlayerModel playerModel, ChannelHandlerContext ctx) {
-        int locId = playerModel.getLoc();
+    public void getNeighbor(Player player, ChannelHandlerContext ctx) {
+        int locId = player.getLoc();
         String neighbors = SceneResource.getSceneById(locId).getNeighbor();
         String[] strs = neighbors.split(",");
         ctx.writeAndFlush("您现在所在场景为：" + SceneResource.getSceneById(locId).getName() + "\n您可到达的地点有：");
@@ -39,14 +39,14 @@ public class SceneService {
     /**
      * 移动场景
      */
-    public SceneExcel moveTo(PlayerModel playerModel, int sceneId) {
+    public SceneExcel moveTo(Player player, int sceneId) {
         Scene scene = new Scene();
         scene.setSceneId(sceneId);
-        playerModel.setNowScene(scene);
-        playerModel.setLoc(sceneId);
-        playerData.updateLoc(sceneId, playerModel);
-        scene.getSceneExcel().getPlayers().put(playerModel.getRoleid(), playerModel);
-        StringBuilder welcome = new StringBuilder("欢迎玩家").append(playerModel.getName()).append("来到场景\n");
+        player.setNowScene(scene);
+        player.setLoc(sceneId);
+        playerData.updateLoc(player);
+        scene.getSceneExcel().getPlayers().put(player.getRoleId(), player);
+        StringBuilder welcome = new StringBuilder("欢迎玩家").append(player.getName()).append("来到场景\n");
         notifyScene.notifyScene(scene, welcome);
         return SceneResource.getSceneById(sceneId);
     }
@@ -54,8 +54,8 @@ public class SceneService {
     /**
      * 查看周围
      */
-    public void aoi(PlayerModel playerModel, ChannelHandlerContext ctx) {
-        Scene scene = playerModel.getNowScene();
+    public void aoi(Player player, ChannelHandlerContext ctx) {
+        Scene scene = player.getNowScene();
         String[] npcs = scene.getSceneExcel().getNpc().split(",");
         ctx.writeAndFlush("您所在场景有NPC:\n");
         for (String s : npcs) {

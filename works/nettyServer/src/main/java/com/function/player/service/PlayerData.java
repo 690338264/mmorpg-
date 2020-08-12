@@ -2,27 +2,22 @@ package com.function.player.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.database.entity.Bag;
-import com.database.entity.BagExample;
-import com.database.entity.Player;
-import com.database.entity.PlayerExample;
-import com.database.mapper.BagMapper;
-import com.database.mapper.PlayerMapper;
-import com.function.bag.model.BagModel;
+import com.function.bag.model.Bag;
 import com.function.bag.service.BagService;
+import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
 import com.function.occ.excel.OccExcel;
 import com.function.occ.excel.OccResource;
-import com.function.player.manager.BagManager;
-import com.function.player.manager.InitManager;
-import com.function.player.manager.PlayerManager;
-import com.function.player.model.PlayerModel;
+import com.function.player.model.Player;
 import com.function.skill.model.Skill;
+import com.jpa.dao.BagDAO;
+import com.jpa.dao.PlayerDAO;
+import com.jpa.entity.TBag;
+import com.jpa.entity.TPlayer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,41 +27,39 @@ import java.util.Map;
 @Component
 public class PlayerData {
     @Autowired
-    private BagMapper bagMapper;
-    @Autowired
     private BagService bagService;
     @Autowired
-    private PlayerMapper playerMapper;
+    private BagDAO bagDAO;
     @Autowired
-    private PlayerManager playerManager;
+    private PlayerDAO playerDAO;
 
-    InitManager initManager;
-
-    public void initLevel(PlayerModel playerModel) {
-        playerModel.setLevel(playerModel.getExp() / 2000);
+    public void initLevel(Player player) {
+        player.setLevel(player.getExp() / 2000);
     }
 
     /**
      * 初始化角色属性
      */
-    public void initAttribute(PlayerModel playerModel) {
-        OccExcel occ = OccResource.getOccById(playerModel.getOccupation());
+    public void initAttribute(Player player) {
+        OccExcel occ = OccResource.getOccById(player.getOccupation());
 
-        playerModel.setHp(occ.getHp());
-        playerModel.setMp(occ.getMp());
-        playerModel.setOriHp(occ.getHp() + playerModel.getLevel() * occ.getHp() / occ.getMultiple());
-        playerModel.setOriMp(occ.getMp() + playerModel.getLevel() * occ.getMp() / occ.getMultiple());
+        player.setHp(occ.getHp());
+        player.setMp(occ.getMp());
+        int level = player.getLevel();
+        player.setOriHp(occ.getHp() + level * occ.getHp() / occ.getMultiple());
+        player.setOriMp(occ.getMp() + level * occ.getMp() / occ.getMultiple());
 
-        playerModel.setAtk(occ.getAtk() + playerModel.getLevel() * occ.getAtk() / occ.getMultiple());
-        playerModel.setDef(occ.getDef() + playerModel.getLevel() * occ.getDef() / occ.getMultiple());
-        playerModel.setSpeed(occ.getSpeed() + playerModel.getLevel() * occ.getSpeed() / occ.getMultiple());
-        for (Integer space : playerModel.getEquipMap().keySet()) {
-            int addAtk = playerModel.getEquipMap().get(space).getItemById().getAtk();
-            int addDef = playerModel.getEquipMap().get(space).getItemById().getDef();
-            int addSpeed = playerModel.getEquipMap().get(space).getItemById().getSpeed();
-            playerModel.setAtk(playerModel.getAtk() + addAtk);
-            playerModel.setDef(playerModel.getDef() + addDef);
-            playerModel.setSpeed(playerModel.getSpeed() + addSpeed);
+        player.setAtk(occ.getAtk() + level * occ.getAtk() / occ.getMultiple());
+        player.setDef(occ.getDef() + level * occ.getDef() / occ.getMultiple());
+        player.setSpeed(occ.getSpeed() + level * occ.getSpeed() / occ.getMultiple());
+        for (Integer space : player.getEquipMap().keySet()) {
+            ItemExcel item = player.getEquipMap().get(space).getItemById();
+            int addAtk = item.getAtk();
+            int addDef = item.getDef();
+            int addSpeed = item.getSpeed();
+            player.setAtk(player.getAtk() + addAtk);
+            player.setDef(player.getDef() + addDef);
+            player.setSpeed(player.getSpeed() + addSpeed);
         }
 
     }
@@ -74,87 +67,70 @@ public class PlayerData {
     /**
      * 初始化角色技能
      */
-    public void initSkill(PlayerModel playerModel) {
-        String skills = OccResource.getOccById(playerModel.getOccupation()).getSkill();
+    public void initSkill(Player player) {
+        String skills = OccResource.getOccById(player.getOccupation()).getSkill();
         String[] str = skills.split(",");
         for (int i = 0; i < str.length; i++) {
             int type = Integer.parseInt(str[i]);
             Skill skill = new Skill();
             skill.setSkillId(type);
-            playerModel.getSkillMap().put(i + 1, skill);
+            player.getSkillMap().put(i + 1, skill);
         }
     }
 
     /**
      * 初始化角色装备
      */
-    public void initEquipment(PlayerModel playerModel) {
-        String json = playerModel.getEquip();
+    public void initEquipment(Player player) {
+        String json = player.getEquip();
         Map<Integer, Item> m = JSON.parseObject(json, new TypeReference<Map<Integer, Item>>() {
         });
-        playerModel.setEquipMap(m);
+        player.setEquipMap(m);
 
     }
 
     /**
      * 初始化玩家
      */
-    public void initPlayer(PlayerModel playerModel) {
-        initLevel(playerModel);
-        initSkill(playerModel);
-        initEquipment(playerModel);
-        initBag(playerModel);
-        initAttribute(playerModel);
+    public void initPlayer(Player player) {
+        initLevel(player);
+        initSkill(player);
+        initEquipment(player);
+        initBag(player);
+        initAttribute(player);
     }
 
     /**
      * 加载背包
      */
-    public void initBag(PlayerModel playerModel) {
-
-        setInitManager(new BagManager());
-        BagExample bagExample = (BagExample) initData(playerModel);
-        List<Bag> bagList = bagMapper.selectByExample(bagExample);
-        BagModel bagModel = new BagModel();
-        BeanUtils.copyProperties(bagList.get(0), bagModel);
-        playerModel.setBagModel(bagModel);
-        String json = bagModel.getItem();
+    public void initBag(Player player) {
+        TBag tBag = bagDAO.findByPlayerId(player.getRoleId());
+        Bag bag = new Bag();
+        BeanUtils.copyProperties(tBag, bag);
+        player.setBag(bag);
+        String json = bag.getItem();
         Map<Integer, Item> m = JSON.parseObject(json, new TypeReference<Map<Integer, Item>>() {
         });
-        bagModel.setItemMap(m);
-
-        bagService.orderBag(playerModel, playerModel.getBagModel().getItemMap());
+        bag.setItemMap(m);
+        bagService.orderBag(player, player.getBag().getItemMap());
     }
 
     /**
      * 更新数据库位置信息
      */
-    public void updateLoc(Integer loc, PlayerModel playerModel) {
-        //
-        setInitManager(playerManager);
-        PlayerExample playerExample = (PlayerExample) initData(playerModel);
-        Player newPlayer = new Player();
-        newPlayer.setLoc(loc);
-        playerMapper.updateByExampleSelective(newPlayer, playerExample);
+    public void updateLoc(Player player) {
+        TPlayer tPlayer = playerDAO.findByRoleId(player.getRoleId());
+        tPlayer.setLoc(player.getLoc());
+        playerDAO.save(tPlayer);
     }
 
     /**
      * 更新数据库装备配置
      */
-    public void updateEquip(PlayerModel playerModel) {
-        setInitManager(playerManager);
-        PlayerExample playerExample = (PlayerExample) initData(playerModel);
-        Player newPlayer = new Player();
-        String json = JSON.toJSONString(playerModel.getEquipMap());
-        newPlayer.setEquip(json);
-        playerMapper.updateByExampleSelective(newPlayer, playerExample);
-    }
-
-    public void setInitManager(InitManager initManager) {
-        this.initManager = initManager;
-    }
-
-    public Object initData(PlayerModel playerModel) {
-        return initManager.init(playerModel);
+    public void updateEquip(Player player) {
+        String json = JSON.toJSONString(player.getEquipMap());
+        TPlayer tPlayer = playerDAO.findByRoleId(player.getRoleId());
+        tPlayer.setEquip(json);
+        playerDAO.save(tPlayer);
     }
 }

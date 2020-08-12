@@ -1,6 +1,6 @@
 package com.function.scene.service;
 
-import com.function.player.model.PlayerModel;
+import com.function.player.model.Player;
 import com.function.scene.model.Scene;
 import com.function.user.map.PlayerMap;
 import io.netty.channel.ChannelHandlerContext;
@@ -23,8 +23,8 @@ public class NotifyScene {
 
     }
 
-    public void notifyPlayer(PlayerModel playerModel, StringBuilder sb) {
-        playerModel.getChannelHandlerContext().writeAndFlush(sb);
+    public void notifyPlayer(Player player, StringBuilder sb) {
+        player.getChannelHandlerContext().writeAndFlush(sb);
 
     }
 

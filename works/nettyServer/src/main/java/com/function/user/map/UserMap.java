@@ -1,6 +1,6 @@
 package com.function.user.map;
 
-import com.function.user.model.UserModel;
+import com.function.user.model.User;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Component;
 
@@ -12,13 +12,13 @@ import java.util.Map;
  */
 @Component
 public class UserMap {
-    private static Map<ChannelHandlerContext, UserModel> userModelMap = new HashMap<>();
+    private static Map<ChannelHandlerContext, User> userModelMap = new HashMap<>();
 
-    public static void putUserctx(ChannelHandlerContext ctx, UserModel userModel) {
-        userModelMap.put(ctx, userModel);
+    public static void putUserctx(ChannelHandlerContext ctx, User user) {
+        userModelMap.put(ctx, user);
     }
 
-    public static UserModel getUserctx(ChannelHandlerContext ctx) {
+    public static User getUserctx(ChannelHandlerContext ctx) {
         return userModelMap.get(ctx);
     }
 }

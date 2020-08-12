@@ -1,7 +1,7 @@
 package com.function.scene.excel;
 
 import com.function.monster.model.Monster;
-import com.function.player.model.PlayerModel;
+import com.function.player.model.Player;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public class SceneExcel {
     /**
      * 场景内玩家
      */
-    private Map<Long, PlayerModel> players = new HashMap<>();
+    private Map<Long, Player> players = new HashMap<>();
     /**
      * 场景内怪物
      */

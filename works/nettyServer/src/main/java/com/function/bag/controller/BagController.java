@@ -2,7 +2,7 @@ package com.function.bag.controller;
 
 import com.Cmd;
 import com.function.bag.service.BagService;
-import com.function.player.model.PlayerModel;
+import com.function.player.model.Player;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,14 +27,14 @@ public class BagController {
     }
 
     private void bagList(ChannelHandlerContext ctx, Msg msg) {
-        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
-        bagservice.listBag(playerModel, ctx);
+        Player player = userService.getPlayerByCtx(ctx);
+        bagservice.listBag(player, ctx);
 
     }
 
     private void bagInorder(ChannelHandlerContext ctx, Msg msg) {
-        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
-        bagservice.orderBag(playerModel, playerModel.getBagModel().getItemMap());
+        Player player = userService.getPlayerByCtx(ctx);
+        bagservice.orderBag(player, player.getBag().getItemMap());
     }
 
 }

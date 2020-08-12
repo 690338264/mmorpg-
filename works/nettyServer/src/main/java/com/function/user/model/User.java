@@ -1,6 +1,6 @@
 package com.function.user.model;
 
-import com.database.entity.User;
+import com.jpa.entity.TUser;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 
-public class UserModel extends User {
+public class User extends TUser {
 
     private ChannelHandlerContext channelHandlerContext;
 

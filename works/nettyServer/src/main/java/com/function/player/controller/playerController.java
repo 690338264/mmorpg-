@@ -1,9 +1,9 @@
 package com.function.player.controller;
 
 import com.Cmd;
-import com.function.player.model.PlayerModel;
+import com.function.player.model.Player;
 import com.function.player.service.PlayerService;
-import com.function.user.model.UserModel;
+import com.function.user.model.User;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,23 +31,23 @@ public class PlayerController {
     }
 
     private void createRole(ChannelHandlerContext ctx, Msg msg) {
-        UserModel userModel = userService.getUserByCtx(ctx);
+        User user = userService.getUserByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
         String roleName = params[1];
         Integer roleType = Integer.valueOf(params[2]);
-        playerService.roleCreate(ctx, roleName, roleType, userModel.getId());
+        playerService.roleCreate(ctx, roleName, roleType, user.getId());
     }
 
     private void attackMonster(ChannelHandlerContext ctx, Msg msg) {
-        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
+        Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
         Integer skill = Integer.valueOf(params[1]);
         Integer target = Integer.valueOf(params[2]);
-        playerService.attackMonster(playerModel, skill, target);
+        playerService.attackMonster(player, skill, target);
     }
 
     private void playerState(ChannelHandlerContext ctx, Msg msg) {
-        PlayerModel playerModel = userService.getPlayerByCtx(ctx);
-        playerService.showState(ctx, playerModel);
+        Player player = userService.getPlayerByCtx(ctx);
+        playerService.showState(ctx, player);
     }
 }
