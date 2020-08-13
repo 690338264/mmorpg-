@@ -1,12 +1,13 @@
 package com.function.npc.excel;
 
+import com.function.scene.model.SceneObject;
 import lombok.Data;
 
 /**
  * @author Catherine
  */
 @Data
-public class NpcExcel {
+public class NpcExcel extends SceneObject {
     private Integer id;
 
     private String name;

@@ -35,15 +35,11 @@ public class MonsterService {
     public int[] monsterAtk(Monster monster) {
         Integer[] keys = monster.getMonsterExcel().getMonsterSkill().keySet().toArray(new Integer[0]);
         Skill skill = new Skill();
-        while (true) {
+        do {
             Random random = new Random();
             Integer randomKey = keys[random.nextInt(keys.length)];
             skill = monster.getMonsterExcel().getMonsterSkill().get(randomKey);
-            skill.setNowTime(System.currentTimeMillis());
-            if (skill.getLastTime() == null || skill.getNowTime() - skill.getLastTime() >= skill.getSkillExcel().getCd()) {
-                break;
-            }
-        }
+        } while (skill.getLastTime() != null && System.currentTimeMillis() - skill.getLastTime() < skill.getSkillExcel().getCd());
 
         skill.setLastTime(System.currentTimeMillis());
         int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getBuff();

@@ -26,7 +26,7 @@ public class BagService {
     public void updateBag(Player player) {
         String json = JSON.toJSONString(player.getBag().getItemMap());
         player.getBag().setItem(json);
-        TBag tBag = bagDAO.findByPlayerId(player.getRoleId());
+        TBag tBag = bagDAO.findByPlayerId(player.getTPlayer().getRoleId());
         tBag.setItem(json);
         bagDAO.save(tBag);
     }

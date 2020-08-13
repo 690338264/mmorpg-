@@ -8,8 +8,8 @@ import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
 import com.function.occ.excel.OccExcel;
 import com.function.occ.excel.OccResource;
+import com.function.occ.manager.OccCache;
 import com.function.player.model.Player;
-import com.function.skill.model.Skill;
 import com.jpa.dao.BagDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TBag;
@@ -32,16 +32,18 @@ public class PlayerData {
     private BagDAO bagDAO;
     @Autowired
     private PlayerDAO playerDAO;
+    @Autowired
+    private OccCache occCache;
 
     public void initLevel(Player player) {
-        player.setLevel(player.getExp() / 2000);
+        player.setLevel(player.getTPlayer().getExp() / 2000);
     }
 
     /**
      * 初始化角色属性
      */
     public void initAttribute(Player player) {
-        OccExcel occ = OccResource.getOccById(player.getOccupation());
+        OccExcel occ = OccResource.getOccById(player.getTPlayer().getOccupation());
 
         player.setHp(occ.getHp());
         player.setMp(occ.getMp());
@@ -68,13 +70,9 @@ public class PlayerData {
      * 初始化角色技能
      */
     public void initSkill(Player player) {
-        String skills = OccResource.getOccById(player.getOccupation()).getSkill();
-        String[] str = skills.split(",");
-        for (int i = 0; i < str.length; i++) {
-            int type = Integer.parseInt(str[i]);
-            Skill skill = new Skill();
-            skill.setSkillId(type);
-            player.getSkillMap().put(i + 1, skill);
+        OccExcel occExcel = occCache.get("OccExcel" + player.getTPlayer().getOccupation());
+        for (int i = 0; i < occExcel.getSkills().size(); i++) {
+            player.getSkillMap().put(i + 1, occExcel.getSkills().get(i));
         }
     }
 
@@ -82,7 +80,7 @@ public class PlayerData {
      * 初始化角色装备
      */
     public void initEquipment(Player player) {
-        String json = player.getEquip();
+        String json = player.getTPlayer().getEquip();
         Map<Integer, Item> m = JSON.parseObject(json, new TypeReference<Map<Integer, Item>>() {
         });
         player.setEquipMap(m);
@@ -104,7 +102,7 @@ public class PlayerData {
      * 加载背包
      */
     public void initBag(Player player) {
-        TBag tBag = bagDAO.findByPlayerId(player.getRoleId());
+        TBag tBag = bagDAO.findByPlayerId(player.getTPlayer().getRoleId());
         Bag bag = new Bag();
         BeanUtils.copyProperties(tBag, bag);
         player.setBag(bag);
@@ -119,8 +117,8 @@ public class PlayerData {
      * 更新数据库位置信息
      */
     public void updateLoc(Player player) {
-        TPlayer tPlayer = playerDAO.findByRoleId(player.getRoleId());
-        tPlayer.setLoc(player.getLoc());
+        TPlayer tPlayer = playerDAO.findByRoleId(player.getTPlayer().getRoleId());
+        tPlayer.setLoc(player.getTPlayer().getLoc());
         playerDAO.save(tPlayer);
     }
 
@@ -129,7 +127,7 @@ public class PlayerData {
      */
     public void updateEquip(Player player) {
         String json = JSON.toJSONString(player.getEquipMap());
-        TPlayer tPlayer = playerDAO.findByRoleId(player.getRoleId());
+        TPlayer tPlayer = playerDAO.findByRoleId(player.getTPlayer().getRoleId());
         tPlayer.setEquip(json);
         playerDAO.save(tPlayer);
     }

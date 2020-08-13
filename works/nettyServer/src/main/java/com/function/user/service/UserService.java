@@ -1,5 +1,6 @@
 package com.function.user.service;
 
+import com.function.player.manager.PlayerCache;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.player.service.PlayerService;
@@ -37,6 +38,8 @@ public class UserService {
     private UserDAO usersDAO;
     @Autowired
     private PlayerDAO playerDAO;
+    @Autowired
+    private PlayerCache playerCache;
 
     /**
      * 用户注册
@@ -61,7 +64,7 @@ public class UserService {
      * 用户登录
      */
     public void login(long userId, String psw, ChannelHandlerContext ctx) {
-        User usermodel = new User();
+        User user = new User();
         TUser logUser = usersDAO.findByIdAndPsw(userId, psw);
         if (logUser != null) {
             ctx.writeAndFlush("正在登陆......\n");
@@ -69,9 +72,9 @@ public class UserService {
             ctx.writeAndFlush("请输入正确的用户名和密码！\n");
             return;
         }
-        BeanUtils.copyProperties(logUser, usermodel);
-        UserMap.putUserctx(ctx, usermodel);
-        usermodel.setChannelHandlerContext(ctx);
+        BeanUtils.copyProperties(logUser, user);
+        UserMap.putUserctx(ctx, user);
+        user.setChannelHandlerContext(ctx);
     }
 
     /**
@@ -99,17 +102,20 @@ public class UserService {
         User user = getUserByCtx(ctx);
         TPlayer tPlayer = playerDAO.findByRoleIdAndUserId(playerId, user.getId());
         Player player = new Player();
-        BeanUtils.copyProperties(tPlayer, player);
+//        BeanUtils.copyProperties(tPlayer, player);
+        player.setTPlayer(tPlayer);
 
         PlayerMap.putPlayerCtx(ctx, player);
         PlayerMap.putCtxId(playerId, ctx);
 
         player.setChannelHandlerContext(ctx);
         Scene scene = new Scene();
-        scene.setSceneId(player.getLoc());
+        scene.setSceneId(tPlayer.getLoc());
         player.setNowScene(scene);
-        scene.getSceneExcel().getPlayers().put(player.getRoleId(), player);
+//        scene.getSceneExcel().getPlayers().put(player.getRoleId(), player);
         playerData.initPlayer(player);
+        playerCache.set(tPlayer.getRoleId() + "player", player);
+        playerCache.set(tPlayer.getRoleId() + "player", player, 20);
         return player;
     }
 

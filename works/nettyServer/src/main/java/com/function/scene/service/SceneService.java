@@ -26,7 +26,7 @@ public class SceneService {
      * 相邻场景
      */
     public void getNeighbor(Player player, ChannelHandlerContext ctx) {
-        int locId = player.getLoc();
+        int locId = player.getTPlayer().getLoc();
         String neighbors = SceneResource.getSceneById(locId).getNeighbor();
         String[] strs = neighbors.split(",");
         ctx.writeAndFlush("您现在所在场景为：" + SceneResource.getSceneById(locId).getName() + "\n您可到达的地点有：");
@@ -43,10 +43,10 @@ public class SceneService {
         Scene scene = new Scene();
         scene.setSceneId(sceneId);
         player.setNowScene(scene);
-        player.setLoc(sceneId);
+        player.getTPlayer().setLoc(sceneId);
         playerData.updateLoc(player);
-        scene.getSceneExcel().getPlayers().put(player.getRoleId(), player);
-        StringBuilder welcome = new StringBuilder("欢迎玩家").append(player.getName()).append("来到场景\n");
+//        scene.getSceneExcel().getPlayers().put(player.getRoleId(), player);
+        StringBuilder welcome = new StringBuilder("欢迎玩家").append(player.getTPlayer().getName()).append("来到场景\n");
         notifyScene.notifyScene(scene, welcome);
         return SceneResource.getSceneById(sceneId);
     }

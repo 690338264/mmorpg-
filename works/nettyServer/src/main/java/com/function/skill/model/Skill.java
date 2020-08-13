@@ -16,10 +16,6 @@ public class Skill {
      * 技能上次释放时间
      */
     private Long lastTime;
-    /**
-     * 现在时间
-     */
-    private Long nowTime;
 
     public SkillExcel getSkillExcel() {
         return SkillResource.getSkillById(skillId);

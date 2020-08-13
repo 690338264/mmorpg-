@@ -2,6 +2,7 @@ package com.function.user.controller;
 
 import com.Cmd;
 import com.function.player.model.Player;
+import com.function.user.model.User;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
 import com.jpa.entity.TPlayer;
@@ -20,8 +21,6 @@ import java.util.List;
 @Service
 @Slf4j
 public class UserController {
-
-    private static long userId;
     @Autowired
     private UserService userservice;
 
@@ -41,14 +40,14 @@ public class UserController {
 
     private void userLogin(ChannelHandlerContext ctx, Msg msg) {
         String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
-        userId = Long.parseLong(params[1]);
+        long userId = Long.parseLong(params[1]);
         String psw = params[2];
         userservice.login(userId, psw, ctx);
-
     }
 
     private void playerList(ChannelHandlerContext ctx, Msg msg) {
-        List<TPlayer> list = userservice.listPlayer(userId);
+        User user = userservice.getUserByCtx(ctx);
+        List<TPlayer> list = userservice.listPlayer(user.getId());
         if (list.size() == 0) {
             ctx.writeAndFlush("请先创建角色\n");
         } else {
@@ -66,7 +65,7 @@ public class UserController {
         if (userservice.hasPlayer(roleId, ctx)) {
             Player player = userservice.logPlayer(roleId, ctx);
             //获取场景
-            ctx.writeAndFlush("[" + player.getName() + "]登录成功！\n当前所在位置为："
+            ctx.writeAndFlush("[" + player.getTPlayer().getName() + "]登录成功！\n当前所在位置为："
                     + player.getNowScene().getSceneExcel().getName() + "您的等级为：" + player.getLevel() + '\n');
         } else {
             ctx.writeAndFlush("无该角色！！！\n");

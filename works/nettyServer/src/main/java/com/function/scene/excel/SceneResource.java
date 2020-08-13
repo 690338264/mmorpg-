@@ -1,6 +1,9 @@
 package com.function.scene.excel;
 
 import com.function.monster.model.Monster;
+import com.function.npc.excel.NpcResource;
+import com.function.scene.manager.SceneCache;
+import com.function.scene.model.Scene;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +20,8 @@ public class SceneResource {
 
     @Autowired
     private ExcelManager excelManager;
+    @Autowired
+    private SceneCache sceneCache;
 
     private static Map<Integer, SceneExcel> sceneMap = new HashMap<Integer, SceneExcel>();
 
@@ -28,6 +33,7 @@ public class SceneResource {
             sceneMap.put(sceneExcel.getId(), sceneExcel);
             String str = sceneExcel.getMonster();
             String[] strs = str.split(",");
+            String[] npcs = sceneExcel.getNpc().split(",");
 
             for (int j = 0; j < strs.length; j++) {
                 int monsterId = Integer.parseInt(strs[j]);
@@ -38,6 +44,13 @@ public class SceneResource {
                 monster.setSelfHp(monster.getMonsterExcel().getHp());
                 sceneExcel.getMonsters().put(j, monster);
             }
+            for (int j = 0; j < npcs.length; j++) {
+                int npcId = Integer.parseInt(npcs[j]);
+                sceneExcel.getNpcs().put(j, NpcResource.getNpcById(npcId));
+            }
+            Scene scene = new Scene();
+            scene.setSceneId(sceneExcel.getId());
+            sceneCache.set(scene);
         }
 
     }

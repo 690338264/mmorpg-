@@ -92,7 +92,7 @@ public class ItemService {
             if (bag.getItemMap().get(i) == null) {
                 bag.getItemMap().put(i, item);
                 if (item.getItemId() == null) {
-                    item.setItemId(player.getRoleId() * 10000 + bag.getMaxId());
+                    item.setItemId(player.getTPlayer().getRoleId() * 10000 + bag.getMaxId());
                     bag.setMaxId(bag.getMaxId() + 1);
                 }
                 bagService.updateBag(player);

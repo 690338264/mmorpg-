@@ -79,14 +79,14 @@ public class PlayerService {
         Scene scene = player.getNowScene();
         Monster monster = scene.getSceneExcel().getMonsters().get(target);
         Skill skill = player.getSkillMap().get(skillId);
-        skill.setNowTime(System.currentTimeMillis());
+        Long now = System.currentTimeMillis();
         //判断目标是否死亡
         if (monster.getSelfHp() <= 0) {
             player.getChannelHandlerContext().writeAndFlush("攻击目标无效，请重新选择！\n");
             return;
         }
         //判断技能CD
-        if (skill.getLastTime() == null || skill.getNowTime() - skill.getLastTime() >= skill.getSkillExcel().getCd() * 1000) {
+        if (skill.getLastTime() == null || now - skill.getLastTime() >= skill.getSkillExcel().getCd() * 1000) {
             //判断玩家mp
             if (player.getMp() >= skill.getSkillExcel().getMp()) {
                 //判断装备磨损度
@@ -104,7 +104,7 @@ public class PlayerService {
                 skill.setLastTime(System.currentTimeMillis());
                 if (monsterService.isMonsterDeath(monster)) {
                     StringBuilder notify = new StringBuilder();
-                    notify.append("玩家[").append(player.getName()).append("]成功击杀怪物").append(monster.getMonsterExcel().getName()).append('\n');
+                    notify.append("玩家[").append(player.getTPlayer().getName()).append("]成功击杀怪物").append(monster.getMonsterExcel().getName()).append('\n');
                     notifyScene.notifyScene(scene, notify);
                     String[] drops = monster.getMonsterExcel().getDrop().split(",");
                     int index = (int) (Math.random() * drops.length);
@@ -115,7 +115,7 @@ public class PlayerService {
 
                 } else {
                     StringBuilder notify = new StringBuilder();
-                    notify.append("玩家[").append(player.getName()).append("]释放了技能[").append(skill.getSkillExcel().getName()).append("]对怪物[")
+                    notify.append("玩家[").append(player.getTPlayer().getName()).append("]释放了技能[").append(skill.getSkillExcel().getName()).append("]对怪物[")
                             .append(monster.getMonsterExcel().getName()).append("]产生伤害:").append(hurt).append('\n');
                     notifyScene.notifyScene(scene, notify);
                     int[] param = monsterService.monsterAtk(monster);
@@ -132,11 +132,15 @@ public class PlayerService {
                         notifyScene.notifyPlayer(player, die);
                     }
                 }
-//              计时怪物刷新
-                Timer timer = new Timer();
-                Time t = new Time();
-                t.setPlayer(player);
-                timer.schedule(t, 0, 3000);
+//              mp恢复
+                if (player.getTimerMap().get("mp") == null) {
+                    Timer timer = new Timer();
+                    player.getTimerMap().put("mp", timer);
+                    Time t = new Time();
+                    t.setPlayer(player);
+                    timer.schedule(t, 0, 3000);
+                }
+
             } else {
                 StringBuilder noMp = new StringBuilder("技能释放失败！原因：mp不足！\n");
                 notifyScene.notifyPlayer(player, noMp);

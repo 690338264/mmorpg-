@@ -12,12 +12,18 @@ import java.util.TimerTask;
 @Data
 public class Time extends TimerTask {
     private Player player;
+    private static int i = 0;
 
     @Override
     public void run() {
+        i++;
         if (player.getMp() < player.getOriMp()) {
-            player.setMp(player.getMp() + 5);
+            player.setMp(player.getMp() + 2);
+            System.out.println(player.getMp());
+            System.out.println(i);
         } else {
+            player.getTimerMap().remove("mp");
+            System.out.println(player.getTimerMap());
             cancel();
         }
     }

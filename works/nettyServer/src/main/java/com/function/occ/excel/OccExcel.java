@@ -1,6 +1,10 @@
 package com.function.occ.excel;
 
+import com.function.skill.model.Skill;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Catherine
@@ -35,5 +39,7 @@ public class OccExcel {
      * 升级倍数
      */
     private Integer multiple;
+
+    private List<Skill> skills = new ArrayList<>();
 
 }

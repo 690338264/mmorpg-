@@ -45,6 +45,7 @@ public enum Cmd {
     PLAYER_STATE("player_state", 888),
     //查看已穿戴装备
     EQUIP_LIST("equip_list", 999),
+    LOG_OUT("log_out", 666),
     UNKNOWN("unknown", 9999);
 
     private String cmd;

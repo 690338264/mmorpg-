@@ -1,7 +1,7 @@
 package com.function.scene.excel;
 
 import com.function.monster.model.Monster;
-import com.function.player.model.Player;
+import com.function.npc.excel.NpcExcel;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -29,13 +29,13 @@ public class SceneExcel {
      */
     private String monster;
     /**
-     * 场景内玩家
-     */
-    private Map<Long, Player> players = new HashMap<>();
-    /**
      * 场景内怪物
      */
     private Map<Integer, Monster> monsters = new HashMap<>();
+    /**
+     * 场景内Npc
+     */
+    private Map<Integer, NpcExcel> npcs = new HashMap<>();
 
 
 }

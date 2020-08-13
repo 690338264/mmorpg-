@@ -1,8 +1,12 @@
 package com.function.scene.model;
 
+import com.function.player.model.Player;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
 import lombok.Data;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Catherine
@@ -10,8 +14,11 @@ import lombok.Data;
  */
 
 @Data
-public class Scene {
+public class Scene extends SceneObject {
+
     private int sceneId;
+
+    private Map<Integer, Player> playerMap = new HashMap<>();
 
     public SceneExcel getSceneExcel() {
         return SceneResource.getSceneById(sceneId);
