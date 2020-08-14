@@ -12,6 +12,7 @@ import java.util.Map;
  */
 @Component
 public class PlayerMap {
+
     private Map<ChannelHandlerContext, Player> playerModelMap = new HashMap<>();
 
     private Map<Long, ChannelHandlerContext> ctxPlayer = new HashMap<>();
@@ -27,5 +28,10 @@ public class PlayerMap {
 
     public ChannelHandlerContext getCtxPlayer(Long playerId) {
         return ctxPlayer.get(playerId);
+    }
+
+    public void remove(ChannelHandlerContext ctx, Long playerId) {
+        playerModelMap.remove(ctx);
+        ctxPlayer.remove(playerId);
     }
 }

@@ -28,6 +28,7 @@ public class UserController {
         ControllerManager.add(Cmd.USER_LOGIN, this::userLogin);
         ControllerManager.add(Cmd.USER_LISTPLAYER, this::playerList);
         ControllerManager.add(Cmd.PLAYER_LOG, this::playerLogin);
+        ControllerManager.add(Cmd.LOG_OUT, this::logout);
     }
 
     private void userCreate(ChannelHandlerContext ctx, Msg msg) {
@@ -63,5 +64,10 @@ public class UserController {
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
         Long roleId = Long.valueOf(params[1]);
         userservice.logPlayer(roleId, ctx);
+    }
+
+    private void logout(ChannelHandlerContext ctx, Msg msg) {
+        Player player = userservice.getPlayerByCtx(ctx);
+        userservice.logout(player);
     }
 }

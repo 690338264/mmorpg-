@@ -41,4 +41,8 @@ public class UserMap {
     public User getUserctx(ChannelHandlerContext ctx) {
         return userCtxMap.get(ctx);
     }
+
+    public void remove(ChannelHandlerContext ctx) {
+        userCtxMap.remove(ctx);
+    }
 }

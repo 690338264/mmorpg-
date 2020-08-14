@@ -132,6 +132,16 @@ public class UserService {
 
     }
 
+    /**
+     * 退出登录
+     */
+    public void logout(Player player) {
+        ChannelHandlerContext ctx = player.getChannelHandlerContext();
+        playerMap.remove(ctx, player.getTPlayer().getRoleId());
+        userMap.remove(ctx);
+        player.setChannelHandlerContext(null);
+    }
+
     public User getUserByCtx(ChannelHandlerContext ctx) {
         return userMap.getUserctx(ctx);
     }
