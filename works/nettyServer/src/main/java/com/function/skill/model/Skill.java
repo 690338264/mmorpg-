@@ -1,5 +1,6 @@
 package com.function.skill.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.function.skill.excel.SkillExcel;
 import com.function.skill.excel.SkillResource;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.Data;
  * @create 2020-07-31 12:43
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Skill {
 
     private Integer skillId;

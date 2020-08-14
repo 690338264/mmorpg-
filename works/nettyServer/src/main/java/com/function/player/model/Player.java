@@ -54,5 +54,6 @@ public class Player extends SceneObject {
     private Integer atk;
     private Integer def;
     private Integer speed;
+    private boolean init;
 
 }

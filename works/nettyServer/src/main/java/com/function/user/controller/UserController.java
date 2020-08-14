@@ -5,7 +5,6 @@ import com.function.player.model.Player;
 import com.function.user.model.User;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
-import com.jpa.entity.TPlayer;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service;
 import util.Msg;
 import util.ParamNumCheck;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author Catherine
@@ -42,18 +41,19 @@ public class UserController {
         String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
         long userId = Long.parseLong(params[1]);
         String psw = params[2];
-        userservice.login(userId, psw, ctx);
+        String say = userservice.login(userId, psw, ctx) ? "正在登陆......\n" : "请输入正确的用户名和密码！\n";
+        ctx.writeAndFlush(say);
     }
 
     private void playerList(ChannelHandlerContext ctx, Msg msg) {
         User user = userservice.getUserByCtx(ctx);
-        List<TPlayer> list = userservice.listPlayer(user.getId());
-        if (list.size() == 0) {
+        Map<Long, Player> playerMap = userservice.listPlayer(user.getId());
+        if (playerMap.size() == 0) {
             ctx.writeAndFlush("请先创建角色\n");
         } else {
-            for (TPlayer tPlayer : list) {
-                ctx.writeAndFlush("角色id：" + tPlayer.getRoleId() + '\n');
-                ctx.writeAndFlush("角色名称：" + tPlayer.getName() + '\n');
+            for (Long playerId : playerMap.keySet()) {
+                ctx.writeAndFlush("角色id：" + playerId + '\n');
+                ctx.writeAndFlush("角色名称：" + playerMap.get(playerId).getTPlayer().getName() + '\n');
             }
             ctx.writeAndFlush("---请选择您要登陆的角色---" + '\n');
         }
@@ -62,15 +62,6 @@ public class UserController {
     private void playerLogin(ChannelHandlerContext ctx, Msg msg) {
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
         Long roleId = Long.valueOf(params[1]);
-        if (userservice.hasPlayer(roleId, ctx)) {
-            Player player = userservice.logPlayer(roleId, ctx);
-            //获取场景
-            ctx.writeAndFlush("[" + player.getTPlayer().getName() + "]登录成功！\n当前所在位置为："
-                    + player.getNowScene().getSceneExcel().getName() + "您的等级为：" + player.getLevel() + '\n');
-        } else {
-            ctx.writeAndFlush("无该角色！！！\n");
-        }
-
+        userservice.logPlayer(roleId, ctx);
     }
-
 }

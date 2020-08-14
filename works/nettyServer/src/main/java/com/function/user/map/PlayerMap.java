@@ -12,23 +12,20 @@ import java.util.Map;
  */
 @Component
 public class PlayerMap {
-    private static Map<ChannelHandlerContext, Player> playerModelMap = new HashMap<>();
-    private static Map<Long, ChannelHandlerContext> ctxIdMap = new HashMap<>();
+    private Map<ChannelHandlerContext, Player> playerModelMap = new HashMap<>();
 
-    public static void putPlayerCtx(ChannelHandlerContext ctx, Player player) {
+    private Map<Long, ChannelHandlerContext> ctxPlayer = new HashMap<>();
+
+    public void putPlayerCtx(ChannelHandlerContext ctx, Player player) {
         playerModelMap.put(ctx, player);
+        ctxPlayer.put(player.getTPlayer().getRoleId(), ctx);
     }
 
-    public static Player getPlayerCtx(ChannelHandlerContext ctx) {
+    public Player getPlayerCtx(ChannelHandlerContext ctx) {
         return playerModelMap.get(ctx);
     }
 
-    public static void putCtxId(Long playerId, ChannelHandlerContext ctx) {
-        ctxIdMap.put(playerId, ctx);
+    public ChannelHandlerContext getCtxPlayer(Long playerId) {
+        return ctxPlayer.get(playerId);
     }
-
-    public static ChannelHandlerContext getCtxId(Long playerId) {
-        return ctxIdMap.get(playerId);
-    }
-
 }

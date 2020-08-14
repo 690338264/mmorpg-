@@ -36,7 +36,7 @@ public class OccResource {
                 skill.setSkillId(Integer.parseInt(occSkill[j]));
                 occExcel.getSkills().add(skill);
             }
-            occCache.set(occExcel.getClass().getName() + occExcel.getId(), occExcel);
+            occCache.set("Occ" + occExcel.getId(), occExcel);
         }
 
     }

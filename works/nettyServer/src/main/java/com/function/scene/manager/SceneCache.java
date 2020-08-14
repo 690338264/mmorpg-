@@ -26,12 +26,14 @@ public class SceneCache {
      */
     public boolean set(Scene scene) {
         try {
-            redisTemplate.opsForValue().set(scene.getSceneExcel().getName(), scene);
+            redisTemplate.opsForValue().set("Scene" + scene.getSceneId(), scene);
+            System.out.println(scene);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
+
     }
 
     /**
@@ -40,7 +42,7 @@ public class SceneCache {
      * @param key 键
      * @return 值
      */
-    public Object get(Integer key) {
+    public Scene get(String key) {
         System.out.println("从缓存中取出");
         return key == null ? null : redisTemplate.opsForValue().get(key);
     }
