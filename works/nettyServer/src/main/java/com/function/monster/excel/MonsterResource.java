@@ -1,5 +1,6 @@
 package com.function.monster.excel;
 
+import com.function.item.excel.ItemResource;
 import com.function.skill.excel.SkillResource;
 import com.function.skill.model.Skill;
 import com.manager.ExcelManager;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.stream.IntStream;
 
 /**
  * @author Catherine
@@ -30,12 +33,17 @@ public class MonsterResource {
             monsterMap.put(monster.getId(), monster);
             String str = monster.getSkill();
             String[] strs = str.split(",");
+            String[] drops = monster.getDrop().split(",");
             for (int j = 0; j < strs.length; j++) {
                 int skillId = Integer.parseInt(strs[j]);
                 Skill skill = new Skill();
                 skill.setSkillId(skillId);
+                skill.setTimer(new Timer());
                 monster.getMonsterSkill().put(j, skill);
             }
+            IntStream.range(0, drops.length).forEach(j
+                    -> monster.getItemList().add(ItemResource.getItemById(Integer.parseInt(drops[j]))));
+
         }
     }
 

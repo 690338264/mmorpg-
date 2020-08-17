@@ -39,12 +39,12 @@ public class PlayerData {
      */
     public void initAttribute(Player player) {
         OccExcel occ = OccResource.getOccById(player.getTPlayer().getOccupation());
-
-        player.setHp(occ.getHp());
-        player.setMp(occ.getMp());
         int level = player.getTPlayer().getLevel();
+
         player.setOriHp(occ.getHp() + level * occ.getHp() / occ.getMultiple());
         player.setOriMp(occ.getMp() + level * occ.getMp() / occ.getMultiple());
+        player.setHp(player.getOriHp());
+        player.setMp(player.getOriMp());
 
         player.setAtk(occ.getAtk() + level * occ.getAtk() / occ.getMultiple());
         player.setDef(occ.getDef() + level * occ.getDef() / occ.getMultiple());

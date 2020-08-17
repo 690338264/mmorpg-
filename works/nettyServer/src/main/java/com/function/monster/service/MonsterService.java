@@ -1,8 +1,13 @@
 package com.function.monster.service;
 
-import com.function.monster.controller.Time;
 import com.function.monster.model.Monster;
+import com.function.monster.timetask.CdTime;
+import com.function.monster.timetask.ReviveTime;
+import com.function.player.model.Player;
+import com.function.scene.model.Scene;
+import com.function.scene.service.NotifyScene;
 import com.function.skill.model.Skill;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
@@ -14,14 +19,19 @@ import java.util.Timer;
  */
 @Component
 public class MonsterService {
+
+    @Autowired
+    private NotifyScene notifyScene;
+
     /**
      * 判断怪物是否死亡
      */
-    public boolean isMonsterDeath(Monster monster) {
+    public boolean isMonsterDeath(int index, Scene scene) {
+        Monster monster = scene.getSceneExcel().getMonsters().get(index);
         if (monster.getSelfHp() <= 0) {
-            Timer timer = new Timer();
-            Time t = new Time();
-            t.setMonster(monster);
+            scene.getSceneExcel().getMonsters().remove(index);
+            Timer timer = monster.getTimer();
+            ReviveTime t = new ReviveTime(monster, index, scene);
             timer.schedule(t, monster.getMonsterExcel().getReviveTime() * 1000);
             return true;
         } else {
@@ -32,20 +42,34 @@ public class MonsterService {
     /**
      * 怪物进行攻击
      */
-    public int[] monsterAtk(Monster monster) {
-        Integer[] keys = monster.getMonsterExcel().getMonsterSkill().keySet().toArray(new Integer[0]);
-        Skill skill = new Skill();
-        do {
-            Random random = new Random();
-            Integer randomKey = keys[random.nextInt(keys.length)];
-            skill = monster.getMonsterExcel().getMonsterSkill().get(randomKey);
-        } while (skill.getLastTime() != null && System.currentTimeMillis() - skill.getLastTime() < skill.getSkillExcel().getCd());
-
-        skill.setLastTime(System.currentTimeMillis());
+    public void monsterAtk(Monster monster, Player player) {
+//        Integer[] keys = monster.getMonsterExcel().getMonsterSkill().keySet().toArray(new Integer[0]);
+//        Skill skill = new Skill();
+//        do {
+//            Random random = new Random();
+//            Integer randomKey = keys[random.nextInt(keys.length)];
+//            skill = monster.getMonsterExcel().getMonsterSkill().get(randomKey);
+//        } while (skill.getLastTime() != null && System.currentTimeMillis() - skill.getLastTime() < skill.getSkillExcel().getCd());
+//
+//        skill.setLastTime(System.currentTimeMillis());
+//        int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getBuff();
+//        int[] a = new int[2];
+//        a[0] = hurt;
+//        a[1] = skill.getSkillId();
+//        return a;
+        Integer[] keys = monster.getCanUseSkill().keySet().toArray(new Integer[0]);
+        Random random = new Random();
+        Integer randomKey = keys[random.nextInt(keys.length)];
+        Skill skill = monster.getCanUseSkill().get(randomKey);
+        Timer skillTimer = skill.getTimer();
+        monster.getCanUseSkill().remove(randomKey);
         int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getBuff();
-        int[] a = new int[2];
-        a[0] = hurt;
-        a[1] = skill.getSkillId();
-        return a;
+        player.setHp(player.getHp() - hurt);
+        CdTime cdTime = new CdTime(monster, randomKey, skill);
+        skillTimer.schedule(cdTime, skill.getSkillExcel().getCd());
+        StringBuilder getHurt = new StringBuilder("[").append(monster.getMonsterExcel().getName())
+                .append("]释放了技能[").append(skill).append("对您造成")
+                .append(hurt).append("的伤害\n");
+        notifyScene.notifyPlayer(player, getHurt);
     }
 }

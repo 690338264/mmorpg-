@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 
 /**
  * @author Catherine
@@ -40,8 +41,9 @@ public class SceneResource {
                 Monster monster = new Monster();
                 monster.setId(monsterId);
                 monster.setSceneId(j);
-                monster.setStatus(1);
                 monster.setSelfHp(monster.getMonsterExcel().getHp());
+                monster.getCanUseSkill().putAll(monster.getMonsterExcel().getMonsterSkill());
+                monster.setTimer(new Timer());
                 sceneExcel.getMonsters().put(j, monster);
             }
             for (int j = 0; j < npcs.length; j++) {

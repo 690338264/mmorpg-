@@ -1,9 +1,11 @@
 package com.function.player.service;
 
+import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
 import com.function.item.service.ItemService;
 import com.function.monster.model.Monster;
 import com.function.monster.service.MonsterService;
+import com.function.monster.timetask.AtkTime;
 import com.function.player.controller.Time;
 import com.function.player.manager.BagManager;
 import com.function.player.manager.PlayerManager;
@@ -19,6 +21,8 @@ import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 
 /**
@@ -81,7 +85,7 @@ public class PlayerService {
         Skill skill = player.getSkillMap().get(skillId);
         Long now = System.currentTimeMillis();
         //判断目标是否死亡
-        if (monster.getSelfHp() <= 0) {
+        if (monster == null) {
             player.getChannelHandlerContext().writeAndFlush("攻击目标无效，请重新选择！\n");
             return;
         }
@@ -98,38 +102,39 @@ public class PlayerService {
                     }
                     player.getEquipMap().get(key).setNowWear(player.getEquipMap().get(key).getNowWear() - 2);
                 }
+                //玩家对怪物造成的伤害
                 int hurt = player.getAtk() * skill.getSkillExcel().getBuff();
                 monster.setSelfHp(monster.getSelfHp() - hurt);
                 player.setMp(player.getMp() - skill.getSkillExcel().getMp());
                 skill.setLastTime(System.currentTimeMillis());
-                if (monsterService.isMonsterDeath(monster)) {
+                //击杀怪物
+                if (monsterService.isMonsterDeath(target, scene)) {
                     StringBuilder notify = new StringBuilder();
                     notify.append("玩家[").append(player.getTPlayer().getName()).append("]成功击杀怪物").append(monster.getMonsterExcel().getName()).append('\n');
                     notifyScene.notifyScene(scene, notify);
-                    String[] drops = monster.getMonsterExcel().getDrop().split(",");
-                    int index = (int) (Math.random() * drops.length);
+                    Random random = new Random();
+                    List<ItemExcel> list = monster.getMonsterExcel().getItemList();
+                    int index = random.nextInt(list.size());
                     Item item = new Item();
-                    item.setId(Integer.parseInt(drops[index]));
+                    item.setId(list.get(index).getId());
                     item.setNowWear(item.getItemById().getWear());
                     itemService.getItem(item, player);
 
                 } else {
+                    //攻击
                     StringBuilder notify = new StringBuilder();
                     notify.append("玩家[").append(player.getTPlayer().getName()).append("]释放了技能[").append(skill.getSkillExcel().getName()).append("]对怪物[")
                             .append(monster.getMonsterExcel().getName()).append("]产生伤害:").append(hurt).append('\n');
                     notifyScene.notifyScene(scene, notify);
-                    int[] param = monsterService.monsterAtk(monster);
-                    int beHurt = param[0];
-                    Skill monSkill = new Skill();
-                    monSkill.setSkillId(param[1]);
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("[").append(monster.getMonsterExcel().getName()).append("]使用技能[").append(monSkill.getSkillExcel().getName())
-                            .append("]  您受到了:[").append(beHurt).append("]点的伤害\n");
-                    notifyScene.notifyPlayer(player, sb);
-                    player.setHp(player.getHp() - beHurt);
-                    if (isPlayerDeath(player)) {
-                        StringBuilder die = new StringBuilder("已阵亡！请复活\n");
-                        notifyScene.notifyPlayer(player, die);
+//                    int beHurt = monsterService.monsterAtk(monster,player);
+//                    player.setHp(player.getHp() - beHurt);
+//                    if (isPlayerDeath(player)) {
+//                        StringBuilder die = new StringBuilder("已阵亡！请复活\n");
+//                        notifyScene.notifyPlayer(player, die);
+//                    }
+                    if (monster.getTarget() == null) {
+                        AtkTime atkTime = new AtkTime(player, monster, scene);
+                        monster.getTimer().schedule(atkTime, 0, 2000);
                     }
                 }
 //              mp恢复

@@ -1,10 +1,13 @@
 package com.function.monster.excel;
 
 
+import com.function.item.excel.ItemExcel;
 import com.function.skill.model.Skill;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,4 +52,8 @@ public class MonsterExcel {
      * 技能列表
      */
     private Map<Integer, Skill> monsterSkill = new HashMap<>();
+    /**
+     * 掉落列表
+     */
+    private List<ItemExcel> itemList = new ArrayList<>();
 }
