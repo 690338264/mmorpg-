@@ -1,12 +1,14 @@
 package com.function.scene.service;
 
 import com.function.monster.model.Monster;
-import com.function.npc.excel.NpcResource;
+import com.function.npc.excel.NpcExcel;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
+import com.function.scene.manager.SceneCache;
 import com.function.scene.model.Scene;
+import com.jpa.entity.TPlayer;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ public class SceneService {
     private PlayerData playerData;
     @Autowired
     private NotifyScene notifyScene;
+    @Autowired
+    private SceneCache sceneCache;
 
     /**
      * 相邻场景
@@ -40,12 +44,15 @@ public class SceneService {
      * 移动场景
      */
     public SceneExcel moveTo(Player player, int sceneId) {
-        Scene scene = new Scene();
-        scene.setSceneId(sceneId);
-        player.setNowScene(scene);
+        Scene oldScene = sceneCache.get(player.getNowScene());
+        oldScene.getPlayerMap().remove(player.getTPlayer().getRoleId());
+        sceneCache.set(oldScene);
+        Scene scene = sceneCache.get("Scene" + sceneId);
         player.getTPlayer().setLoc(sceneId);
+        scene.getPlayerMap().put(player.getTPlayer().getRoleId(), player.getTPlayer());
+        sceneCache.set(scene);
+        player.setNowScene(scene);
         playerData.updateLoc(player);
-//        scene.getSceneExcel().getPlayers().put(player.getRoleId(), player);
         StringBuilder welcome = new StringBuilder("欢迎玩家").append(player.getTPlayer().getName()).append("来到场景\n");
         notifyScene.notifyScene(scene, welcome);
         return SceneResource.getSceneById(sceneId);
@@ -56,28 +63,31 @@ public class SceneService {
      */
     public void aoi(Player player, ChannelHandlerContext ctx) {
         Scene scene = player.getNowScene();
-        String[] npcs = scene.getSceneExcel().getNpc().split(",");
-        ctx.writeAndFlush("您所在场景有NPC:\n");
-        for (String s : npcs) {
-            int npc = Integer.parseInt(s);
-            ctx.writeAndFlush(NpcResource.getNpcById(npc).getName() + "--id为" + npc + "\n[Npc状态]");
-            if (NpcResource.getNpcById(npc).getStatus() == 1) {
-                ctx.writeAndFlush("存活！\n");
-            } else {
-                ctx.writeAndFlush("已死亡\n");
-            }
+        StringBuilder sb = new StringBuilder("您所在场景有NPC:\n");
+        for (Integer key : scene.getSceneExcel().getNpcs().keySet()) {
+            NpcExcel npc = scene.getSceneExcel().getNpcs().get(key);
+            sb.append(npc.getName()).append("--id为").append(npc.getId()).append('\n');
         }
-        ctx.writeAndFlush("您所在场景有怪物：\n");
-
+        sb.append("您所在的场景有玩家：").append('\n');
+        for (Long key : scene.getPlayerMap().keySet()) {
+            TPlayer tPlayer = scene.getPlayerMap().get(key);
+            sb.append("[").append(tPlayer.getName()).append("]")
+                    .append("等级为：[").append(tPlayer.getLevel()).append("]\n");
+        }
+        sb.append("您所在场景有怪物：").append('\n');
         for (Integer key : scene.getSceneExcel().getMonsters().keySet()) {
             Monster monster = scene.getSceneExcel().getMonsters().get(key);
             if (monster.getSelfHp() <= 0) {
-                ctx.writeAndFlush("id:[" + key + "]" + monster.getMonsterExcel().getName() + "  [已死亡]" + '\n');
+                sb.append("id:[").append(key).append("]")
+                        .append(monster.getMonsterExcel().getName()).append("  [已死亡]").append('\n');
             } else {
-                ctx.writeAndFlush("id:[" + key + "]" + monster.getMonsterExcel().getName() + "  Hp[" + monster.getSelfHp() + "]" + '\n');
+                sb.append("id:[").append(key).append("]")
+                        .append(monster.getMonsterExcel().getName()).append("  Hp[")
+                        .append(monster.getSelfHp()).append("]").append('\n');
             }
         }
-        ctx.writeAndFlush("可选择怪物进行攻击\n");
+        sb.append("可选择怪物进行攻击\n");
+        notifyScene.notifyPlayer(player, sb);
     }
 
 }

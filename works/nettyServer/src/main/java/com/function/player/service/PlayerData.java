@@ -13,7 +13,6 @@ import com.function.player.model.Player;
 import com.jpa.dao.BagDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TBag;
-import com.jpa.entity.TPlayer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,10 +34,6 @@ public class PlayerData {
     @Autowired
     private OccCache occCache;
 
-    public void initLevel(Player player) {
-        player.setLevel(player.getTPlayer().getExp() / 2000);
-    }
-
     /**
      * 初始化角色属性
      */
@@ -47,7 +42,7 @@ public class PlayerData {
 
         player.setHp(occ.getHp());
         player.setMp(occ.getMp());
-        int level = player.getLevel();
+        int level = player.getTPlayer().getLevel();
         player.setOriHp(occ.getHp() + level * occ.getHp() / occ.getMultiple());
         player.setOriMp(occ.getMp() + level * occ.getMp() / occ.getMultiple());
 
@@ -91,7 +86,6 @@ public class PlayerData {
      * 初始化玩家
      */
     public void initPlayer(Player player) {
-        initLevel(player);
         initSkill(player);
         initEquipment(player);
         initBag(player);
@@ -110,16 +104,13 @@ public class PlayerData {
         Map<Integer, Item> m = JSON.parseObject(json, new TypeReference<Map<Integer, Item>>() {
         });
         bag.setItemMap(m);
-        bagService.orderBag(player, player.getBag().getItemMap());
     }
 
     /**
      * 更新数据库位置信息
      */
     public void updateLoc(Player player) {
-        TPlayer tPlayer = playerDAO.findByRoleId(player.getTPlayer().getRoleId());
-        tPlayer.setLoc(player.getTPlayer().getLoc());
-        playerDAO.save(tPlayer);
+        playerDAO.save(player.getTPlayer());
     }
 
     /**
@@ -127,8 +118,7 @@ public class PlayerData {
      */
     public void updateEquip(Player player) {
         String json = JSON.toJSONString(player.getEquipMap());
-        TPlayer tPlayer = playerDAO.findByRoleId(player.getTPlayer().getRoleId());
-        tPlayer.setEquip(json);
-        playerDAO.save(tPlayer);
+        player.getTPlayer().setEquip(json);
+        playerDAO.save(player.getTPlayer());
     }
 }

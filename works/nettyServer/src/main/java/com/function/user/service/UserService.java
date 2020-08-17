@@ -113,16 +113,14 @@ public class UserService {
             return;
         }
         Scene scene = sceneCache.get("Scene" + player.getTPlayer().getLoc());
+        scene.getPlayerMap().put(playerId, player.getTPlayer());
+        sceneCache.set(scene);
         //加载角色信息
         if (!player.isInit()) {
-            scene.getPlayerMap().put(playerId, player);
-            sceneCache.set(scene);
             player.setNowScene(scene);
             playerData.initPlayer(player);
             player.setInit(true);
-
         }
-
         player.setChannelHandlerContext(ctx);
         playerMap.putPlayerCtx(ctx, player);
         //通知场景
@@ -139,6 +137,9 @@ public class UserService {
         ChannelHandlerContext ctx = player.getChannelHandlerContext();
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);
+        Scene scene = sceneCache.get("Scene" + player.getNowScene().getSceneId());
+        scene.getPlayerMap().remove(player.getTPlayer().getRoleId());
+        sceneCache.set(scene);
         player.setChannelHandlerContext(null);
     }
 

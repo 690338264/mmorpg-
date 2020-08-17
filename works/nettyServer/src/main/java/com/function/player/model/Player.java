@@ -30,7 +30,6 @@ public class Player extends SceneObject {
      */
     private Scene nowScene;
 
-    private Integer level;
     private Map<Integer, Skill> skillMap = new HashMap<>();
     private Map<Integer, Item> equipMap = new HashMap<>();
     private Map<String, Timer> timerMap = new HashMap<>();

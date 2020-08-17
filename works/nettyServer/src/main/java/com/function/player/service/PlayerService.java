@@ -67,7 +67,7 @@ public class PlayerService {
     public void showState(ChannelHandlerContext ctx, Player player) {
         ctx.writeAndFlush("您当前hp:[" + player.getHp() + "]\n" +
                 "您当前mp:[" + player.getMp() + "]\n" +
-                "您当前等级为:[" + player.getLevel() + "]\n" +
+                "您当前等级为:[" + player.getTPlayer().getLevel() + "]\n" +
                 "您当前攻击力为:[" + player.getAtk() + "]\n" +
                 "您当前防御力为:[" + player.getDef() + "]\n");
     }

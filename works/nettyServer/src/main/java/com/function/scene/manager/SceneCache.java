@@ -27,7 +27,6 @@ public class SceneCache {
     public boolean set(Scene scene) {
         try {
             redisTemplate.opsForValue().set("Scene" + scene.getSceneId(), scene);
-            System.out.println(scene);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,6 +44,21 @@ public class SceneCache {
     public Scene get(String key) {
         System.out.println("从缓存中取出");
         return key == null ? null : redisTemplate.opsForValue().get(key);
+    }
+
+    public Scene get(Scene scene) {
+        System.out.println("从缓存中取出");
+        return scene == null ? null : redisTemplate.opsForValue().get("Scene" + scene.getSceneId());
+    }
+
+    /**
+     * 删除场景
+     */
+    @SuppressWarnings("unchecked")
+    public void del(Scene scene) {
+        redisTemplate.delete("Scene" + scene.getSceneId());
+        System.out.println(redisTemplate);
+
     }
 
 }

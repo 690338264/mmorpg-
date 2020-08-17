@@ -37,13 +37,16 @@ public class ItemService {
         } else if (all == num) {
             player.getBag().getItemMap().remove(index);
         } else {
-            player.getBag().getItemMap().get(index).setNum(player.getBag().getItemMap().get(index).getNum() - 1);
+            int number = player.getBag().getItemMap().get(index).getNum();
+            player.getBag().getItemMap().get(index).setNum(number - 1);
         }
         bagService.updateBag(player);
     }
 
     /**
      * 装拆装备的人物属性变化
+     *
+     * @param sign 加/减属性
      */
     public void changeAttr(int sign, Item item, Player player) {
         player.setAtk(player.getAtk() + item.getItemById().getAtk() * sign);
@@ -73,7 +76,9 @@ public class ItemService {
                 if (item.getId().equals(p.get(index).getId()) && p.get(index).getNum() < 100) {
                     p.get(index).setNum(p.get(index).getNum() + 1);
                     bagService.updateBag(player);
-                    player.getChannelHandlerContext().writeAndFlush("[" + p.get(index).getItemById().getName() + "]已放入背包\n");
+                    StringBuilder put = new StringBuilder("[")
+                            .append(p.get(index).getItemById().getName()).append("]已放入背包\n");
+                    notifyScene.notifyPlayer(player, put);
                     return;
                 }
             }
@@ -131,13 +136,15 @@ public class ItemService {
             ctx.writeAndFlush("该物品不可穿戴！\n");
             return;
         }
+        removeItem(index, 1, player);
         if (player.getEquipMap().get(item.getItemById().getSpace()) != null) {
             removeEquip(item.getItemById().getSpace(), player, ctx);
         }
         changeAttr(1, item, player);
-        removeItem(index, 1, player);
-        playerData.updateEquip(player);
+
         player.getEquipMap().put(item.getItemById().getSpace(), item);
+        playerData.updateEquip(player);
+
         ctx.writeAndFlush("您已成功穿戴:[" + item.getItemById().getName() + "]\n");
     }
 

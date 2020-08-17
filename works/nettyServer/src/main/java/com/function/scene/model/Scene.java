@@ -1,9 +1,9 @@
 package com.function.scene.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.function.player.model.Player;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
+import com.jpa.entity.TPlayer;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -16,11 +16,11 @@ import java.util.Map;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Scene extends SceneObject {
+public class Scene {
 
     private int sceneId;
 
-    private Map<Long, Player> playerMap = new HashMap<>();
+    private Map<Long, TPlayer> playerMap = new HashMap<>();
 
     public SceneExcel getSceneExcel() {
         return SceneResource.getSceneById(sceneId);

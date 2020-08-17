@@ -39,6 +39,9 @@ public class TPlayer {
     @Column(name = "roleId")
     private Long roleId;
 
+    @Column(name = "level")
+    private int level;
+
     public Long getUserId() {
         return userId;
     }
@@ -111,6 +114,14 @@ public class TPlayer {
         this.roleId = roleId;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     @Override
     public String toString() {
         return "TPlayer{" +
@@ -123,6 +134,7 @@ public class TPlayer {
                 ", money=" + money +
                 ", friend='" + friend + '\'' +
                 ", roleId=" + roleId +
+                ", level=" + level +
                 '}';
     }
 }

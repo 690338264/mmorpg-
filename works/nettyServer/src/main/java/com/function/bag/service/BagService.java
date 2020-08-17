@@ -39,10 +39,11 @@ public class BagService {
         ctx.writeAndFlush("您背包里的物品有：\n");
         for (Integer index : bag.getItemMap().keySet()) {
             StringBuilder sb = new StringBuilder();
-            sb.append("[").append(index).append("]").append(bag.getItemMap().get(index).getItemById().getName())
-                    .append("[").append(bag.getItemMap().get(index).getNum()).append("]");
-            if (bag.getItemMap().get(index).getItemById().getType() == 2) {
-                sb.append("磨损度:[").append(bag.getItemMap().get(index).getNowWear()).append("]");
+            Item item = bag.getItemMap().get(index);
+            sb.append("[").append(index).append("]").append(item.getItemById().getName())
+                    .append("[").append(item.getNum()).append("]");
+            if (item.getItemById().getType() == 2) {
+                sb.append("磨损度:[").append(item.getNowWear()).append("]");
             }
             sb.append('\n');
             ctx.writeAndFlush(sb);
