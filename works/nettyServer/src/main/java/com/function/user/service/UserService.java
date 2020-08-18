@@ -3,7 +3,7 @@ package com.function.user.service;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.player.service.PlayerService;
-import com.function.scene.manager.SceneCache;
+import com.function.scene.manager.SceneMap;
 import com.function.scene.model.Scene;
 import com.function.scene.service.NotifyScene;
 import com.function.user.map.PlayerMap;
@@ -38,13 +38,13 @@ public class UserService {
     @Autowired
     private PlayerDAO playerDAO;
     @Autowired
-    private SceneCache sceneCache;
-    @Autowired
     private UserMap userMap;
     @Autowired
     private PlayerMap playerMap;
     @Autowired
     private NotifyScene notifyScene;
+    @Autowired
+    private SceneMap sceneMap;
 
     /**
      * 用户注册
@@ -112,9 +112,10 @@ public class UserService {
             ctx.writeAndFlush("该角色不存在！\n");
             return;
         }
-        Scene scene = sceneCache.get("Scene" + player.getTPlayer().getLoc());
+//        Scene scene = sceneCache.get("Scene" + player.getTPlayer().getLoc());
+        Scene scene = sceneMap.getSceneCache().get(player.getTPlayer().getLoc());
         scene.getPlayerMap().put(playerId, player.getTPlayer());
-        sceneCache.set(scene);
+//        sceneCache.set(scene);
         //加载角色信息
         if (!player.isInit()) {
             player.setNowScene(scene);
@@ -137,9 +138,11 @@ public class UserService {
         ChannelHandlerContext ctx = player.getChannelHandlerContext();
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);
-        Scene scene = sceneCache.get("Scene" + player.getNowScene().getSceneId());
+//        Scene scene = sceneCache.get("Scene" + player.getNowScene().getSceneId());
+//        scene.getPlayerMap().remove(player.getTPlayer().getRoleId());
+//        sceneCache.set(scene);
+        Scene scene = sceneMap.getSceneCache().get(player.getNowScene().getSceneId());
         scene.getPlayerMap().remove(player.getTPlayer().getRoleId());
-        sceneCache.set(scene);
         player.setChannelHandlerContext(null);
     }
 

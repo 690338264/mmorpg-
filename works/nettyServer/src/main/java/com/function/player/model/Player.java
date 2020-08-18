@@ -29,10 +29,12 @@ public class Player extends SceneObject {
      * 玩家当前场景
      */
     private Scene nowScene;
-
+    /**
+     * 玩家恢复Mp计时器
+     */
+    private Timer mpTimer;
     private Map<Integer, Skill> skillMap = new HashMap<>();
     private Map<Integer, Item> equipMap = new HashMap<>();
-    private Map<String, Timer> timerMap = new HashMap<>();
     private Bag bag;
     /**
      * 玩家当前hp

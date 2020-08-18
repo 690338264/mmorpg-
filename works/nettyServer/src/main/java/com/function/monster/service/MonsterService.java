@@ -33,6 +33,7 @@ public class MonsterService {
             Timer timer = monster.getTimer();
             ReviveTime t = new ReviveTime(monster, index, scene);
             timer.schedule(t, monster.getMonsterExcel().getReviveTime() * 1000);
+            monster.setTarget(null);
             return true;
         } else {
             return false;
@@ -43,20 +44,7 @@ public class MonsterService {
      * 怪物进行攻击
      */
     public void monsterAtk(Monster monster, Player player) {
-//        Integer[] keys = monster.getMonsterExcel().getMonsterSkill().keySet().toArray(new Integer[0]);
-//        Skill skill = new Skill();
-//        do {
-//            Random random = new Random();
-//            Integer randomKey = keys[random.nextInt(keys.length)];
-//            skill = monster.getMonsterExcel().getMonsterSkill().get(randomKey);
-//        } while (skill.getLastTime() != null && System.currentTimeMillis() - skill.getLastTime() < skill.getSkillExcel().getCd());
-//
-//        skill.setLastTime(System.currentTimeMillis());
-//        int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getBuff();
-//        int[] a = new int[2];
-//        a[0] = hurt;
-//        a[1] = skill.getSkillId();
-//        return a;
+
         Integer[] keys = monster.getCanUseSkill().keySet().toArray(new Integer[0]);
         Random random = new Random();
         Integer randomKey = keys[random.nextInt(keys.length)];
@@ -66,7 +54,7 @@ public class MonsterService {
         int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getBuff();
         player.setHp(player.getHp() - hurt);
         CdTime cdTime = new CdTime(monster, randomKey, skill);
-        skillTimer.schedule(cdTime, skill.getSkillExcel().getCd());
+        skillTimer.schedule(cdTime, skill.getSkillExcel().getCd() * 1000);
         StringBuilder getHurt = new StringBuilder("[").append(monster.getMonsterExcel().getName())
                 .append("]释放了技能[").append(skill).append("对您造成")
                 .append(hurt).append("的伤害\n");

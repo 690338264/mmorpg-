@@ -107,6 +107,7 @@ public class PlayerService {
                 monster.setSelfHp(monster.getSelfHp() - hurt);
                 player.setMp(player.getMp() - skill.getSkillExcel().getMp());
                 skill.setLastTime(System.currentTimeMillis());
+
                 //击杀怪物
                 if (monsterService.isMonsterDeath(target, scene)) {
                     StringBuilder notify = new StringBuilder();
@@ -126,24 +127,19 @@ public class PlayerService {
                     notify.append("玩家[").append(player.getTPlayer().getName()).append("]释放了技能[").append(skill.getSkillExcel().getName()).append("]对怪物[")
                             .append(monster.getMonsterExcel().getName()).append("]产生伤害:").append(hurt).append('\n');
                     notifyScene.notifyScene(scene, notify);
-//                    int beHurt = monsterService.monsterAtk(monster,player);
-//                    player.setHp(player.getHp() - beHurt);
-//                    if (isPlayerDeath(player)) {
-//                        StringBuilder die = new StringBuilder("已阵亡！请复活\n");
-//                        notifyScene.notifyPlayer(player, die);
-//                    }
+
                     if (monster.getTarget() == null) {
+                        monster.setTarget(player);
                         AtkTime atkTime = new AtkTime(player, monster, scene);
                         monster.getTimer().schedule(atkTime, 0, 2000);
                     }
                 }
 //              mp恢复
-                if (player.getTimerMap().get("mp") == null) {
-                    Timer timer = new Timer();
-                    player.getTimerMap().put("mp", timer);
+                if (player.getMpTimer() == null) {
+                    player.setMpTimer(new Timer());
                     Time t = new Time();
                     t.setPlayer(player);
-                    timer.schedule(t, 0, 3000);
+                    player.getMpTimer().schedule(t, 0, 3000);
                 }
 
             } else {

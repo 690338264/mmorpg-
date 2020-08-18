@@ -6,7 +6,7 @@ import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
-import com.function.scene.manager.SceneCache;
+import com.function.scene.manager.SceneMap;
 import com.function.scene.model.Scene;
 import com.jpa.entity.TPlayer;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,7 +24,7 @@ public class SceneService {
     @Autowired
     private NotifyScene notifyScene;
     @Autowired
-    private SceneCache sceneCache;
+    private SceneMap sceneMap;
 
     /**
      * 相邻场景
@@ -44,13 +44,11 @@ public class SceneService {
      * 移动场景
      */
     public SceneExcel moveTo(Player player, int sceneId) {
-        Scene oldScene = sceneCache.get(player.getNowScene());
+        Scene oldScene = sceneMap.getSceneCache().get(player.getTPlayer().getLoc());
         oldScene.getPlayerMap().remove(player.getTPlayer().getRoleId());
-        sceneCache.set(oldScene);
-        Scene scene = sceneCache.get("Scene" + sceneId);
+        Scene scene = sceneMap.getSceneCache().get(sceneId);
         player.getTPlayer().setLoc(sceneId);
         scene.getPlayerMap().put(player.getTPlayer().getRoleId(), player.getTPlayer());
-        sceneCache.set(scene);
         player.setNowScene(scene);
         playerData.updateLoc(player);
         StringBuilder welcome = new StringBuilder("欢迎玩家").append(player.getTPlayer().getName()).append("来到场景\n");

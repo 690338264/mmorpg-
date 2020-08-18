@@ -2,7 +2,7 @@ package com.function.scene.excel;
 
 import com.function.monster.model.Monster;
 import com.function.npc.excel.NpcResource;
-import com.function.scene.manager.SceneCache;
+import com.function.scene.manager.SceneMap;
 import com.function.scene.model.Scene;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class SceneResource {
     @Autowired
     private ExcelManager excelManager;
     @Autowired
-    private SceneCache sceneCache;
+    private SceneMap sceneMapCache;
 
     private static Map<Integer, SceneExcel> sceneMap = new HashMap<Integer, SceneExcel>();
 
@@ -52,7 +52,8 @@ public class SceneResource {
             }
             Scene scene = new Scene();
             scene.setSceneId(sceneExcel.getId());
-            sceneCache.set(scene);
+//            sceneCache.set(scene);
+            sceneMapCache.getSceneCache().put(sceneExcel.getId(), scene);
         }
 
     }
