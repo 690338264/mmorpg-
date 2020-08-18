@@ -6,6 +6,7 @@ import com.function.item.model.Item;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.scene.service.NotifyScene;
+import com.jpa.entity.TBag;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -92,13 +93,13 @@ public class ItemService {
     public void addItem(Item item, Player player) {
         item.setNum(1);
         Bag bag = player.getBag();
-
-        for (int i = 0; i < bag.getVolume(); i++) {
+        TBag tBag = bag.getTBag();
+        for (int i = 0; i < tBag.getVolume(); i++) {
             if (bag.getItemMap().get(i) == null) {
                 bag.getItemMap().put(i, item);
                 if (item.getItemId() == null) {
-                    item.setItemId(player.getTPlayer().getRoleId() * 10000 + bag.getMaxId());
-                    bag.setMaxId(bag.getMaxId() + 1);
+                    item.setItemId(player.getTPlayer().getRoleId() * 10000 + tBag.getMaxId());
+                    tBag.setMaxId(tBag.getMaxId() + 1);
                 }
                 bagService.updateBag(player);
                 StringBuilder put = new StringBuilder("[").append(item.getItemById().getName()).append("]已放入背包\n");

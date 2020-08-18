@@ -13,7 +13,6 @@ import com.function.player.model.Player;
 import com.jpa.dao.BagDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TBag;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -98,9 +97,10 @@ public class PlayerData {
     public void initBag(Player player) {
         TBag tBag = bagDAO.findByPlayerId(player.getTPlayer().getRoleId());
         Bag bag = new Bag();
-        BeanUtils.copyProperties(tBag, bag);
+        bag.setTBag(tBag);
+//        BeanUtils.copyProperties(tBag, bag);
         player.setBag(bag);
-        String json = bag.getItem();
+        String json = tBag.getItem();
         Map<Integer, Item> m = JSON.parseObject(json, new TypeReference<Map<Integer, Item>>() {
         });
         bag.setItemMap(m);

@@ -5,7 +5,6 @@ import com.function.bag.model.Bag;
 import com.function.item.model.Item;
 import com.function.player.model.Player;
 import com.jpa.dao.BagDAO;
-import com.jpa.entity.TBag;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,10 +24,8 @@ public class BagService {
      */
     public void updateBag(Player player) {
         String json = JSON.toJSONString(player.getBag().getItemMap());
-        player.getBag().setItem(json);
-        TBag tBag = bagDAO.findByPlayerId(player.getTPlayer().getRoleId());
-        tBag.setItem(json);
-        bagDAO.save(tBag);
+        player.getBag().getTBag().setItem(json);
+        bagDAO.save(player.getBag().getTBag());
     }
 
     /**

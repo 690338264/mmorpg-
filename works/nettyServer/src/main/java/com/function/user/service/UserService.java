@@ -1,5 +1,6 @@
 package com.function.user.service;
 
+import com.function.bag.service.BagService;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.player.service.PlayerService;
@@ -45,6 +46,8 @@ public class UserService {
     private NotifyScene notifyScene;
     @Autowired
     private SceneMap sceneMap;
+    @Autowired
+    private BagService bagService;
 
     /**
      * 用户注册
@@ -112,10 +115,8 @@ public class UserService {
             ctx.writeAndFlush("该角色不存在！\n");
             return;
         }
-//        Scene scene = sceneCache.get("Scene" + player.getTPlayer().getLoc());
         Scene scene = sceneMap.getSceneCache().get(player.getTPlayer().getLoc());
         scene.getPlayerMap().put(playerId, player.getTPlayer());
-//        sceneCache.set(scene);
         //加载角色信息
         if (!player.isInit()) {
             player.setNowScene(scene);
@@ -136,11 +137,10 @@ public class UserService {
      */
     public void logout(Player player) {
         ChannelHandlerContext ctx = player.getChannelHandlerContext();
+        bagService.updateBag(player);
+        playerData.updateEquip(player);
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);
-//        Scene scene = sceneCache.get("Scene" + player.getNowScene().getSceneId());
-//        scene.getPlayerMap().remove(player.getTPlayer().getRoleId());
-//        sceneCache.set(scene);
         Scene scene = sceneMap.getSceneCache().get(player.getNowScene().getSceneId());
         scene.getPlayerMap().remove(player.getTPlayer().getRoleId());
         player.setChannelHandlerContext(null);

@@ -13,8 +13,8 @@ import java.util.Map;
  */
 @Data
 
-public class Bag extends TBag {
-
+public class Bag {
+    private TBag tBag;
     private Map<Integer, Item> itemMap = new HashMap<>();
 
 }
