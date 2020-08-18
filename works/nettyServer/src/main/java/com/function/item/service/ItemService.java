@@ -38,7 +38,7 @@ public class ItemService {
             player.getBag().getItemMap().remove(index);
         } else {
             int number = player.getBag().getItemMap().get(index).getNum();
-            player.getBag().getItemMap().get(index).setNum(number - 1);
+            player.getBag().getItemMap().get(index).setNum(number - num);
         }
         bagService.updateBag(player);
     }
@@ -119,12 +119,14 @@ public class ItemService {
             ctx.writeAndFlush("该物品不可使用！\n");
             return;
         }
-        int addHp = player.getHp() + item.getItemById().getHp();
-        player.setHp(addHp < player.getOriHp() ? addHp : player.getOriHp());
-        int addMp = player.getMp() + item.getItemById().getMp();
-        player.setMp(addMp < player.getOriMp() ? addMp : player.getOriMp());
-        ctx.writeAndFlush("您成功使用[" + item.getItemById().getName() + "]\n");
-        removeItem(index, 1, player);
+        synchronized (this) {
+            removeItem(index, 1, player);
+            int addHp = player.getHp() + item.getItemById().getHp();
+            player.setHp(addHp < player.getOriHp() ? addHp : player.getOriHp());
+            int addMp = player.getMp() + item.getItemById().getMp();
+            player.setMp(addMp < player.getOriMp() ? addMp : player.getOriMp());
+            ctx.writeAndFlush("您成功使用[" + item.getItemById().getName() + "]\n");
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ package com.function.monster.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.function.monster.excel.MonsterExcel;
 import com.function.monster.excel.MonsterResource;
+import com.function.monster.timetask.AtkTime;
 import com.function.player.model.Player;
 import com.function.scene.model.SceneObject;
 import com.function.skill.model.Skill;
@@ -34,6 +35,7 @@ public class Monster extends SceneObject {
      * 死亡复活计时器
      */
     private Timer timer;
+    private AtkTime atkTime;
     /**
      * 当前仇恨目标
      */

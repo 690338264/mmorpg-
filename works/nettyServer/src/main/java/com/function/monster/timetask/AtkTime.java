@@ -29,7 +29,7 @@ public class AtkTime extends TimerTask {
 
     @Override
     public void run() {
-        if (player.getHp() <= 0 || monster.getSelfHp() <= 0) {
+        if (monster.getSelfHp() <= 0) {
             cancel();
         } else {
             Integer[] keys = monster.getCanUseSkill().keySet().toArray(new Integer[0]);
@@ -42,7 +42,13 @@ public class AtkTime extends TimerTask {
             player.setHp(player.getHp() - hurt);
             CdTime cdTime = new CdTime(monster, randomKey, skill);
             skillTimer.schedule(cdTime, skill.getSkillExcel().getCd() * 1000);
-            player.getChannelHandlerContext().writeAndFlush("您受到了：" + hurt + "点的伤害    剩余血量为" + player.getHp() + '\n');
+            if (player.getHp() <= 0) {
+                player.getChannelHandlerContext().writeAndFlush("已阵亡！请复活！\n");
+                monster.setTarget(null);
+                cancel();
+            } else {
+                player.getChannelHandlerContext().writeAndFlush("您受到了：" + hurt + "点的伤害    剩余血量为" + player.getHp() + '\n');
+            }
         }
     }
 
