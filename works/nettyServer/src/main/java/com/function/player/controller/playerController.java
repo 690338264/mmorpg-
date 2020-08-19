@@ -48,6 +48,6 @@ public class PlayerController {
 
     private void playerState(ChannelHandlerContext ctx, Msg msg) {
         Player player = userService.getPlayerByCtx(ctx);
-        playerService.showState(ctx, player);
+        playerService.showState(player);
     }
 }

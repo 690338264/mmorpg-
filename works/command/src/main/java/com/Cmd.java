@@ -41,6 +41,14 @@ public enum Cmd {
     ITEM_DROP("item_drop", 10103),
     //拖下装备
     EQUIP_OFF("equip_off", 10104),
+    //修理装备
+    EQUIP_FIX("equip_fix", 10105),
+    //查看商店系统
+    SHOW_SHOP("show_shop", 1012),
+    //买东西
+    BUY("buy", 10121),
+    //卖东西
+    SELL("sell", 10122),
     //查看人物状态属性
     PLAYER_STATE("player_state", 888),
     //查看已穿戴装备

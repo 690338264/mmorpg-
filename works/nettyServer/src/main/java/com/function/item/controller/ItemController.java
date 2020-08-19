@@ -29,27 +29,28 @@ public class ItemController {
         ControllerManager.add(Cmd.ITEM_DROP, this::itemDrop);
         ControllerManager.add(Cmd.EQUIP_OFF, this::equipOff);
         ControllerManager.add(Cmd.EQUIP_LIST, this::equipList);
+        ControllerManager.add(Cmd.EQUIP_FIX, this::equipFix);
     }
 
     private void itemUse(ChannelHandlerContext ctx, Msg msg) {
         Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
-        Integer index = Integer.valueOf(params[1]);
+        int index = Integer.parseInt(params[1]);
         itemService.useItem(index, player, ctx);
     }
 
     private void equipOn(ChannelHandlerContext ctx, Msg msg) {
         Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
-        Integer index = Integer.parseInt(params[1]);
+        int index = Integer.parseInt(params[1]);
         itemService.wearEquipment(index, player, ctx);
     }
 
     private void itemDrop(ChannelHandlerContext ctx, Msg msg) {
         Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
-        Integer index = Integer.parseInt(params[1]);
-        Integer num = Integer.parseInt(params[2]);
+        int index = Integer.parseInt(params[1]);
+        int num = Integer.parseInt(params[2]);
         String name = player.getBag().getItemMap().get(index).getItemById().getName();
         itemService.removeItem(index, num, player);
         ctx.writeAndFlush("您已丢弃:[" + name + "]\n");
@@ -58,7 +59,7 @@ public class ItemController {
     private void equipOff(ChannelHandlerContext ctx, Msg msg) {
         Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
-        Integer index = Integer.parseInt(params[1]);
+        int index = Integer.parseInt(params[1]);
         itemService.removeEquip(index, player, ctx);
     }
 
@@ -66,4 +67,12 @@ public class ItemController {
         Player player = userService.getPlayerByCtx(ctx);
         itemService.listEquip(player, ctx);
     }
+
+    private void equipFix(ChannelHandlerContext ctx, Msg msg) {
+        Player player = userService.getPlayerByCtx(ctx);
+        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+        int index = Integer.parseInt(params[1]);
+        itemService.fixEquip(player, index);
+    }
+
 }

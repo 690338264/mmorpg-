@@ -161,4 +161,33 @@ public class ItemService {
                     "]磨损度:[" + player.getEquipMap().get(key).getNowWear() + "]\n");
         }
     }
+
+    /**
+     * 修理装备
+     */
+    public void fixEquip(Player player, int index) {
+        Item equip = player.getBag().getItemMap().get(index);
+        if (equip.getItemById().getType() == 2) {
+            int oriWear = equip.getItemById().getWear();
+            int money = (oriWear - equip.getNowWear()) * 50;
+            if (subMoney(player, money)) {
+                equip.setNowWear(oriWear);
+                StringBuilder fix = new StringBuilder("您花费").append(money)
+                        .append("金币修复装备[").append(equip.getItemById().getName()).append("]\n");
+                notifyScene.notifyPlayer(player, fix);
+            }
+        }
+    }
+
+    public boolean subMoney(Player player, int money) {
+        int remain = player.getTPlayer().getMoney() - money;
+        if (remain < 0) {
+            StringBuilder fail = new StringBuilder("失败！金币不足\n");
+            notifyScene.notifyPlayer(player, fail);
+            return false;
+        } else {
+            player.getTPlayer().setMoney(remain);
+            return true;
+        }
+    }
 }

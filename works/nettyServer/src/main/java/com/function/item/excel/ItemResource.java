@@ -33,4 +33,8 @@ public class ItemResource {
     public static ItemExcel getItemById(int id) {
         return itemMap.get(id);
     }
+
+    public static Map<Integer, ItemExcel> getMap() {
+        return itemMap;
+    }
 }
