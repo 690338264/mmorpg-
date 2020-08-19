@@ -62,8 +62,8 @@ public class SceneService {
     public void aoi(Player player, ChannelHandlerContext ctx) {
         Scene scene = player.getNowScene();
         StringBuilder sb = new StringBuilder("您所在场景有NPC:\n");
-        for (Integer key : scene.getSceneExcel().getNpcs().keySet()) {
-            NpcExcel npc = scene.getSceneExcel().getNpcs().get(key);
+        for (Integer key : scene.getNpcMap().keySet()) {
+            NpcExcel npc = scene.getNpcMap().get(key);
             sb.append(npc.getName()).append("--id为").append(npc.getId()).append('\n');
         }
         sb.append("您所在的场景有玩家：").append('\n');
@@ -73,8 +73,8 @@ public class SceneService {
                     .append("等级为：[").append(tPlayer.getLevel()).append("]\n");
         }
         sb.append("您所在场景有怪物：").append('\n');
-        for (Integer key : scene.getSceneExcel().getMonsters().keySet()) {
-            Monster monster = scene.getSceneExcel().getMonsters().get(key);
+        for (Integer key : scene.getMonsterMap().keySet()) {
+            Monster monster = scene.getMonsterMap().get(key);
             if (monster.getSelfHp() <= 0) {
                 sb.append("id:[").append(key).append("]")
                         .append(monster.getMonsterExcel().getName()).append("  [已死亡]").append('\n');

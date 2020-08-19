@@ -23,7 +23,7 @@ public class ReviveTime extends TimerTask {
 
     @Override
     public void run() {
-        scene.getSceneExcel().getMonsters().put(index, monster);
+        scene.getMonsterMap().put(index, monster);
         monster.setSelfHp(monster.getMonsterExcel().getHp());
     }
 }

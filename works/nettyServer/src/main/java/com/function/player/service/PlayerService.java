@@ -82,7 +82,7 @@ public class PlayerService {
     public void attackMonster(Player player, int skillId, int target) {
         synchronized (this) {
             Scene scene = player.getNowScene();
-            Monster monster = scene.getSceneExcel().getMonsters().get(target);
+            Monster monster = scene.getMonsterMap().get(target);
             Skill skill = player.getSkillMap().get(skillId);
             Long now = System.currentTimeMillis();
             //判断目标是否死亡

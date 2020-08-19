@@ -27,9 +27,9 @@ public class MonsterService {
      * 判断怪物是否死亡
      */
     public boolean isMonsterDeath(int index, Scene scene) {
-        Monster monster = scene.getSceneExcel().getMonsters().get(index);
+        Monster monster = scene.getMonsterMap().get(index);
         if (monster.getSelfHp() <= 0) {
-            scene.getSceneExcel().getMonsters().remove(index);
+            scene.getMonsterMap().remove(index);
             Timer timer = monster.getTimer();
             ReviveTime t = new ReviveTime(monster, index, scene);
             timer.schedule(t, monster.getMonsterExcel().getReviveTime() * 1000);

@@ -35,7 +35,8 @@ public class SceneResource {
             String str = sceneExcel.getMonster();
             String[] strs = str.split(",");
             String[] npcs = sceneExcel.getNpc().split(",");
-
+            Scene scene = new Scene();
+            scene.setSceneId(sceneExcel.getId());
             for (int j = 0; j < strs.length; j++) {
                 int monsterId = Integer.parseInt(strs[j]);
                 Monster monster = new Monster();
@@ -44,15 +45,12 @@ public class SceneResource {
                 monster.setSelfHp(monster.getMonsterExcel().getHp());
                 monster.getCanUseSkill().putAll(monster.getMonsterExcel().getMonsterSkill());
                 monster.setTimer(new Timer());
-                sceneExcel.getMonsters().put(j, monster);
+                scene.getMonsterMap().put(j, monster);
             }
             for (int j = 0; j < npcs.length; j++) {
                 int npcId = Integer.parseInt(npcs[j]);
-                sceneExcel.getNpcs().put(j, NpcResource.getNpcById(npcId));
+                scene.getNpcMap().put(j, NpcResource.getNpcById(npcId));
             }
-            Scene scene = new Scene();
-            scene.setSceneId(sceneExcel.getId());
-//            sceneCache.set(scene);
             sceneMapCache.getSceneCache().put(sceneExcel.getId(), scene);
         }
 
