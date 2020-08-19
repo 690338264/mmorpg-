@@ -33,9 +33,9 @@ public class BagService {
      */
     public void listBag(Player player, ChannelHandlerContext ctx) {
         Bag bag = player.getBag();
-        ctx.writeAndFlush("您背包里的物品有：\n");
+        StringBuilder sb = new StringBuilder("您背包里的物品有：\n");
+
         for (Integer index : bag.getItemMap().keySet()) {
-            StringBuilder sb = new StringBuilder();
             Item item = bag.getItemMap().get(index);
             sb.append("[").append(index).append("]").append(item.getItemById().getName())
                     .append("[").append(item.getNum()).append("]");
@@ -43,8 +43,10 @@ public class BagService {
                 sb.append("磨损度:[").append(item.getNowWear()).append("]");
             }
             sb.append('\n');
-            ctx.writeAndFlush(sb);
+
         }
+        sb.append("金币：").append(player.getTPlayer().getMoney()).append('\n');
+        ctx.writeAndFlush(sb);
     }
 
     /**

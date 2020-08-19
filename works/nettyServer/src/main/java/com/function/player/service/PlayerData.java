@@ -98,7 +98,6 @@ public class PlayerData {
         TBag tBag = bagDAO.findByPlayerId(player.getTPlayer().getRoleId());
         Bag bag = new Bag();
         bag.setTBag(tBag);
-//        BeanUtils.copyProperties(tBag, bag);
         player.setBag(bag);
         String json = tBag.getItem();
         Map<Integer, Item> m = JSON.parseObject(json, new TypeReference<Map<Integer, Item>>() {

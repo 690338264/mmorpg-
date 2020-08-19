@@ -42,6 +42,9 @@ public class TPlayer {
     @Column(name = "level")
     private int level;
 
+    @Column(name = "levelUp")
+    private final int levelUp = 2000;
+
     public Long getUserId() {
         return userId;
     }
@@ -120,6 +123,10 @@ public class TPlayer {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public int getLevelUp() {
+        return levelUp;
     }
 
     @Override

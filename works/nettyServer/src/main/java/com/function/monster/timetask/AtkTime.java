@@ -41,7 +41,7 @@ public class AtkTime extends TimerTask {
             int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getBuff();
             player.setHp(player.getHp() - hurt);
             CdTime cdTime = new CdTime(monster, randomKey, skill);
-            skillTimer.schedule(cdTime, skill.getSkillExcel().getCd() * 1000);
+            skillTimer.schedule(cdTime, skill.getSkillExcel().getCd());
             if (player.getHp() <= 0) {
                 player.getChannelHandlerContext().writeAndFlush("已阵亡！请复活！\n");
                 monster.setTarget(null);

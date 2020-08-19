@@ -34,6 +34,8 @@ public class PlayerService {
     @Autowired
     private MonsterService monsterService;
     @Autowired
+    private PlayerData playerData;
+    @Autowired
     private ItemService itemService;
     @Autowired
     private BagManager bagManager;
@@ -68,12 +70,15 @@ public class PlayerService {
     /**
      * 显示人物状态
      */
-    public void showState(ChannelHandlerContext ctx, Player player) {
-        ctx.writeAndFlush("您当前hp:[" + player.getHp() + "]\n" +
-                "您当前mp:[" + player.getMp() + "]\n" +
-                "您当前等级为:[" + player.getTPlayer().getLevel() + "]\n" +
-                "您当前攻击力为:[" + player.getAtk() + "]\n" +
-                "您当前防御力为:[" + player.getDef() + "]\n");
+    public void showState(Player player) {
+        TPlayer tPlayer = player.getTPlayer();
+        StringBuilder state = new StringBuilder("您当前hp:[").append(player.getHp()).append("]\n")
+                .append("您当前mp:[").append(player.getMp()).append("]\n")
+                .append("您当前等级为:[").append(tPlayer.getLevel()).append("]\n")
+                .append("经验值").append(tPlayer.getExp()).append("/").append(tPlayer.getLevel() * tPlayer.getLevelUp()).append('\n')
+                .append("您当前攻击力为:[").append(player.getAtk()).append("]\n")
+                .append("您当前防御力为:[").append(player.getDef()).append("]\n");
+        notifyScene.notifyPlayer(player, state);
     }
 
     /**
@@ -91,7 +96,7 @@ public class PlayerService {
                 return;
             }
             //判断技能CD
-            if (skill.getLastTime() == null || now - skill.getLastTime() >= skill.getSkillExcel().getCd() * 1000) {
+            if (skill.getLastTime() == null || now - skill.getLastTime() >= skill.getSkillExcel().getCd()) {
                 //判断玩家mp
                 if (player.getMp() >= skill.getSkillExcel().getMp()) {
                     //判断装备磨损度
@@ -117,6 +122,7 @@ public class PlayerService {
                         StringBuilder notify = new StringBuilder();
                         notify.append("玩家[").append(player.getTPlayer().getName()).append("]成功击杀怪物").append(monster.getMonsterExcel().getName()).append('\n');
                         notifyScene.notifyScene(scene, notify);
+                        //物品掉落
                         Random random = new Random();
                         List<ItemExcel> list = monster.getMonsterExcel().getItemList();
                         int index = random.nextInt(list.size());
@@ -124,6 +130,22 @@ public class PlayerService {
                         item.setId(list.get(index).getId());
                         item.setNowWear(item.getItemById().getWear());
                         itemService.getItem(item, player);
+                        //金钱经验奖励
+                        TPlayer tPlayer = player.getTPlayer();
+                        int addMoney = monster.getMonsterExcel().getMoney();
+                        tPlayer.setMoney(tPlayer.getMoney() + addMoney);
+                        int addExc = monster.getMonsterExcel().getExc();
+                        tPlayer.setExp(tPlayer.getExp() + addExc);
+                        StringBuilder get = new StringBuilder("获得").append(addMoney).append("金钱\n")
+                                .append(addExc).append("经验\n");
+                        notifyScene.notifyPlayer(player, get);
+                        if (tPlayer.getExp() > tPlayer.getLevel() * tPlayer.getLevelUp()) {
+                            levelUp(tPlayer);
+                            playerData.initAttribute(player);
+                            StringBuilder levelUp = new StringBuilder("恭喜您到达")
+                                    .append(tPlayer.getLevel()).append("级\n");
+                            notifyScene.notifyPlayer(player, levelUp);
+                        }
 
                     } else {
                         //攻击
@@ -156,6 +178,11 @@ public class PlayerService {
                 notifyScene.notifyPlayer(player, waitCd);
             }
         }
+    }
+
+    public void levelUp(TPlayer tplayer) {
+        tplayer.setExp(tplayer.getExp() - tplayer.getLevel() * tplayer.getLevelUp());
+        tplayer.setLevel(tplayer.getLevel() + 1);
     }
 
 }
