@@ -73,7 +73,7 @@ public class PlayerService {
         StringBuilder state = new StringBuilder("您当前hp:[").append(player.getHp()).append("]\n")
                 .append("您当前mp:[").append(player.getMp()).append("]\n")
                 .append("您当前等级为:[").append(tPlayer.getLevel()).append("]\n")
-                .append("经验值").append(tPlayer.getExp()).append("/").append(tPlayer.getLevel() * tPlayer.getLevelUp()).append('\n')
+                .append("经验值").append(tPlayer.getExp()).append("/").append(tPlayer.getLevel() * player.getLevelUp()).append('\n')
                 .append("您当前攻击力为:[").append(player.getAtk()).append("]\n")
                 .append("您当前防御力为:[").append(player.getDef()).append("]\n");
         notifyScene.notifyPlayer(player, state);
@@ -137,8 +137,8 @@ public class PlayerService {
                         StringBuilder get = new StringBuilder("获得").append(addMoney).append("金钱\n")
                                 .append(addExc).append("经验\n");
                         notifyScene.notifyPlayer(player, get);
-                        if (tPlayer.getExp() > tPlayer.getLevel() * tPlayer.getLevelUp()) {
-                            levelUp(tPlayer);
+                        if (tPlayer.getExp() > tPlayer.getLevel() * player.getLevelUp()) {
+                            levelUp(player);
                             playerData.initAttribute(player);
                             StringBuilder levelUp = new StringBuilder("恭喜您到达")
                                     .append(tPlayer.getLevel()).append("级\n");
@@ -158,13 +158,6 @@ public class PlayerService {
                             monster.getTimer().schedule(monster.getAtkTime(), 0, 5000);
                         }
                     }
-////              mp恢复
-//                    if (player.getMpTimer() == null) {
-//                        player.setMpTimer(new Timer());
-//                        Time t = new Time();
-//                        t.setPlayer(player);
-//                        player.getMpTimer().schedule(t, 0, 3000);
-//                    }
 
                 } else {
                     StringBuilder noMp = new StringBuilder("技能释放失败！原因：mp不足！\n");
@@ -181,8 +174,9 @@ public class PlayerService {
     /**
      * 升级
      */
-    public void levelUp(TPlayer tplayer) {
-        tplayer.setExp(tplayer.getExp() - tplayer.getLevel() * tplayer.getLevelUp());
+    public void levelUp(Player player) {
+        TPlayer tplayer = player.getTPlayer();
+        tplayer.setExp(tplayer.getExp() - tplayer.getLevel() * player.getLevelUp());
         tplayer.setLevel(tplayer.getLevel() + 1);
     }
 

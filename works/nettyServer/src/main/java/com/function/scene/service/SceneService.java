@@ -48,7 +48,7 @@ public class SceneService {
         oldScene.getPlayerMap().remove(player.getTPlayer().getRoleId());
         Scene scene = sceneMap.getSceneCache().get(sceneId);
         player.getTPlayer().setLoc(sceneId);
-        scene.getPlayerMap().put(player.getTPlayer().getRoleId(), player.getTPlayer());
+        scene.getPlayerMap().put(player.getTPlayer().getRoleId(), player);
         player.setNowScene(scene);
         playerData.updateLoc(player);
         StringBuilder welcome = new StringBuilder("欢迎玩家").append(player.getTPlayer().getName()).append("来到场景\n");
@@ -68,7 +68,7 @@ public class SceneService {
         }
         sb.append("您所在的场景有玩家：").append('\n');
         for (Long key : scene.getPlayerMap().keySet()) {
-            TPlayer tPlayer = scene.getPlayerMap().get(key);
+            TPlayer tPlayer = scene.getPlayerMap().get(key).getTPlayer();
             sb.append("[").append(tPlayer.getName()).append("]")
                     .append("等级为：[").append(tPlayer.getLevel()).append("]\n");
         }

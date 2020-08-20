@@ -119,7 +119,7 @@ public class UserService {
             return;
         }
         Scene scene = sceneMap.getSceneCache().get(player.getTPlayer().getLoc());
-        scene.getPlayerMap().put(playerId, player.getTPlayer());
+        scene.getPlayerMap().put(playerId, player);
         //加载角色信息
         if (!player.isInit()) {
             player.setNowScene(scene);
@@ -150,7 +150,7 @@ public class UserService {
             int nowMp = player.getMp() + 5 < player.getOriMp() ? player.getMp() + 5 : player.getOriMp();
             player.setMp(nowMp);
         }, 0, 10, TimeUnit.SECONDS);
-        player.getTaskMap().put("MpResume", s);
+        player.getTaskMap().put(key, s);
     }
 
     /**

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.function.bag.model.Bag;
 import com.function.bag.service.BagService;
+import com.function.communicate.model.Email;
 import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
 import com.function.occ.excel.OccExcel;
@@ -82,6 +83,19 @@ public class PlayerData {
     }
 
     /**
+     * 初始化邮件
+     */
+    public void initEmail(Player player) {
+        if (player.getTPlayer().getEmail() == null) {
+            player.getTPlayer().setEmail("{}");
+        }
+        String json = player.getTPlayer().getEmail();
+        Map<Integer, Email> email = JSON.parseObject(json, new TypeReference<Map<Integer, Email>>() {
+        });
+        player.setEmailMap(email);
+    }
+
+    /**
      * 初始化玩家
      */
     public void initPlayer(Player player) {
@@ -89,6 +103,7 @@ public class PlayerData {
         initEquipment(player);
         initBag(player);
         initAttribute(player);
+        initEmail(player);
     }
 
     /**
@@ -118,6 +133,12 @@ public class PlayerData {
     public void updateEquip(Player player) {
         String json = JSON.toJSONString(player.getEquipMap());
         player.getTPlayer().setEquip(json);
+        playerDAO.save(player.getTPlayer());
+    }
+
+    public void updateEmail(Player player) {
+        String json = JSON.toJSONString(player.getEmailMap());
+        player.getTPlayer().setEmail(json);
         playerDAO.save(player.getTPlayer());
     }
 }

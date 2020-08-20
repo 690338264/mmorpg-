@@ -1,6 +1,7 @@
 package com.function.player.model;
 
 import com.function.bag.model.Bag;
+import com.function.communicate.model.Email;
 import com.function.item.model.Item;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
@@ -13,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -33,13 +33,10 @@ public class Player extends SceneObject {
      */
     private Scene nowScene;
     /**
-     * 玩家恢复Mp计时器
+     * 玩家线程
      */
-    private Timer mpTimer;
     private ScheduledExecutorService playerPool;
-    private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
-    private Map<Integer, Skill> skillMap = new HashMap<>();
-    private Map<Integer, Item> equipMap = new HashMap<>();
+
     private Bag bag;
     /**
      * 玩家当前hp
@@ -60,6 +57,16 @@ public class Player extends SceneObject {
     private Integer atk;
     private Integer def;
     private Integer speed;
+    private int levelUp = 2000;
+    /**
+     * 是否已加载好角色
+     */
     private boolean init;
-
+    /**
+     * 玩家线程任务列表
+     */
+    private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
+    private Map<Integer, Skill> skillMap = new HashMap<>();
+    private Map<Integer, Item> equipMap = new HashMap<>();
+    private Map<Integer, Email> emailMap = new HashMap<>();
 }

@@ -42,8 +42,8 @@ public class TPlayer {
     @Column(name = "level")
     private int level;
 
-    @Column(name = "levelUp")
-    private final int levelUp = 2000;
+    @Column(name = "email")
+    private String email;
 
     public Long getUserId() {
         return userId;
@@ -125,8 +125,12 @@ public class TPlayer {
         this.level = level;
     }
 
-    public int getLevelUp() {
-        return levelUp;
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
@@ -142,6 +146,7 @@ public class TPlayer {
                 ", friend='" + friend + '\'' +
                 ", roleId=" + roleId +
                 ", level=" + level +
+                ", email='" + email + '\'' +
                 '}';
     }
 }

@@ -22,7 +22,7 @@ public class Time extends TimerTask {
             System.out.println(player.getMp());
             System.out.println(i);
         } else {
-            player.setMpTimer(null);
+//            player.setMpTimer(null);
             cancel();
         }
     }

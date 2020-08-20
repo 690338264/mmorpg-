@@ -49,6 +49,16 @@ public enum Cmd {
     BUY("buy", 10121),
     //卖东西
     SELL("sell", 10122),
+    //私聊玩家
+    WHISPER("whisper", 1013),
+    //全服喊话
+    SPEAK("speak", 1014),
+    //查看邮件
+    CHECK_EMAIL("check_email", 1015),
+    //发送邮件
+    SEND_EMAIL("send_email", 10151),
+    //收取邮件
+    RECEIVE_EMAIL("receive", 10152),
     //查看人物状态属性
     PLAYER_STATE("player_state", 888),
     //查看已穿戴装备
