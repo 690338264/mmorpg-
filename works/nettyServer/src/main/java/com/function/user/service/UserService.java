@@ -13,6 +13,7 @@ import com.function.user.model.User;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.dao.UserDAO;
 import com.jpa.entity.TUser;
+import com.manager.ThreadPoolManager;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Catherine
@@ -124,12 +127,30 @@ public class UserService {
             player.setInit(true);
         }
         player.setChannelHandlerContext(ctx);
+        player.setPlayerPool(ThreadPoolManager.get(ctx.hashCode()));
         playerMap.putPlayerCtx(ctx, player);
+        mpResume(player);
         //通知场景
         StringBuilder log = new StringBuilder();
         log.append("玩家[").append(player.getTPlayer().getName()).append("]进入场景\n");
         notifyScene.notifyScene(scene, log);
 
+    }
+
+    /**
+     * mp定时器开启
+     */
+    public void mpResume(Player player) {
+        String key = "MpResume";
+        ScheduledFuture s = player.getPlayerPool().scheduleAtFixedRate(() -> {
+            if (player.getChannelHandlerContext() == null) {
+                player.getTaskMap().get(key).cancel(true);
+                return;
+            }
+            int nowMp = player.getMp() + 5 < player.getOriMp() ? player.getMp() + 5 : player.getOriMp();
+            player.setMp(nowMp);
+        }, 0, 10, TimeUnit.SECONDS);
+        player.getTaskMap().put("MpResume", s);
     }
 
     /**

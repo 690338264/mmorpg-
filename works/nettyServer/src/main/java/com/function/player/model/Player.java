@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
 
 /**
@@ -33,6 +36,8 @@ public class Player extends SceneObject {
      * 玩家恢复Mp计时器
      */
     private Timer mpTimer;
+    private ScheduledExecutorService playerPool;
+    private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
     private Map<Integer, Skill> skillMap = new HashMap<>();
     private Map<Integer, Item> equipMap = new HashMap<>();
     private Bag bag;

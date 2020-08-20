@@ -6,7 +6,6 @@ import com.function.item.service.ItemService;
 import com.function.monster.model.Monster;
 import com.function.monster.service.MonsterService;
 import com.function.monster.timetask.AtkTime;
-import com.function.player.controller.Time;
 import com.function.player.manager.BagManager;
 import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Timer;
 
 /**
  * @author Catherine
@@ -160,13 +158,13 @@ public class PlayerService {
                             monster.getTimer().schedule(monster.getAtkTime(), 0, 5000);
                         }
                     }
-//              mp恢复
-                    if (player.getMpTimer() == null) {
-                        player.setMpTimer(new Timer());
-                        Time t = new Time();
-                        t.setPlayer(player);
-                        player.getMpTimer().schedule(t, 0, 3000);
-                    }
+////              mp恢复
+//                    if (player.getMpTimer() == null) {
+//                        player.setMpTimer(new Timer());
+//                        Time t = new Time();
+//                        t.setPlayer(player);
+//                        player.getMpTimer().schedule(t, 0, 3000);
+//                    }
 
                 } else {
                     StringBuilder noMp = new StringBuilder("技能释放失败！原因：mp不足！\n");
@@ -180,6 +178,9 @@ public class PlayerService {
         }
     }
 
+    /**
+     * 升级
+     */
     public void levelUp(TPlayer tplayer) {
         tplayer.setExp(tplayer.getExp() - tplayer.getLevel() * tplayer.getLevelUp());
         tplayer.setLevel(tplayer.getLevel() + 1);
