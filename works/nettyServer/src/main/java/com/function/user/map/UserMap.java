@@ -16,6 +16,9 @@ public class UserMap {
     private Map<ChannelHandlerContext, User> userCtxMap = new HashMap<>();
 
     private Map<Long, User> userMap = new HashMap<>();
+
+    private Map<Long, Player> players = new HashMap<>();
+
     private Map<Long, Map<Long, Player>> playerMap = new HashMap<>();
 
     public void putUserMap(Long userId, User user) {
@@ -28,6 +31,11 @@ public class UserMap {
 
     public void putPlayerMap(Long userId, Map<Long, Player> map) {
         playerMap.put(userId, map);
+        players.putAll(map);
+    }
+
+    public Player getPlayers(Long playerId) {
+        return players.get(playerId);
     }
 
     public Map<Long, Player> getPlayerMap(Long userId) {

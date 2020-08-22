@@ -29,12 +29,12 @@ public class ItemService {
     /**
      * 移除背包中的物品
      */
-    public void removeItem(int index, int num, Player player) {
+    public boolean removeItem(int index, int num, Player player) {
         int all = player.getBag().getItemMap().get(index).getNum();
         if (all < num) {
-            StringBuilder wrongNum = new StringBuilder("丢弃失败！你没有足够数量的该物品，请重试\n");
+            StringBuilder wrongNum = new StringBuilder("失败！你没有足够数量的该物品，请重试\n");
             notifyScene.notifyPlayer(player, wrongNum);
-            return;
+            return false;
         } else if (all == num) {
             player.getBag().getItemMap().remove(index);
         } else {
@@ -42,6 +42,7 @@ public class ItemService {
             player.getBag().getItemMap().get(index).setNum(number - num);
         }
         bagService.updateBag(player);
+        return true;
     }
 
     /**
@@ -70,7 +71,7 @@ public class ItemService {
     /**
      * 得到物品
      */
-    public void getItem(Item item, Player player) {
+    public boolean getItem(Item item, Player player) {
         if (item.getItemById().getType() == 1) {
             Map<Integer, Item> p = player.getBag().getItemMap();
             for (Integer index : p.keySet()) {
@@ -80,17 +81,17 @@ public class ItemService {
                     StringBuilder put = new StringBuilder("[")
                             .append(p.get(index).getItemById().getName()).append("]已放入背包\n");
                     notifyScene.notifyPlayer(player, put);
-                    return;
+                    return true;
                 }
             }
         }
-        addItem(item, player);
+        return addItem(item, player) ? true : false;
     }
 
     /**
      * 找空插入物品
      */
-    public void addItem(Item item, Player player) {
+    public boolean addItem(Item item, Player player) {
         item.setNum(1);
         Bag bag = player.getBag();
         TBag tBag = bag.getTBag();
@@ -104,11 +105,12 @@ public class ItemService {
                 bagService.updateBag(player);
                 StringBuilder put = new StringBuilder("[").append(item.getItemById().getName()).append("]已放入背包\n");
                 notifyScene.notifyPlayer(player, put);
-                return;
+                return true;
             }
         }
         StringBuilder full = new StringBuilder("背包已满！\n");
         notifyScene.notifyPlayer(player, full);
+        return false;
     }
 
     /**
@@ -179,6 +181,9 @@ public class ItemService {
         }
     }
 
+    /**
+     * 扣除金币
+     */
     public boolean subMoney(Player player, int money) {
         int remain = player.getTPlayer().getMoney() - money;
         if (remain < 0) {

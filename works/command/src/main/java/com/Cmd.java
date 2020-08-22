@@ -53,12 +53,14 @@ public enum Cmd {
     WHISPER("whisper", 1013),
     //全服喊话
     SPEAK("speak", 1014),
+    //收件箱
+    LIST_EMAIL("list_email", 1015),
     //查看邮件
-    CHECK_EMAIL("check_email", 1015),
+    CHECK_EMAIL("check_email", 10151),
     //发送邮件
-    SEND_EMAIL("send_email", 10151),
-    //收取邮件
-    RECEIVE_EMAIL("receive", 10152),
+    SEND_EMAIL("send_email", 10152),
+    //收取礼物
+    RECEIVE_EMAIL("receive", 10153),
     //查看人物状态属性
     PLAYER_STATE("player_state", 888),
     //查看已穿戴装备

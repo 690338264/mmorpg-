@@ -52,8 +52,9 @@ public class ItemController {
         int index = Integer.parseInt(params[1]);
         int num = Integer.parseInt(params[2]);
         String name = player.getBag().getItemMap().get(index).getItemById().getName();
-        itemService.removeItem(index, num, player);
-        ctx.writeAndFlush("您已丢弃:[" + name + "]\n");
+        if (itemService.removeItem(index, num, player)) {
+            ctx.writeAndFlush("您已丢弃:[" + name + "]\n");
+        }
     }
 
     private void equipOff(ChannelHandlerContext ctx, Msg msg) {
