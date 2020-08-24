@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 
@@ -32,12 +31,10 @@ public class Player extends SceneObject {
      * 玩家当前场景
      */
     private Scene nowScene;
-    /**
-     * 玩家线程
-     */
-    private ScheduledExecutorService playerPool;
 
     private Bag bag;
+
+    private Integer teamId;
     /**
      * 玩家当前hp
      */

@@ -61,6 +61,22 @@ public enum Cmd {
     SEND_EMAIL("send_email", 10152),
     //收取礼物
     RECEIVE_EMAIL("receive", 10153),
+    //查看已有小队
+    LIST_TEAM("list_team", 1016),
+    //创建小队
+    CREATE_TEAM("create_team", 10160),
+    //查看自己所在小队
+    CHECK_TEAM("check_team", 10161),
+    //邀请加入小队
+    INVITE_PLAYER("invite_player", 10162),
+    //申请加入小队
+    APPLY_TEAM("apply_team", 10163),
+    //同意申请
+    AGREE_APPLY("agree_apply", 10164),
+    //接受组队邀请
+    ACCEPT_TEAM("accept_team", 10165),
+    //退出小队
+    LEAVE_TEAM("leave_team", 10166),
     //查看人物状态属性
     PLAYER_STATE("player_state", 888),
     //查看已穿戴装备

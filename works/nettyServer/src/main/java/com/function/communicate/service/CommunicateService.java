@@ -16,6 +16,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -43,25 +44,22 @@ public class CommunicateService {
      */
     public void whisper(Player player, long playerId, String text) {
         ChannelHandlerContext ctxPlayer = playerMap.getCtxPlayer(playerId);
-        StringBuilder result = new StringBuilder();
         if (ctxPlayer == null) {
-            result.append("玩家不在线或不存在！\n");
-            notifyScene.notifyPlayer(player, result);
+            notifyScene.notifyPlayer(player, "玩家不在线或不存在！\n");
             return;
         }
         Player toTalk = playerMap.getPlayerCtx(ctxPlayer);
-        result.append(player.getTPlayer().getName()).append("对你说：").append(text).append('\n');
-        notifyScene.notifyPlayer(toTalk, result);
+
+        notifyScene.notifyPlayer(toTalk, MessageFormat.format("{0}对你说：{1}\n", player.getTPlayer().getName(), text));
     }
 
     /**
      * 全服喊话
      */
     public void speak(Player player, String text) {
-        StringBuilder sentence = new StringBuilder(player.getTPlayer().getName())
-                .append("说：").append(text).append('\n');
+        String s = MessageFormat.format("{0}说：{1}\n", player.getTPlayer().getName(), text);
         for (int key : sceneMap.getSceneCache().keySet()) {
-            notifyScene.notifyScene(sceneMap.getSceneCache().get(key), sentence);
+            notifyScene.notifyScene(sceneMap.getSceneCache().get(key), s);
         }
 
     }
@@ -99,9 +97,8 @@ public class CommunicateService {
             Player receiver = findPlayer(playerId);
             int emailId = receiver.getEmailMap().size();
             receiver.getEmailMap().put(emailId, email);
-            StringBuilder sb = new StringBuilder("您有一封新邮件 请查收\n");
             if (player.getChannelHandlerContext() != null) {
-                notifyScene.notifyPlayer(receiver, sb);
+                notifyScene.notifyPlayer(receiver, "您有一封新邮件 请查收\n");
             }
         } else {
             //玩家未被加载
@@ -124,18 +121,20 @@ public class CommunicateService {
      * 查看邮件
      */
     public void showEmail(Player player) {
-        StringBuilder content = new StringBuilder("收件箱：\n");
+        String e = "收件箱：\n";
         player.getEmailMap().forEach((k, v) -> {
             Email email = player.getEmailMap().get(k);
-            content.append(k);
+            String state;
             if (email.getState() == 1) {
-                content.append("[已读]");
+                state = "[已读]";
             } else {
-                content.append("[未读]");
+                state = "[未读]";
             }
-            content.append("来自").append(email.getSender().getTPlayer().getName()).append("的邮件\n");
+            String result = MessageFormat.format("{0}{1}{2}来自{3}的邮件\n",
+                    k, state, email.getSender().getTPlayer().getName());
+
+            notifyScene.notifyPlayer(player, result);
         });
-        notifyScene.notifyPlayer(player, content);
     }
 
     /**

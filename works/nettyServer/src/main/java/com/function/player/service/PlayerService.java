@@ -20,6 +20,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Random;
 
@@ -117,9 +118,8 @@ public class PlayerService {
                         if (monster.getTarget() != null) {
                             monster.getAtkTime().cancel();
                         }
-                        StringBuilder notify = new StringBuilder();
-                        notify.append("玩家[").append(player.getTPlayer().getName()).append("]成功击杀怪物").append(monster.getMonsterExcel().getName()).append('\n');
-                        notifyScene.notifyScene(scene, notify);
+                        notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]成功击杀怪物{1}\n",
+                                player.getTPlayer().getName(), monster.getMonsterExcel().getName()));
                         //物品掉落
                         Random random = new Random();
                         List<ItemExcel> list = monster.getMonsterExcel().getItemList();
@@ -147,10 +147,8 @@ public class PlayerService {
 
                     } else {
                         //攻击
-                        StringBuilder notify = new StringBuilder();
-                        notify.append("玩家[").append(player.getTPlayer().getName()).append("]释放了技能[").append(skill.getSkillExcel().getName()).append("]对怪物[")
-                                .append(monster.getMonsterExcel().getName()).append("]产生伤害:").append(hurt).append('\n');
-                        notifyScene.notifyScene(scene, notify);
+                        notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]释放了技能[{1}]对怪物[{2}]产生伤害:{3}\n",
+                                player.getTPlayer().getName(), skill.getSkillExcel().getName(), monster.getMonsterExcel().getName(), hurt));
 
                         if (monster.getTarget() == null) {
                             monster.setTarget(player);

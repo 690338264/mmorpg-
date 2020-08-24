@@ -1,12 +1,13 @@
 package com.server;
 
+import com.function.user.service.UserService;
 import com.handler.Controller;
 import com.handler.ControllerManager;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import util.Msg;
 
@@ -20,12 +21,11 @@ import java.net.InetAddress;
 @ChannelHandler.Sharable
 @Component
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
-
+    @Autowired
+    private UserService userService;
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ctx.writeAndFlush("server Received your message !\n");
-
-        Channel ch = ctx.channel();
         String cmd = msg.toString();
         String[] split = cmd.split(" ");
         String cmdIds = split[0];

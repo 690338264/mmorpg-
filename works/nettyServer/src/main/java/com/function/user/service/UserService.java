@@ -7,6 +7,7 @@ import com.function.player.service.PlayerService;
 import com.function.scene.manager.SceneMap;
 import com.function.scene.model.Scene;
 import com.function.scene.service.NotifyScene;
+import com.function.team.service.TeamService;
 import com.function.user.map.PlayerMap;
 import com.function.user.map.UserMap;
 import com.function.user.model.User;
@@ -20,8 +21,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -51,6 +54,12 @@ public class UserService {
     private SceneMap sceneMap;
     @Autowired
     private BagService bagService;
+    @Autowired
+    private TeamService teamService;
+
+    public static String mpKey = "MpResume";
+
+    public static int mpAdd = 5;
 
     /**
      * 用户注册
@@ -127,13 +136,10 @@ public class UserService {
             player.setInit(true);
         }
         player.setChannelHandlerContext(ctx);
-        player.setPlayerPool(ThreadPoolManager.get(ctx.hashCode()));
         playerMap.putPlayerCtx(ctx, player);
         mpResume(player);
         //通知场景
-        StringBuilder log = new StringBuilder();
-        log.append("玩家[").append(player.getTPlayer().getName()).append("]进入场景\n");
-        notifyScene.notifyScene(scene, log);
+        notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]进入场景\n", player.getTPlayer().getName()));
 
     }
 
@@ -141,16 +147,20 @@ public class UserService {
      * mp定时器开启
      */
     public void mpResume(Player player) {
-        String key = "MpResume";
-        ScheduledFuture s = player.getPlayerPool().scheduleAtFixedRate(() -> {
+        ScheduledExecutorService mpService = ThreadPoolManager.get(player.getChannelHandlerContext().hashCode());
+        if (player.getTaskMap().get(mpKey) != null) {
+            return;
+        }
+        ScheduledFuture s = mpService.scheduleAtFixedRate(() -> {
             if (player.getChannelHandlerContext() == null) {
-                player.getTaskMap().get(key).cancel(true);
+                player.getTaskMap().get(mpKey).cancel(true);
+                player.getTaskMap().remove(mpKey);
                 return;
             }
-            int nowMp = player.getMp() + 5 < player.getOriMp() ? player.getMp() + 5 : player.getOriMp();
+            int nowMp = player.getMp() + mpAdd < player.getOriMp() ? player.getMp() + mpAdd : player.getOriMp();
             player.setMp(nowMp);
         }, 0, 10, TimeUnit.SECONDS);
-        player.getTaskMap().put(key, s);
+        player.getTaskMap().put(mpKey, s);
     }
 
     /**
@@ -160,6 +170,8 @@ public class UserService {
         ChannelHandlerContext ctx = player.getChannelHandlerContext();
         bagService.updateBag(player);
         playerData.updateEquip(player);
+        playerData.updateEmail(player);
+        teamService.leaveTeam(player);
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);
         Scene scene = sceneMap.getSceneCache().get(player.getNowScene().getSceneId());

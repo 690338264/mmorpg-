@@ -13,6 +13,8 @@ import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
+
 /**
  * @author Catherine
  */
@@ -51,8 +53,7 @@ public class SceneService {
         scene.getPlayerMap().put(player.getTPlayer().getRoleId(), player);
         player.setNowScene(scene);
         playerData.updateLoc(player);
-        StringBuilder welcome = new StringBuilder("欢迎玩家").append(player.getTPlayer().getName()).append("来到场景\n");
-        notifyScene.notifyScene(scene, welcome);
+        notifyScene.notifyScene(scene, MessageFormat.format("欢迎玩家{0}来到场景\n", player.getTPlayer().getName()));
         return SceneResource.getSceneById(sceneId);
     }
 
