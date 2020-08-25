@@ -1,7 +1,5 @@
 package com.function.buff.excel;
 
-import com.function.buff.map.BuffMap;
-import com.function.buff.model.Buff;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,8 +16,6 @@ import java.util.Map;
 public class BuffResource {
     @Autowired
     private ExcelManager excelManager;
-    @Autowired
-    private BuffMap buffCache;
 
     private static Map<Integer, BuffExcel> buffMap = new HashMap<>();
 
@@ -31,9 +27,6 @@ public class BuffResource {
         for (int i = 0; i < num; i++) {
             BuffExcel buffExcel = (BuffExcel) excelManager.getMap().get(key).get(i);
             buffMap.put(buffExcel.getId(), buffExcel);
-            Buff buff = new Buff();
-            buff.setId(buffExcel.getId());
-            buffCache.put(buff.getId(), buff);
         }
 
     }

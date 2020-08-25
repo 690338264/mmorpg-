@@ -24,10 +24,6 @@ public class Monster extends SceneObject {
      * 怪物类型id
      */
     private Integer id;
-    /**
-     * 怪物血量
-     */
-    private Integer selfHp;
 
     ReentrantLock lock = new ReentrantLock();
 

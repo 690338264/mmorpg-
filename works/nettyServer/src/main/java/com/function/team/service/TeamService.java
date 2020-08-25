@@ -106,7 +106,7 @@ public class TeamService {
             if (team.getApply().get(key) != null) {
                 team.getApply().remove(key);
             }
-        }, 60000, player.getChannelHandlerContext());
+        }, 60000, player.getChannelHandlerContext().hashCode());
     }
 
     /**
@@ -128,7 +128,7 @@ public class TeamService {
             if (team.getInvite().get(playerId) != null) {
                 team.getInvite().remove(playerId);
             }
-        }, 60000, player.getChannelHandlerContext());
+        }, 60000, player.getChannelHandlerContext().hashCode());
     }
 
     /**

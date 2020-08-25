@@ -44,7 +44,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         } else {
             ThreadPoolManager.runThread(() -> {
                 contr.handle(ctx, message);
-            }, 0, ctx);
+            }, 0, ctx.hashCode());
         }
 
     }

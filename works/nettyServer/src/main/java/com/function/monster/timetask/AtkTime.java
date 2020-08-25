@@ -29,7 +29,7 @@ public class AtkTime extends TimerTask {
 
     @Override
     public void run() {
-        if (monster.getSelfHp() <= 0) {
+        if (monster.getHp() <= 0) {
             cancel();
         } else {
             Integer[] keys = monster.getCanUseSkill().keySet().toArray(new Integer[0]);

@@ -28,7 +28,7 @@ public class MonsterService {
      */
     public boolean isMonsterDeath(int index, Scene scene) {
         Monster monster = scene.getMonsterMap().get(index);
-        if (monster.getSelfHp() <= 0) {
+        if (monster.getHp() <= 0) {
             scene.getMonsterMap().remove(index);
             Timer timer = monster.getTimer();
             ReviveTime t = new ReviveTime(monster, index, scene);

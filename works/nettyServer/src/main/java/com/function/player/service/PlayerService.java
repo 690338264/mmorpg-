@@ -1,5 +1,6 @@
 package com.function.player.service;
 
+import com.function.buff.model.Buff;
 import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
 import com.function.item.service.ItemService;
@@ -16,6 +17,7 @@ import com.jpa.dao.BagDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TBag;
 import com.jpa.entity.TPlayer;
+import com.manager.ThreadPoolManager;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -109,7 +111,7 @@ public class PlayerService {
                     }
                     //玩家对怪物造成的伤害
                     int hurt = player.getAtk() * skill.getSkillExcel().getAtk();
-                    monster.setSelfHp(monster.getSelfHp() - hurt);
+                    monster.setHp(monster.getHp() - hurt);
                     player.setMp(player.getMp() - skill.getSkillExcel().getMp());
                     skill.setLastTime(System.currentTimeMillis());
 
@@ -167,6 +169,22 @@ public class PlayerService {
                 notifyScene.notifyPlayer(player, waitCd);
             }
         }
+    }
+
+    /**
+     * buff效果
+     */
+    public void buff(int id, Skill skill, int type) {
+        skill.getBuffMap().forEach((k, v) -> {
+            Buff buff = skill.getBuffMap().get(k);
+            long time = buff.getBuffExcel().getLast() / buff.getBuffExcel().getTimes();
+            //多次效果
+            if (buff.getBuffExcel().getTimes() != 1) {
+                ThreadPoolManager.loopThread(() -> {
+
+                }, 0, time, id);
+            }
+        });
     }
 
     /**

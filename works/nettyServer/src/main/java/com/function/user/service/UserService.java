@@ -156,7 +156,7 @@ public class UserService {
             }
             int nowMp = player.getMp() + mpAdd < player.getOriMp() ? player.getMp() + mpAdd : player.getOriMp();
             player.setMp(nowMp);
-        }, 0, 10000, player.getChannelHandlerContext());
+        }, 0, 10000, player.getChannelHandlerContext().hashCode());
         player.getTaskMap().put(mpKey, s);
     }
 

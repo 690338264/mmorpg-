@@ -42,7 +42,8 @@ public class SceneResource {
                 Monster monster = new Monster();
                 monster.setId(monsterId);
                 monster.setSceneId(j);
-                monster.setSelfHp(monster.getMonsterExcel().getHp());
+                monster.setHp(monster.getMonsterExcel().getHp());
+                monster.setAtk(monster.getMonsterExcel().getAggr());
                 monster.getCanUseSkill().putAll(monster.getMonsterExcel().getMonsterSkill());
                 monster.setTimer(new Timer());
                 scene.getMonsterMap().put(j, monster);

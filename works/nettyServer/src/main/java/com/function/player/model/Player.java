@@ -14,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 
 
 /**
@@ -36,10 +34,6 @@ public class Player extends SceneObject {
 
     private Integer teamId;
     /**
-     * 玩家当前hp
-     */
-    private Integer hp;
-    /**
      * 玩家初始hp
      */
     private Integer oriHp;
@@ -51,7 +45,6 @@ public class Player extends SceneObject {
      * 玩家初始mp
      */
     private Integer oriMp;
-    private Integer atk;
     private Integer def;
     private Integer speed;
     private int levelUp = 2000;
@@ -62,7 +55,6 @@ public class Player extends SceneObject {
     /**
      * 玩家线程任务列表
      */
-    private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
     private Map<Integer, Skill> skillMap = new HashMap<>();
     private Map<Integer, Item> equipMap = new HashMap<>();
     private Map<Integer, Email> emailMap = new HashMap<>();

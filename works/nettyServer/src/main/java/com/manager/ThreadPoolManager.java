@@ -1,6 +1,5 @@
 package com.manager;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executors;
@@ -25,16 +24,12 @@ public class ThreadPoolManager {
         ThreadPoolManager.services = services;
     }
 
-    public static void runThread(Runnable r, long l, ChannelHandlerContext ctx) {
-        services[ctx.hashCode() % 24].schedule(r, l, TimeUnit.MILLISECONDS);
+    public static void runThread(Runnable r, long l, int id) {
+        services[id % 24].schedule(r, l, TimeUnit.MILLISECONDS);
     }
 
-    public static ScheduledFuture loopThread(Runnable r, long delay, long period, ChannelHandlerContext ctx) {
-        ScheduledFuture scheduledFutures = services[ctx.hashCode() % 24].scheduleAtFixedRate(r, delay, period, TimeUnit.MILLISECONDS);
+    public static ScheduledFuture loopThread(Runnable r, long delay, long period, int id) {
+        ScheduledFuture scheduledFutures = services[id % 24].scheduleAtFixedRate(r, delay, period, TimeUnit.MILLISECONDS);
         return scheduledFutures;
-    }
-
-    public static ScheduledExecutorService get(int id) {
-        return services[id % 24];
     }
 }

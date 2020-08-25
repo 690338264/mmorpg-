@@ -76,13 +76,13 @@ public class SceneService {
         sb.append("您所在场景有怪物：").append('\n');
         for (Integer key : scene.getMonsterMap().keySet()) {
             Monster monster = scene.getMonsterMap().get(key);
-            if (monster.getSelfHp() <= 0) {
+            if (monster.getHp() <= 0) {
                 sb.append("id:[").append(key).append("]")
                         .append(monster.getMonsterExcel().getName()).append("  [已死亡]").append('\n');
             } else {
                 sb.append("id:[").append(key).append("]")
                         .append(monster.getMonsterExcel().getName()).append("  Hp[")
-                        .append(monster.getSelfHp()).append("]").append('\n');
+                        .append(monster.getHp()).append("]").append('\n');
             }
         }
         sb.append("可选择怪物进行攻击\n");
