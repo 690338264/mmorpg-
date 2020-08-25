@@ -14,9 +14,6 @@ import org.springframework.stereotype.Component;
 import util.Msg;
 
 import java.net.InetAddress;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Catherine
@@ -45,11 +42,11 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         if (contr == null) {
             ctx.writeAndFlush("指令错误！\n");
         } else {
-            ScheduledExecutorService service = ThreadPoolManager.get(ctx.hashCode());
-            ScheduledFuture scheduledFuture = service.schedule(() -> {
+            ThreadPoolManager.runThread(() -> {
                 contr.handle(ctx, message);
-            }, 0, TimeUnit.SECONDS);
+            }, 0, ctx);
         }
+
     }
 
     @Override

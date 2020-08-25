@@ -51,7 +51,7 @@ public class MonsterService {
         Skill skill = monster.getCanUseSkill().get(randomKey);
         Timer skillTimer = skill.getTimer();
         monster.getCanUseSkill().remove(randomKey);
-        int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getBuff();
+        int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getAtk();
         player.setHp(player.getHp() - hurt);
         CdTime cdTime = new CdTime(monster, randomKey, skill);
         skillTimer.schedule(cdTime, skill.getSkillExcel().getCd() * 1000);

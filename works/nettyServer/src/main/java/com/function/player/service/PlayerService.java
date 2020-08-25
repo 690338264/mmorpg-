@@ -108,7 +108,7 @@ public class PlayerService {
                         player.getEquipMap().get(key).setNowWear(player.getEquipMap().get(key).getNowWear() - 2);
                     }
                     //玩家对怪物造成的伤害
-                    int hurt = player.getAtk() * skill.getSkillExcel().getBuff();
+                    int hurt = player.getAtk() * skill.getSkillExcel().getAtk();
                     monster.setSelfHp(monster.getSelfHp() - hurt);
                     player.setMp(player.getMp() - skill.getSkillExcel().getMp());
                     skill.setLastTime(System.currentTimeMillis());

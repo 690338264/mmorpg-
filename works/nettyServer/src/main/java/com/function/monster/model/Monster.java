@@ -12,6 +12,7 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Catherine
@@ -27,6 +28,9 @@ public class Monster extends SceneObject {
      * 怪物血量
      */
     private Integer selfHp;
+
+    ReentrantLock lock = new ReentrantLock();
+
     /**
      * 怪物场景自己的id
      */

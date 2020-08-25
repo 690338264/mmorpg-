@@ -16,7 +16,9 @@ public class SkillExcel {
      */
     private Integer mp;
 
-    private Integer buff;
+    private Integer atk;
 
     private Integer cd;
+
+    private String buff;
 }

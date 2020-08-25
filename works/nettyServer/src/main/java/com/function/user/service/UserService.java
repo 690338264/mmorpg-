@@ -24,9 +24,7 @@ import org.springframework.stereotype.Component;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Catherine
@@ -147,11 +145,10 @@ public class UserService {
      * mp定时器开启
      */
     public void mpResume(Player player) {
-        ScheduledExecutorService mpService = ThreadPoolManager.get(player.getChannelHandlerContext().hashCode());
         if (player.getTaskMap().get(mpKey) != null) {
             return;
         }
-        ScheduledFuture s = mpService.scheduleAtFixedRate(() -> {
+        ScheduledFuture s = ThreadPoolManager.loopThread(() -> {
             if (player.getChannelHandlerContext() == null) {
                 player.getTaskMap().get(mpKey).cancel(true);
                 player.getTaskMap().remove(mpKey);
@@ -159,7 +156,7 @@ public class UserService {
             }
             int nowMp = player.getMp() + mpAdd < player.getOriMp() ? player.getMp() + mpAdd : player.getOriMp();
             player.setMp(nowMp);
-        }, 0, 10, TimeUnit.SECONDS);
+        }, 0, 10000, player.getChannelHandlerContext());
         player.getTaskMap().put(mpKey, s);
     }
 

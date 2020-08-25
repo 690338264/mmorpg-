@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 /**
@@ -100,24 +97,22 @@ public class TeamService {
             notifyScene.notifyPlayer(player, "您已加入一支小队\n");
             return;
         }
-        ScheduledExecutorService apply = ThreadPoolManager.get(player.getChannelHandlerContext().hashCode());
         Team team = teamMap.getTeamCache().get(teamId);
         team.getApply().put(player.getTPlayer().getRoleId(), player);
         Player leader = team.getMembers().get(team.getLeaderId());
         notifyScene.notifyPlayer(leader, "收到一条小队加入申请\n");
-        ScheduledFuture future = apply.schedule(() -> {
+        ThreadPoolManager.runThread(() -> {
             Long key = player.getTPlayer().getRoleId();
             if (team.getApply().get(key) != null) {
                 team.getApply().remove(key);
             }
-        }, 60, TimeUnit.SECONDS);
+        }, 60000, player.getChannelHandlerContext());
     }
 
     /**
      * 邀请玩家加入小队
      */
     public void invitePlayer(Player player, Long playerId) {
-        ScheduledExecutorService apply = ThreadPoolManager.get(player.getChannelHandlerContext().hashCode());
         Team team = teamMap.getTeamCache().get(player.getTeamId());
         Player invite = userMap.getPlayers(playerId);
         if (invite.getChannelHandlerContext() == null) {
@@ -129,11 +124,11 @@ public class TeamService {
             return;
         }
         team.getInvite().put(playerId, invite);
-        ScheduledFuture future = apply.schedule(() -> {
+        ThreadPoolManager.runThread(() -> {
             if (team.getInvite().get(playerId) != null) {
                 team.getInvite().remove(playerId);
             }
-        }, 60, TimeUnit.SECONDS);
+        }, 60000, player.getChannelHandlerContext());
     }
 
     /**
