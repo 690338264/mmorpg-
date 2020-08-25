@@ -236,10 +236,6 @@ public class TeamService {
      * 是否在小队
      */
     public boolean isInTeam(Player player) {
-        if (player.getTeamId() == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return player.getTeamId() != null;
     }
 }

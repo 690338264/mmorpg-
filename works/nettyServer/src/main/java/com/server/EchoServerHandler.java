@@ -1,8 +1,10 @@
 package com.server;
 
+import com.function.user.map.PlayerMap;
 import com.function.user.service.UserService;
 import com.handler.Controller;
 import com.handler.ControllerManager;
+import com.manager.ThreadPoolManager;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Component;
 import util.Msg;
 
 import java.net.InetAddress;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Catherine
@@ -23,6 +28,9 @@ import java.net.InetAddress;
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     private UserService userService;
+    @Autowired
+    private PlayerMap playerMap;
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ctx.writeAndFlush("server Received your message !\n");
@@ -37,7 +45,10 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         if (contr == null) {
             ctx.writeAndFlush("指令错误！\n");
         } else {
-            contr.handle(ctx, message);
+            ScheduledExecutorService service = ThreadPoolManager.get(ctx.hashCode());
+            ScheduledFuture scheduledFuture = service.schedule(() -> {
+                contr.handle(ctx, message);
+            }, 0, TimeUnit.SECONDS);
         }
     }
 
