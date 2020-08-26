@@ -55,7 +55,7 @@ public class PlayerService {
 
     public static String attack = "attack";
 
-    public Long period = 5000L;
+    public Long period = 15000L;
 
     public void roleCreate(ChannelHandlerContext ctx, String roleName, Integer roleType, Long userId) {
         TPlayer tPlayer = playerManager.newPlayer(roleName, roleType, userId);
@@ -99,7 +99,6 @@ public class PlayerService {
             SceneObject s = scene.getSceneObjectMap().get(target);
 
             Skill skill = player.getCanUseSkill().get(skillId);
-            Long now = System.currentTimeMillis();
             //判断目标是否死亡
             if (s == null) {
                 player.getChannelHandlerContext().writeAndFlush("攻击目标无效，请重新选择！\n");
@@ -131,11 +130,11 @@ public class PlayerService {
                         //击杀怪物
                         if (s.getType() == SceneObjectType.MONSTER.getType()) {
                             Monster monster = (Monster) s;
-                            monsterService.monsterDeath(target, scene);
                             if (monster.getTarget() != null) {
                                 monster.getTaskMap().get(attack).cancel(true);
                                 monster.getTaskMap().remove(attack);
                             }
+                            monsterService.monsterDeath(target, scene);
                             notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]成功击杀怪物{1}\n",
                                     player.getTPlayer().getName(), monster.getMonsterExcel().getName()));
                             //物品掉落

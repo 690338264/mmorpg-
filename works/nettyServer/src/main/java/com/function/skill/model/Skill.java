@@ -8,7 +8,6 @@ import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
 import java.util.concurrent.ScheduledFuture;
 
 /**
@@ -20,12 +19,6 @@ import java.util.concurrent.ScheduledFuture;
 public class Skill {
 
     private Integer skillId;
-    /**
-     * 技能上次释放时间
-     */
-    private Long lastTime;
-
-    private Timer timer;
 
     private Map<Integer, Buff> buffMap = new HashMap<>();
 
