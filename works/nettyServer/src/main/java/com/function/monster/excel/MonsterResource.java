@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 import java.util.stream.IntStream;
 
 /**
@@ -38,10 +39,8 @@ public class MonsterResource {
             String[] drops = monster.getDrop().split(",");
             for (int j = 0; j < strs.length; j++) {
                 int skillId = Integer.parseInt(strs[j]);
-//                Skill skill = new Skill();
-//                skill.setSkillId(skillId);
-//                skill.setTimer(new Timer());
                 Skill skill = skillCache.get("Skill" + skillId);
+                skill.setTimer(new Timer());
                 monster.getMonsterSkill().put(j, skill);
             }
             IntStream.range(0, drops.length).forEach(j

@@ -13,7 +13,7 @@ public class Buff {
 
     private int id;
 
-    private int remainTime;
+    private int remainTimes;
 
     public BuffExcel getBuffExcel() {
         return BuffResource.getBuffById(id);

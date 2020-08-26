@@ -11,6 +11,7 @@ import com.function.occ.excel.OccExcel;
 import com.function.occ.excel.OccResource;
 import com.function.occ.manager.OccCache;
 import com.function.player.model.Player;
+import com.function.scene.model.SceneObjectType;
 import com.jpa.dao.BagDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TBag;
@@ -67,7 +68,7 @@ public class PlayerData {
     public void initSkill(Player player) {
         OccExcel occExcel = occCache.get("Occ" + player.getTPlayer().getOccupation());
         for (int i = 0; i < occExcel.getSkills().size(); i++) {
-            player.getSkillMap().put(i + 1, occExcel.getSkills().get(i));
+            player.getCanUseSkill().put(i + 1, occExcel.getSkills().get(i));
         }
     }
 
@@ -99,6 +100,7 @@ public class PlayerData {
      * 初始化玩家
      */
     public void initPlayer(Player player) {
+        player.setType(SceneObjectType.PLAYER.getType());
         initSkill(player);
         initEquipment(player);
         initBag(player);

@@ -57,6 +57,8 @@ public class UserService {
 
     public static String mpKey = "MpResume";
 
+    public static String Player = "Player";
+
     public static int mpAdd = 5;
 
     /**
@@ -126,7 +128,7 @@ public class UserService {
             return;
         }
         Scene scene = sceneMap.getSceneCache().get(player.getTPlayer().getLoc());
-        scene.getPlayerMap().put(playerId, player);
+        scene.getSceneObjectMap().put(Player + playerId, player);
         //加载角色信息
         if (!player.isInit()) {
             player.setNowScene(scene);
@@ -172,7 +174,7 @@ public class UserService {
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);
         Scene scene = sceneMap.getSceneCache().get(player.getNowScene().getSceneId());
-        scene.getPlayerMap().remove(player.getTPlayer().getRoleId());
+        scene.getSceneObjectMap().remove(player.getTPlayer().getRoleId());
         player.setChannelHandlerContext(null);
     }
 

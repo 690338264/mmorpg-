@@ -24,6 +24,8 @@ public class PlayerController {
     @Autowired
     private UserService userService;
 
+    public static String Monster = "Monster";
+
     {
         ControllerManager.add(Cmd.PLAYER_CREATE, this::createRole);
         ControllerManager.add(Cmd.ATTACK, this::attackMonster);
@@ -43,7 +45,8 @@ public class PlayerController {
         String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
         Integer skill = Integer.valueOf(params[1]);
         Integer target = Integer.valueOf(params[2]);
-        playerService.attackMonster(player, skill, target);
+        String t = Monster + target;
+        playerService.attack(player, skill, t);
     }
 
     private void playerState(ChannelHandlerContext ctx, Msg msg) {

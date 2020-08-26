@@ -8,7 +8,9 @@ import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
 import com.function.scene.manager.SceneMap;
 import com.function.scene.model.Scene;
-import com.jpa.entity.TPlayer;
+import com.function.scene.model.SceneObject;
+import com.function.scene.model.SceneObjectType;
+import com.function.user.service.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,10 +49,10 @@ public class SceneService {
      */
     public SceneExcel moveTo(Player player, int sceneId) {
         Scene oldScene = sceneMap.getSceneCache().get(player.getTPlayer().getLoc());
-        oldScene.getPlayerMap().remove(player.getTPlayer().getRoleId());
+        oldScene.getSceneObjectMap().remove(player.getTPlayer().getRoleId());
         Scene scene = sceneMap.getSceneCache().get(sceneId);
         player.getTPlayer().setLoc(sceneId);
-        scene.getPlayerMap().put(player.getTPlayer().getRoleId(), player);
+        scene.getSceneObjectMap().put(UserService.Player + player.getTPlayer().getRoleId(), player);
         player.setNowScene(scene);
         playerData.updateLoc(player);
         notifyScene.notifyScene(scene, MessageFormat.format("欢迎玩家{0}来到场景\n", player.getTPlayer().getName()));
@@ -62,31 +64,27 @@ public class SceneService {
      */
     public void aoi(Player player, ChannelHandlerContext ctx) {
         Scene scene = player.getNowScene();
-        StringBuilder sb = new StringBuilder("您所在场景有NPC:\n");
-        for (Integer key : scene.getNpcMap().keySet()) {
-            NpcExcel npc = scene.getNpcMap().get(key);
-            sb.append(npc.getName()).append("--id为").append(npc.getId()).append('\n');
-        }
-        sb.append("您所在的场景有玩家：").append('\n');
-        for (Long key : scene.getPlayerMap().keySet()) {
-            TPlayer tPlayer = scene.getPlayerMap().get(key).getTPlayer();
-            sb.append("[").append(tPlayer.getName()).append("]")
-                    .append("等级为：[").append(tPlayer.getLevel()).append("]\n");
-        }
-        sb.append("您所在场景有怪物：").append('\n');
-        for (Integer key : scene.getMonsterMap().keySet()) {
-            Monster monster = scene.getMonsterMap().get(key);
-            if (monster.getHp() <= 0) {
-                sb.append("id:[").append(key).append("]")
-                        .append(monster.getMonsterExcel().getName()).append("  [已死亡]").append('\n');
-            } else {
-                sb.append("id:[").append(key).append("]")
-                        .append(monster.getMonsterExcel().getName()).append("  Hp[")
-                        .append(monster.getHp()).append("]").append('\n');
+        for (String key : scene.getSceneObjectMap().keySet()) {
+            SceneObject sceneObject = scene.getSceneObjectMap().get(key);
+            if (sceneObject.getType() == SceneObjectType.NPC.getType()) {
+                NpcExcel npc = (NpcExcel) sceneObject;
+                notifyScene.notifyPlayer(player, MessageFormat.format("NPC:{0}  id为{1}\n",
+                        npc.getName(), npc.getId()));
+                continue;
+            }
+            if (sceneObject.getType() == SceneObjectType.PLAYER.getType()) {
+                Player p = (Player) sceneObject;
+                notifyScene.notifyPlayer(player, MessageFormat.format("玩家:[{0}]等级为{1}\n",
+                        p.getTPlayer().getName(), p.getTPlayer().getLevel()));
+                continue;
+            }
+            if (sceneObject.getType() == SceneObjectType.MONSTER.getType()) {
+                Monster monster = (Monster) sceneObject;
+                notifyScene.notifyPlayer(player, MessageFormat.format("怪物:id:[{0}]{1}  Hp:[{2}]\n",
+                        monster.getSceneId(), monster.getMonsterExcel().getName(), monster.getHp()));
             }
         }
-        sb.append("可选择怪物进行攻击\n");
-        notifyScene.notifyPlayer(player, sb);
+
     }
 
 }

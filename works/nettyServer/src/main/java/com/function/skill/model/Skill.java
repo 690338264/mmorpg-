@@ -9,13 +9,14 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Catherine
  * @create 2020-07-31 12:43
  */
 @Data
-@JsonIgnoreProperties(value = {"timer"}, ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"timer", "buffMap"}, ignoreUnknown = true)
 public class Skill {
 
     private Integer skillId;
@@ -27,6 +28,8 @@ public class Skill {
     private Timer timer;
 
     private Map<Integer, Buff> buffMap = new HashMap<>();
+
+    private Map<String, ScheduledFuture> taskMap = new HashMap<>();
 
     public SkillExcel getSkillExcel() {
         return SkillResource.getSkillById(skillId);

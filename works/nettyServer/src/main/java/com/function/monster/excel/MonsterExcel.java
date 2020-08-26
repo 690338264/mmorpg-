@@ -34,7 +34,7 @@ public class MonsterExcel {
     /**
      * 复活时间
      */
-    private int reviveTime;
+    private Long reviveTime;
     /**
      * 掉落
      */

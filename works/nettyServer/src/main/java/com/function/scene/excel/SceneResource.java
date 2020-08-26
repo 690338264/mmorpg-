@@ -4,6 +4,7 @@ import com.function.monster.model.Monster;
 import com.function.npc.excel.NpcResource;
 import com.function.scene.manager.SceneMap;
 import com.function.scene.model.Scene;
+import com.function.scene.model.SceneObjectType;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
 
 /**
  * @author Catherine
@@ -23,6 +23,10 @@ public class SceneResource {
     private ExcelManager excelManager;
     @Autowired
     private SceneMap sceneMapCache;
+
+    public static String Monster = "Monster";
+
+    public static String Npc = "Npc";
 
     private static Map<Integer, SceneExcel> sceneMap = new HashMap<Integer, SceneExcel>();
 
@@ -45,12 +49,12 @@ public class SceneResource {
                 monster.setHp(monster.getMonsterExcel().getHp());
                 monster.setAtk(monster.getMonsterExcel().getAggr());
                 monster.getCanUseSkill().putAll(monster.getMonsterExcel().getMonsterSkill());
-                monster.setTimer(new Timer());
-                scene.getMonsterMap().put(j, monster);
+                monster.setType(SceneObjectType.MONSTER.getType());
+                scene.getSceneObjectMap().put(Monster + j, monster);
             }
             for (int j = 0; j < npcs.length; j++) {
                 int npcId = Integer.parseInt(npcs[j]);
-                scene.getNpcMap().put(j, NpcResource.getNpcById(npcId));
+                scene.getSceneObjectMap().put(Npc + j, NpcResource.getNpcById(npcId));
             }
             sceneMapCache.getSceneCache().put(sceneExcel.getId(), scene);
         }

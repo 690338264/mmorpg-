@@ -5,7 +5,6 @@ import com.function.communicate.model.Email;
 import com.function.item.model.Item;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
-import com.function.skill.model.Skill;
 import com.jpa.entity.TPlayer;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
@@ -52,10 +51,7 @@ public class Player extends SceneObject {
      * 是否已加载好角色
      */
     private boolean init;
-    /**
-     * 玩家线程任务列表
-     */
-    private Map<Integer, Skill> skillMap = new HashMap<>();
+
     private Map<Integer, Item> equipMap = new HashMap<>();
     private Map<Integer, Email> emailMap = new HashMap<>();
 }

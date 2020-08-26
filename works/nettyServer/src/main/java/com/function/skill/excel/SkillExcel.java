@@ -18,7 +18,7 @@ public class SkillExcel {
 
     private Integer atk;
 
-    private Integer cd;
+    private Long cd;
 
     private String buff;
 }

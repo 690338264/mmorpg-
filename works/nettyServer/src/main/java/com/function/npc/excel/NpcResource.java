@@ -1,5 +1,6 @@
 package com.function.npc.excel;
 
+import com.function.scene.model.SceneObjectType;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ public class NpcResource {
         int num = excelManager.getMap().get("Npc").size();
         for (int i = 0; i < num; i++) {
             NpcExcel npcExcel = (NpcExcel) excelManager.getMap().get("Npc").get(i);
+            npcExcel.setType(SceneObjectType.NPC.getType());
             npcMap.put(npcExcel.getId(), npcExcel);
         }
     }

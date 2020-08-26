@@ -1,17 +1,17 @@
 package com.function.monster.service;
 
 import com.function.monster.model.Monster;
-import com.function.monster.timetask.CdTime;
-import com.function.monster.timetask.ReviveTime;
 import com.function.player.model.Player;
+import com.function.player.service.PlayerService;
+import com.function.scene.excel.SceneResource;
 import com.function.scene.model.Scene;
 import com.function.scene.service.NotifyScene;
 import com.function.skill.model.Skill;
+import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
-import java.util.Timer;
 
 
 /**
@@ -23,21 +23,19 @@ public class MonsterService {
     @Autowired
     private NotifyScene notifyScene;
 
+
     /**
-     * 判断怪物是否死亡
+     * 怪物死亡
      */
-    public boolean isMonsterDeath(int index, Scene scene) {
-        Monster monster = scene.getMonsterMap().get(index);
-        if (monster.getHp() <= 0) {
-            scene.getMonsterMap().remove(index);
-            Timer timer = monster.getTimer();
-            ReviveTime t = new ReviveTime(monster, index, scene);
-            timer.schedule(t, monster.getMonsterExcel().getReviveTime() * 1000);
-            monster.setTarget(null);
-            return true;
-        } else {
-            return false;
-        }
+    public void monsterDeath(String index, Scene scene) {
+        Monster monster = (Monster) scene.getSceneObjectMap().get(index);
+        scene.getSceneObjectMap().remove(index);
+        String id = index.replaceAll(SceneResource.Monster, "");
+        ThreadPoolManager.runThread(() -> {
+            monster.setHp(monster.getMonsterExcel().getHp());
+            scene.getSceneObjectMap().put(index, monster);
+        }, monster.getMonsterExcel().getReviveTime(), Integer.parseInt(id));
+        monster.setTarget(null);
     }
 
     /**
@@ -49,15 +47,19 @@ public class MonsterService {
         Random random = new Random();
         Integer randomKey = keys[random.nextInt(keys.length)];
         Skill skill = monster.getCanUseSkill().get(randomKey);
-        Timer skillTimer = skill.getTimer();
         monster.getCanUseSkill().remove(randomKey);
         int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getAtk();
         player.setHp(player.getHp() - hurt);
-        CdTime cdTime = new CdTime(monster, randomKey, skill);
-        skillTimer.schedule(cdTime, skill.getSkillExcel().getCd() * 1000);
-        StringBuilder getHurt = new StringBuilder("[").append(monster.getMonsterExcel().getName())
-                .append("]释放了技能[").append(skill).append("对您造成")
-                .append(hurt).append("的伤害\n");
-        notifyScene.notifyPlayer(player, getHurt);
+        ThreadPoolManager.runThread(() -> {
+            monster.getCanUseSkill().put(randomKey, skill);
+        }, skill.getSkillExcel().getCd(), monster.getId());
+        if (player.getHp() <= 0) {
+            player.getChannelHandlerContext().writeAndFlush("已阵亡！请复活！\n");
+            monster.setTarget(null);
+            monster.getTaskMap().get(PlayerService.attack).cancel(true);
+            monster.getTaskMap().remove(PlayerService.attack);
+        } else {
+            player.getChannelHandlerContext().writeAndFlush("您受到了：" + hurt + "点的伤害    剩余血量为" + player.getHp() + '\n');
+        }
     }
 }
