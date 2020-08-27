@@ -63,7 +63,7 @@ public class SceneService {
     /**
      * 查看周围
      */
-    public void aoi(Player player, ChannelHandlerContext ctx) {
+    public void aoi(Player player) {
         Scene scene = player.getNowScene();
         for (String key : scene.getSceneObjectMap().keySet()) {
             SceneObject sceneObject = scene.getSceneObjectMap().get(key);

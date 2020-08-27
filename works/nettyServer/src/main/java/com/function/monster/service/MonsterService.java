@@ -8,11 +8,12 @@ import com.function.scene.excel.SceneResource;
 import com.function.scene.model.Scene;
 import com.function.scene.service.NotifyScene;
 import com.function.skill.model.Skill;
+import com.function.user.map.UserMap;
 import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Random;
+import java.util.*;
 
 
 /**
@@ -27,6 +28,8 @@ public class MonsterService {
     private PlayerService playerService;
     @Autowired
     private BuffService buffService;
+    @Autowired
+    private UserMap userMap;
 
 
     /**
@@ -41,14 +44,14 @@ public class MonsterService {
             monster.setHp(monster.getMonsterExcel().getHp());
             scene.getSceneObjectMap().put(index, monster);
         }, monster.getMonsterExcel().getReviveTime(), Integer.parseInt(id));
-        monster.setTarget(null);
+        monster.getHurtList().clear();
     }
 
     /**
      * 怪物进行攻击
      */
-    public void monsterAtk(Monster monster, Player player) {
-
+    public void monsterAtk(Monster monster, Long playerId) {
+        Player player = userMap.getPlayers(playerId);
         Integer[] keys = monster.getCanUseSkill().keySet().toArray(new Integer[0]);
         Random random = new Random();
         Integer randomKey = keys[random.nextInt(keys.length)];
@@ -56,12 +59,21 @@ public class MonsterService {
         monster.getCanUseSkill().remove(randomKey);
         int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getAtk();
         player.setHp(player.getHp() - hurt);
-        ThreadPoolManager.runThread(() -> {
-            monster.getCanUseSkill().put(randomKey, skill);
-        }, skill.getSkillExcel().getCd(), monster.getId());
+        ThreadPoolManager.runThread(() -> monster.getCanUseSkill().put(randomKey, skill), skill.getSkillExcel().getCd(), monster.getId());
         if (!playerService.playerDie(player, monster)) {
             player.getChannelHandlerContext().writeAndFlush("您受到了：" + hurt + "点的伤害    剩余血量为" + player.getHp() + '\n');
             buffService.buff(monster.getSceneId(), skill, player, monster, player.getNowScene());
         }
+    }
+
+    public Long hurtSort(Monster monster) {
+        Map<Long, Integer> hurtMap = monster.getHurtList();
+        List<Map.Entry<Long, Integer>> list = new LinkedList<>(hurtMap.entrySet());
+        Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        Map<Long, Integer> result = new LinkedHashMap<>();
+        for (Map.Entry<Long, Integer> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result.entrySet().iterator().next().getKey();
     }
 }

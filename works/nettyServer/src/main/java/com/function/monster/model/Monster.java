@@ -1,35 +1,32 @@
 package com.function.monster.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.function.monster.excel.MonsterExcel;
 import com.function.monster.excel.MonsterResource;
-import com.function.player.model.Player;
 import com.function.scene.model.SceneObject;
 import lombok.Data;
 
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Catherine
  */
 @Data
-@JsonIgnoreProperties(value = {"timer"})
 public class Monster extends SceneObject {
     /**
      * 怪物类型id
      */
     private Integer id;
 
-    ReentrantLock lock = new ReentrantLock();
 
     /**
      * 怪物场景自己的id
      */
     private Integer sceneId;
     /**
-     * 当前仇恨目标
+     * 仇恨列表
      */
-    private Player target;
+    private Map<Long, Integer> hurtList = new ConcurrentHashMap<>();
 
     @Override
     public int getOriHp() {

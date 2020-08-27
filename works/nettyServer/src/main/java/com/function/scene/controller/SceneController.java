@@ -45,6 +45,6 @@ public class SceneController {
 
     private void aoi(ChannelHandlerContext ctx, Msg msg) {
         Player player = userService.getPlayerByCtx(ctx);
-        sceneService.aoi(player, ctx);
+        sceneService.aoi(player);
     }
 }

@@ -103,30 +103,30 @@ public class PlayerService {
      * 攻击
      */
     public void attack(Player player, int skillId, String target) {
-        synchronized (this) {
-            Scene scene = player.getNowScene();
-            SceneObject s = scene.getSceneObjectMap().get(target);
-
-            Skill skill = player.getCanUseSkill().get(skillId);
-            //判断目标是否死亡
-            if (s == null) {
-                player.getChannelHandlerContext().writeAndFlush("攻击目标无效，请重新选择！\n");
-                return;
-            }
-            //判断技能CD
-            if (skill != null) {
-                //判断玩家mp
-                if (player.getMp() >= skill.getSkillExcel().getMp()) {
-                    //判断装备磨损度
-                    for (Integer key : player.getEquipMap().keySet()) {
-                        if (player.getEquipMap().get(key).getNowWear() <= 10) {
-                            StringBuilder eqpBreak = new StringBuilder("装备损坏过于严重！请维修\n");
-                            notifyScene.notifyPlayer(player, eqpBreak);
-                            return;
-                        }
-                        player.getEquipMap().get(key).setNowWear(player.getEquipMap().get(key).getNowWear() - 2);
+        Scene scene = player.getNowScene();
+        SceneObject s = scene.getSceneObjectMap().get(target);
+        Skill skill = player.getCanUseSkill().get(skillId);
+        //判断目标是否死亡
+        if (s == null) {
+            player.getChannelHandlerContext().writeAndFlush("攻击目标无效，请重新选择！\n");
+            return;
+        }
+        //判断技能CD
+        if (skill != null) {
+            //判断玩家mp
+            if (player.getMp() >= skill.getSkillExcel().getMp()) {
+                //判断装备磨损度
+                for (Integer key : player.getEquipMap().keySet()) {
+                    if (player.getEquipMap().get(key).getNowWear() <= 10) {
+                        StringBuilder eqpBreak = new StringBuilder("装备损坏过于严重！请维修\n");
+                        notifyScene.notifyPlayer(player, eqpBreak);
+                        return;
                     }
-                    //造成的伤害
+                    player.getEquipMap().get(key).setNowWear(player.getEquipMap().get(key).getNowWear() - 2);
+                }
+                //造成的伤害
+                try {
+                    s.getLock().lock();
                     int hurt = player.getAtk() * skill.getSkillExcel().getAtk();
                     s.setHp(s.getHp() - hurt);
                     player.setMp(player.getMp() - skill.getSkillExcel().getMp());
@@ -141,8 +141,8 @@ public class PlayerService {
                             Monster monster = (Monster) s;
                             killMonster(monster, scene, target, player);
                             return;
-
                         }
+
                         if (s.getType() == SceneObjectType.PLAYER.getType()) {
                             Player p = (Player) s;
                             notifyScene.notifyScene(scene, MessageFormat.format("玩家{0}击败玩家{1}\n",
@@ -153,27 +153,44 @@ public class PlayerService {
                         //攻击
                         if (s.getType() == SceneObjectType.MONSTER.getType()) {
                             Monster monster = (Monster) s;
+                            int oriHurt;
+                            int flag = 0;
+                            if (monster.getHurtList().isEmpty()) {
+                                flag = 1;
+                            }
+                            if (!monster.getHurtList().containsKey(player.getTPlayer().getRoleId())) {
+                                oriHurt = 0;
+                            } else {
+                                oriHurt = monster.getHurtList().get(player.getTPlayer().getRoleId());
+                            }
+                            monster.getHurtList().put(player.getTPlayer().getRoleId(), hurt + oriHurt);
                             buffService.buff(monster.getSceneId(), skill, monster, player, scene);
                             notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]释放了技能[{1}]对怪物[{2}]产生伤害:{3}\n",
                                     player.getTPlayer().getName(), skill.getSkillExcel().getName(),
                                     monster.getMonsterExcel().getName(), hurt));
-
-                            if (monster.getTarget() == null) {
-                                monster.setTarget(player);
+                            if (flag == 1) {
                                 ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
-                                    monsterService.monsterAtk(monster, player);
+                                    if (monster.getHurtList().isEmpty()) {
+                                        monster.getTaskMap().get(attack).cancel(true);
+                                        monster.getTaskMap().remove(attack);
+                                    }
+                                    Long hate = monsterService.hurtSort(monster);
+                                    monsterService.monsterAtk(monster, hate);
                                 }, 0, period, monster.getId());
                                 monster.getTaskMap().put(attack, scheduledFuture);
                             }
                         }
                     }
-                } else {
-                    notifyScene.notifyPlayer(player, "技能释放失败！原因：mp不足！\n");
+                } finally {
+                    s.getLock().unlock();
                 }
             } else {
-                notifyScene.notifyPlayer(player, "技能冷却中\n");
+                notifyScene.notifyPlayer(player, "技能释放失败！原因：mp不足！\n");
             }
+        } else {
+            notifyScene.notifyPlayer(player, "技能冷却中\n");
         }
+
 
     }
 
@@ -183,7 +200,7 @@ public class PlayerService {
      */
     public void killMonster(Monster monster, Scene scene, String target, Player player) {
 
-        if (monster.getTarget() != null) {
+        if (!monster.getHurtList().isEmpty()) {
             monster.getTaskMap().get(attack).cancel(true);
             monster.getTaskMap().remove(attack);
         }
@@ -240,9 +257,7 @@ public class PlayerService {
                 player.setHp(player.getOriHp());
             }, playerRevive, player.getChannelHandlerContext().hashCode());
             buffService.removeBuff(player);
-            monster.setTarget(null);
-            monster.getTaskMap().get(PlayerService.attack).cancel(true);
-            monster.getTaskMap().remove(PlayerService.attack);
+            monster.getHurtList().remove(player.getTPlayer().getRoleId());
             return true;
         }
         return false;

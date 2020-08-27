@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Catherine
@@ -30,6 +31,8 @@ public class SceneObject {
      * 原始Hp
      */
     private int oriHp;
+
+    ReentrantLock lock = new ReentrantLock();
     /**
      * 线程任务列表
      */
@@ -81,6 +84,14 @@ public class SceneObject {
 
     public void setOriHp(int oriHp) {
         this.oriHp = oriHp;
+    }
+
+    public ReentrantLock getLock() {
+        return lock;
+    }
+
+    public void setLock(ReentrantLock lock) {
+        this.lock = lock;
     }
 
     public Map<String, ScheduledFuture> getTaskMap() {
