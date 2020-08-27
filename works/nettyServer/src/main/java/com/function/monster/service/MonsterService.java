@@ -61,7 +61,7 @@ public class MonsterService {
         }, skill.getSkillExcel().getCd(), monster.getId());
         if (!playerService.playerDie(player, monster)) {
             player.getChannelHandlerContext().writeAndFlush("您受到了：" + hurt + "点的伤害    剩余血量为" + player.getHp() + '\n');
-            playerService.buff(monster.getSceneId(), skill, player, monster, player.getNowScene());
+            buffService.buff(monster.getSceneId(), skill, player, monster, player.getNowScene());
         }
     }
 }

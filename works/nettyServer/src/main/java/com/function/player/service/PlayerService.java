@@ -58,7 +58,7 @@ public class PlayerService {
 
     public static String attack = "attack";
 
-    public Long period = 15000L;
+    public Long period = 5000L;
 
     public Long playerRevive = 5000L;
 
