@@ -33,10 +33,6 @@ public class Player extends SceneObject {
 
     private Integer teamId;
     /**
-     * 玩家初始hp
-     */
-    private Integer oriHp;
-    /**
      * 玩家当前mp
      */
     private Integer mp;
@@ -44,6 +40,7 @@ public class Player extends SceneObject {
      * 玩家初始mp
      */
     private Integer oriMp;
+
     private Integer def;
     private Integer speed;
     private int levelUp = 2000;

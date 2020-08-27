@@ -31,6 +31,11 @@ public class Monster extends SceneObject {
      */
     private Player target;
 
+    @Override
+    public int getOriHp() {
+        return getMonsterExcel().getHp();
+    }
+
     public MonsterExcel getMonsterExcel() {
         return MonsterResource.getMonById(id);
     }

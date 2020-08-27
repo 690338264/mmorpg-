@@ -29,6 +29,10 @@ public class MonsterService {
      */
     public void monsterDeath(String index, Scene scene) {
         Monster monster = (Monster) scene.getSceneObjectMap().get(index);
+        monster.getBuffs().forEach((k, v) -> {
+            monster.getBuffs().get(k).cancel(true);
+            monster.getBuffs().remove(k);
+        });
         scene.getSceneObjectMap().remove(index);
         String id = index.replaceAll(SceneResource.Monster, "");
         ThreadPoolManager.runThread(() -> {

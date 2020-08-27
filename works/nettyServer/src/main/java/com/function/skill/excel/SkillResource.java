@@ -1,5 +1,6 @@
 package com.function.skill.excel;
 
+import com.function.buff.excel.BuffResource;
 import com.function.buff.model.Buff;
 import com.function.skill.cache.SkillCache;
 import com.function.skill.model.Skill;
@@ -21,6 +22,8 @@ public class SkillResource {
     private ExcelManager excelManager;
     @Autowired
     private SkillCache skillCache;
+    @Autowired
+    private BuffResource buffResource;
 
     public static String className = "Skill";
 

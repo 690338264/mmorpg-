@@ -25,9 +25,17 @@ public class SceneObject {
      */
     private int type;
     /**
+     * 原始Hp
+     */
+    private int oriHp;
+    /**
      * 线程任务列表
      */
     private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
+    /**
+     * buff
+     */
+    private Map<Integer, ScheduledFuture> buffs = new ConcurrentHashMap<>();
     /**
      * 可用技能
      */
@@ -57,12 +65,29 @@ public class SceneObject {
         this.type = type;
     }
 
+    public int getOriHp() {
+        return oriHp;
+    }
+
+    public void setOriHp(int oriHp) {
+        this.oriHp = oriHp;
+    }
+
     public Map<String, ScheduledFuture> getTaskMap() {
         return taskMap;
     }
 
+
     public void setTaskMap(Map<String, ScheduledFuture> taskMap) {
         this.taskMap = taskMap;
+    }
+
+    public Map<Integer, ScheduledFuture> getBuffs() {
+        return buffs;
+    }
+
+    public void setBuffs(Map<Integer, ScheduledFuture> buffs) {
+        this.buffs = buffs;
     }
 
     public Map<Integer, Skill> getCanUseSkill() {
@@ -72,4 +97,6 @@ public class SceneObject {
     public void setCanUseSkill(Map<Integer, Skill> canUseSkill) {
         this.canUseSkill = canUseSkill;
     }
+
+
 }
