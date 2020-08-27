@@ -12,6 +12,8 @@ import java.util.concurrent.ScheduledFuture;
  * @create 2020-08-13 16:07
  */
 public class SceneObject {
+
+    private String name;
     /**
      * 当前hp
      */
@@ -40,6 +42,14 @@ public class SceneObject {
      * 可用技能
      */
     private Map<Integer, Skill> canUseSkill = new HashMap<>();
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public int getHp() {
         return hp;

@@ -30,6 +30,7 @@ public class SceneService {
     @Autowired
     private SceneMap sceneMap;
 
+
     /**
      * 相邻场景
      */
@@ -74,8 +75,9 @@ public class SceneService {
             }
             if (sceneObject.getType() == SceneObjectType.PLAYER.getType()) {
                 Player p = (Player) sceneObject;
-                notifyScene.notifyPlayer(player, MessageFormat.format("玩家:[{0}]等级为{1}\n",
-                        p.getTPlayer().getName(), p.getTPlayer().getLevel()));
+                String die = p.getHp() <= 0 ? "[阵亡]" : "";
+                notifyScene.notifyPlayer(player, MessageFormat.format("玩家:[{0}]等级为{1}  {2}\n",
+                        p.getTPlayer().getName(), p.getTPlayer().getLevel(), die));
                 continue;
             }
             if (sceneObject.getType() == SceneObjectType.MONSTER.getType()) {

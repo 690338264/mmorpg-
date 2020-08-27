@@ -28,4 +28,8 @@ public class BuffExcel {
      * 正/负面状态
      */
     private int state;
+
+    private String describe;
+
+    private double rate;
 }

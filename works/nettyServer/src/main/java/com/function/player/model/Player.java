@@ -51,4 +51,9 @@ public class Player extends SceneObject {
 
     private Map<Integer, Item> equipMap = new HashMap<>();
     private Map<Integer, Email> emailMap = new HashMap<>();
+
+    @Override
+    public String getName() {
+        return tPlayer.getName();
+    }
 }

@@ -1,5 +1,6 @@
 package com.function.monster.service;
 
+import com.function.buff.service.BuffService;
 import com.function.monster.model.Monster;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerService;
@@ -22,6 +23,10 @@ public class MonsterService {
 
     @Autowired
     private NotifyScene notifyScene;
+    @Autowired
+    private PlayerService playerService;
+    @Autowired
+    private BuffService buffService;
 
 
     /**
@@ -29,10 +34,7 @@ public class MonsterService {
      */
     public void monsterDeath(String index, Scene scene) {
         Monster monster = (Monster) scene.getSceneObjectMap().get(index);
-        monster.getBuffs().forEach((k, v) -> {
-            monster.getBuffs().get(k).cancel(true);
-            monster.getBuffs().remove(k);
-        });
+        buffService.removeBuff(monster);
         scene.getSceneObjectMap().remove(index);
         String id = index.replaceAll(SceneResource.Monster, "");
         ThreadPoolManager.runThread(() -> {
@@ -57,13 +59,9 @@ public class MonsterService {
         ThreadPoolManager.runThread(() -> {
             monster.getCanUseSkill().put(randomKey, skill);
         }, skill.getSkillExcel().getCd(), monster.getId());
-        if (player.getHp() <= 0) {
-            player.getChannelHandlerContext().writeAndFlush("已阵亡！请复活！\n");
-            monster.setTarget(null);
-            monster.getTaskMap().get(PlayerService.attack).cancel(true);
-            monster.getTaskMap().remove(PlayerService.attack);
-        } else {
+        if (!playerService.playerDie(player, monster)) {
             player.getChannelHandlerContext().writeAndFlush("您受到了：" + hurt + "点的伤害    剩余血量为" + player.getHp() + '\n');
+            playerService.buff(monster.getSceneId(), skill, player, monster, player.getNowScene());
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.function.player.service;
 
-import com.function.buff.model.Buff;
+import com.function.buff.service.BuffService;
 import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
 import com.function.item.service.ItemService;
@@ -9,7 +9,6 @@ import com.function.monster.service.MonsterService;
 import com.function.player.manager.BagManager;
 import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
-import com.function.scene.excel.SceneResource;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
 import com.function.scene.model.SceneObjectType;
@@ -39,6 +38,8 @@ public class PlayerService {
     @Autowired
     private MonsterService monsterService;
     @Autowired
+    private BuffService buffService;
+    @Autowired
     private PlayerData playerData;
     @Autowired
     private ItemService itemService;
@@ -58,6 +59,8 @@ public class PlayerService {
     public static String attack = "attack";
 
     public Long period = 15000L;
+
+    public Long playerRevive = 5000L;
 
     public void roleCreate(ChannelHandlerContext ctx, String roleName, Integer roleType, Long userId) {
         TPlayer tPlayer = playerManager.newPlayer(roleName, roleType, userId);
@@ -150,7 +153,7 @@ public class PlayerService {
                         //攻击
                         if (s.getType() == SceneObjectType.MONSTER.getType()) {
                             Monster monster = (Monster) s;
-                            buff(monster.getSceneId(), skill, monster, player, scene);
+                            buffService.buff(monster.getSceneId(), skill, monster, player, scene);
                             notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]释放了技能[{1}]对怪物[{2}]产生伤害:{3}\n",
                                     player.getTPlayer().getName(), skill.getSkillExcel().getName(),
                                     monster.getMonsterExcel().getName(), hurt));
@@ -174,64 +177,6 @@ public class PlayerService {
 
     }
 
-    /**
-     * buff效果
-     */
-    public void buff(int id, Skill skill, SceneObject beAttack, SceneObject attacker, Scene scene) {
-        skill.getBuffMap().forEach((k, v) -> {
-            SceneObject buffer;
-            Buff buff = skill.getBuffMap().get(k);
-            int flag;
-            if (buff.getBuffExcel().getState() == 1) {
-                flag = 1;
-                buffer = attacker;
-            } else {
-                flag = -1;
-                buffer = beAttack;
-            }
-            buff.setSceneObject(attacker);
-            //如果已有该buff  覆盖
-            ScheduledFuture scheduledFuture = buffer.getBuffs().get(buff.getId());
-            if (scheduledFuture != null) {
-                scheduledFuture.cancel(true);
-                buffer.getBuffs().remove(buff.getId());
-                buffer.setAtk(buffer.getAtk() - flag * buff.getBuffExcel().getAtk());
-            }
-
-            long time = buff.getBuffExcel().getLast() / buff.getBuffExcel().getTimes();
-            buff.setRemainTimes(buff.getBuffExcel().getTimes());
-            //多次效果
-            if (buff.getBuffExcel().getTimes() != 1) {
-                ScheduledFuture buffTask = ThreadPoolManager.loopThread(() -> {
-                    if (buff.getRemainTimes() == 0) {
-                        buffer.getBuffs().get(buff.getId()).cancel(true);
-                    }
-                    buffer.setHp(buffer.getHp() + flag * buff.getBuffExcel().getHp());
-                    System.out.println("Hp-" + flag * buff.getBuffExcel().getHp());
-                    buff.setRemainTimes(buff.getRemainTimes() - 1);
-                    if (buffer.getHp() <= 0) {
-                        Monster m = (Monster) buffer;
-                        killMonster(m, scene, SceneResource.Monster + m.getSceneId(), (Player) attacker);
-                    }
-                    if (buffer.getHp() > buffer.getOriHp()) {
-                        buffer.setHp(buffer.getOriHp());
-                    }
-                }, 0, time, id);
-                buffer.getBuffs().put(buff.getId(), buffTask);
-            }
-            //单次持续效果
-            else {
-                int atk = buffer.getAtk();
-                buffer.setAtk(atk + flag * buff.getBuffExcel().getAtk());
-                ScheduledFuture buffTask = ThreadPoolManager.runThread(() -> {
-                    buffer.setAtk(atk);
-                }, time, id);
-                buffer.getBuffs().put(buff.getId(), buffTask);
-
-            }
-            System.out.println("获得buff" + buff.getBuffExcel().getName());
-        });
-    }
 
     /**
      * 击杀怪物
@@ -283,6 +228,24 @@ public class PlayerService {
                     .append(tPlayer.getLevel()).append("级\n");
             notifyScene.notifyPlayer(player, levelUp);
         }
+    }
+
+    /**
+     * 玩家阵亡
+     */
+    public boolean playerDie(Player player, Monster monster) {
+        if (player.getHp() <= 0) {
+            notifyScene.notifyPlayer(player, "已阵亡！五秒后复活！\n");
+            ThreadPoolManager.runThread(() -> {
+                player.setHp(player.getOriHp());
+            }, playerRevive, player.getChannelHandlerContext().hashCode());
+            buffService.removeBuff(player);
+            monster.setTarget(null);
+            monster.getTaskMap().get(PlayerService.attack).cancel(true);
+            monster.getTaskMap().remove(PlayerService.attack);
+            return true;
+        }
+        return false;
     }
 
     /**

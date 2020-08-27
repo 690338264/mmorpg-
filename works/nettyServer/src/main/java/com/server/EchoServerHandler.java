@@ -39,6 +39,10 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         Msg message = new Msg();
         message.setCmdId(cmdId);
         message.setContent(cmd);
+        if (userService.getPlayerByCtx(ctx).getHp() <= 0) {
+            ctx.writeAndFlush("请等待复活!\n");
+            return;
+        }
         if (contr == null) {
             ctx.writeAndFlush("指令错误！\n");
         } else {
