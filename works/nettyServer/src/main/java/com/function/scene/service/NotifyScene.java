@@ -10,6 +10,8 @@ import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 /**
  * @author Catherine
  */
@@ -19,8 +21,9 @@ public class NotifyScene {
     private PlayerMap playerMap;
 
     public void notifyScene(Scene scene, String notify) {
-        scene.getSceneObjectMap().keySet().forEach(playerId -> {
-            SceneObject sceneObject = scene.getSceneObjectMap().get(playerId);
+        Map<Long, SceneObject> players = scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType());
+        players.keySet().forEach(playerId -> {
+            SceneObject sceneObject = players.get(playerId);
             if (sceneObject.getType() == SceneObjectType.PLAYER.getType()) {
                 Player p = (Player) sceneObject;
                 ChannelHandlerContext ctx = playerMap.getCtxPlayer(p.getTPlayer().getRoleId());

@@ -4,8 +4,10 @@ import com.function.bag.service.BagService;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.player.service.PlayerService;
-import com.function.scene.manager.SceneMap;
+import com.function.scene.manager.SceneManager;
 import com.function.scene.model.Scene;
+import com.function.scene.model.SceneObjectType;
+import com.function.scene.model.SceneType;
 import com.function.scene.service.NotifyScene;
 import com.function.team.service.TeamService;
 import com.function.user.map.PlayerMap;
@@ -49,7 +51,7 @@ public class UserService {
     @Autowired
     private NotifyScene notifyScene;
     @Autowired
-    private SceneMap sceneMap;
+    private SceneManager sceneManager;
     @Autowired
     private BagService bagService;
     @Autowired
@@ -127,8 +129,8 @@ public class UserService {
             ctx.writeAndFlush("该角色不存在！\n");
             return;
         }
-        Scene scene = sceneMap.getSceneCache().get(player.getTPlayer().getLoc());
-        scene.getSceneObjectMap().put(Player + playerId, player);
+        Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(player.getTPlayer().getLoc());
+        scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).put(playerId, player);
         //加载角色信息
         if (!player.isInit()) {
             player.setNowScene(scene);
@@ -173,7 +175,7 @@ public class UserService {
         teamService.leaveTeam(player);
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);
-        Scene scene = sceneMap.getSceneCache().get(player.getNowScene().getSceneId());
+        Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(player.getNowScene().getSceneId());
         scene.getSceneObjectMap().remove(player.getTPlayer().getRoleId());
         player.setChannelHandlerContext(null);
     }

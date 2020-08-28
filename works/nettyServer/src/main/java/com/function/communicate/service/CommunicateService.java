@@ -6,7 +6,8 @@ import com.function.communicate.model.Email;
 import com.function.item.model.Item;
 import com.function.item.service.ItemService;
 import com.function.player.model.Player;
-import com.function.scene.manager.SceneMap;
+import com.function.scene.manager.SceneManager;
+import com.function.scene.model.SceneType;
 import com.function.scene.service.NotifyScene;
 import com.function.user.map.PlayerMap;
 import com.function.user.map.UserMap;
@@ -31,7 +32,7 @@ public class CommunicateService {
     @Autowired
     private UserMap userMap;
     @Autowired
-    private SceneMap sceneMap;
+    private SceneManager sceneManager;
     @Autowired
     private PlayerDAO playerDAO;
     @Autowired
@@ -58,8 +59,10 @@ public class CommunicateService {
      */
     public void speak(Player player, String text) {
         String s = MessageFormat.format("{0}说：{1}\n", player.getTPlayer().getName(), text);
-        for (int key : sceneMap.getSceneCache().keySet()) {
-            notifyScene.notifyScene(sceneMap.getSceneCache().get(key), s);
+        for (SceneType type : SceneType.values()) {
+            for (int key : sceneManager.get(type.getType()).keySet()) {
+                notifyScene.notifyScene(sceneManager.get(type.getType()).get(key), s);
+            }
         }
 
     }

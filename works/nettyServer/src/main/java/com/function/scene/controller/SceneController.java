@@ -2,7 +2,6 @@ package com.function.scene.controller;
 
 import com.Cmd;
 import com.function.player.model.Player;
-import com.function.scene.excel.SceneExcel;
 import com.function.scene.service.SceneService;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
@@ -39,8 +38,7 @@ public class SceneController {
         Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
         int sceneId = Integer.parseInt(params[1]);
-        SceneExcel sceneExcel = sceneService.moveTo(player, sceneId);
-        ctx.writeAndFlush("您已到达：" + sceneExcel.getName() + '\n');
+        sceneService.moveTo(player, sceneId);
     }
 
     private void aoi(ChannelHandlerContext ctx, Msg msg) {

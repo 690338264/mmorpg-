@@ -3,6 +3,7 @@ package com.function.player.controller;
 import com.Cmd;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerService;
+import com.function.scene.model.SceneObjectType;
 import com.function.user.model.User;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
@@ -23,9 +24,6 @@ public class PlayerController {
 
     @Autowired
     private UserService userService;
-
-    public static String Monster = "Monster";
-
     {
         ControllerManager.add(Cmd.PLAYER_CREATE, this::createRole);
         ControllerManager.add(Cmd.ATTACK, this::attackMonster);
@@ -43,10 +41,10 @@ public class PlayerController {
     private void attackMonster(ChannelHandlerContext ctx, Msg msg) {
         Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
-        Integer skill = Integer.valueOf(params[1]);
-        Integer target = Integer.valueOf(params[2]);
-        String t = Monster + target;
-        playerService.attack(player, skill, t);
+        int skill = Integer.parseInt(params[1]);
+        long target = Long.parseLong(params[2]);
+
+        playerService.attack(player, skill, target, SceneObjectType.MONSTER.getType());
     }
 
     private void playerState(ChannelHandlerContext ctx, Msg msg) {

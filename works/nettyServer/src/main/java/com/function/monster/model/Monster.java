@@ -16,17 +16,19 @@ public class Monster extends SceneObject {
     /**
      * 怪物类型id
      */
-    private Integer id;
-
-
+    private int id;
     /**
      * 怪物场景自己的id
      */
-    private Integer sceneId;
+    private Long sceneId;
     /**
      * 仇恨列表
      */
     private Map<Long, Integer> hurtList = new ConcurrentHashMap<>();
+    /**
+     * 阵亡时间
+     */
+    private Long deathTime;
 
     @Override
     public int getOriHp() {

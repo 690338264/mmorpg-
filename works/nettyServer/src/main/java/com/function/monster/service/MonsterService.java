@@ -4,8 +4,8 @@ import com.function.buff.service.BuffService;
 import com.function.monster.model.Monster;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerService;
-import com.function.scene.excel.SceneResource;
 import com.function.scene.model.Scene;
+import com.function.scene.model.SceneObjectType;
 import com.function.scene.service.NotifyScene;
 import com.function.skill.model.Skill;
 import com.function.user.map.UserMap;
@@ -35,16 +35,29 @@ public class MonsterService {
     /**
      * 怪物死亡
      */
-    public void monsterDeath(String index, Scene scene) {
-        Monster monster = (Monster) scene.getSceneObjectMap().get(index);
+    public void monsterDeath(Long index, Scene scene) {
+        int type = SceneObjectType.MONSTER.getType();
+        Monster monster = (Monster) scene.getSceneObjectMap().get(type).get(index);
+        monster.setDeathTime(System.currentTimeMillis());
         buffService.removeBuff(monster);
-        scene.getSceneObjectMap().remove(index);
-        String id = index.replaceAll(SceneResource.Monster, "");
-        ThreadPoolManager.runThread(() -> {
-            monster.setHp(monster.getMonsterExcel().getHp());
-            scene.getSceneObjectMap().put(index, monster);
-        }, monster.getMonsterExcel().getReviveTime(), Integer.parseInt(id));
+        scene.getSceneObjectMap().get(type).remove(index);
+        scene.getWaitForRevive().put(monster.getSceneId(), monster);
         monster.getHurtList().clear();
+    }
+
+    /**
+     * 怪物复活
+     */
+    public void monsterRevive(Scene scene) {
+        scene.getWaitForRevive().forEach((k, v) -> {
+            Monster monster = scene.getWaitForRevive().get(k);
+            if (System.currentTimeMillis() - monster.getDeathTime() > monster.getMonsterExcel().getReviveTime()) {
+                scene.getWaitForRevive().remove(k);
+                monster.setHp(monster.getOriHp());
+                scene.getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).put(monster.getSceneId(), monster);
+            }
+        });
+
     }
 
     /**
@@ -62,10 +75,13 @@ public class MonsterService {
         ThreadPoolManager.runThread(() -> monster.getCanUseSkill().put(randomKey, skill), skill.getSkillExcel().getCd(), monster.getId());
         if (!playerService.playerDie(player, monster)) {
             player.getChannelHandlerContext().writeAndFlush("您受到了：" + hurt + "点的伤害    剩余血量为" + player.getHp() + '\n');
-            buffService.buff(monster.getSceneId(), skill, player, monster, player.getNowScene());
+            buffService.buff(monster.getSceneId().intValue(), skill, player, monster, player.getNowScene());
         }
     }
 
+    /**
+     * 仇恨排名
+     */
     public Long hurtSort(Monster monster) {
         Map<Long, Integer> hurtMap = monster.getHurtList();
         List<Map.Entry<Long, Integer>> list = new LinkedList<>(hurtMap.entrySet());

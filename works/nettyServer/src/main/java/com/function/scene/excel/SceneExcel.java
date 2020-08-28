@@ -23,14 +23,10 @@ public class SceneExcel {
      * 场景内的怪物
      */
     private String monster;
-//    /**
-//     * 场景内怪物
-//     */
-//    private Map<Integer, Monster> monsters = new HashMap<>();
-//    /**
-//     * 场景内Npc
-//     */
-//    private Map<Integer, NpcExcel> npcs = new HashMap<>();
+    /**
+     * 场景类型
+     */
+    private int type;
 
 
 }

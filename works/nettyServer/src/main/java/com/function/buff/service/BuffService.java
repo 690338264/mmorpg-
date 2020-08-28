@@ -4,7 +4,6 @@ import com.function.buff.model.Buff;
 import com.function.monster.model.Monster;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerService;
-import com.function.scene.excel.SceneResource;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
 import com.function.scene.model.SceneObjectType;
@@ -84,7 +83,7 @@ public class BuffService {
                     if (buffer.getHp() <= 0) {
                         if (buffer.getType() == SceneObjectType.MONSTER.getType()) {
                             Monster m = (Monster) buffer;
-                            playerService.killMonster(m, scene, SceneResource.Monster + m.getSceneId(), (Player) attacker);
+                            playerService.killMonster(m, scene, m.getSceneId(), (Player) attacker);
                         } else {
                             Monster m = (Monster) attacker;
                             Player p = (Player) buffer;

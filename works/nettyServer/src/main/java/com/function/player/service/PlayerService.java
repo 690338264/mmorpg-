@@ -102,9 +102,9 @@ public class PlayerService {
     /**
      * 攻击
      */
-    public void attack(Player player, int skillId, String target) {
+    public void attack(Player player, int skillId, Long target, int type) {
         Scene scene = player.getNowScene();
-        SceneObject s = scene.getSceneObjectMap().get(target);
+        SceneObject s = scene.getSceneObjectMap().get(type).get(target);
         Skill skill = player.getCanUseSkill().get(skillId);
         //判断目标是否死亡
         if (s == null) {
@@ -164,7 +164,7 @@ public class PlayerService {
                                 oriHurt = monster.getHurtList().get(player.getTPlayer().getRoleId());
                             }
                             monster.getHurtList().put(player.getTPlayer().getRoleId(), hurt + oriHurt);
-                            buffService.buff(monster.getSceneId(), skill, monster, player, scene);
+                            buffService.buff(monster.getSceneId().intValue(), skill, monster, player, scene);
                             notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]释放了技能[{1}]对怪物[{2}]产生伤害:{3}\n",
                                     player.getTPlayer().getName(), skill.getSkillExcel().getName(),
                                     monster.getMonsterExcel().getName(), hurt));
@@ -198,7 +198,7 @@ public class PlayerService {
     /**
      * 击杀怪物
      */
-    public void killMonster(Monster monster, Scene scene, String target, Player player) {
+    public void killMonster(Monster monster, Scene scene, Long target, Player player) {
 
         if (!monster.getHurtList().isEmpty()) {
             monster.getTaskMap().get(attack).cancel(true);
