@@ -37,12 +37,13 @@ public class SceneService {
      */
     public void getNeighbor(Player player, ChannelHandlerContext ctx) {
         int locId = player.getTPlayer().getLoc();
-        String neighbors = SceneResource.getSceneById(SceneType.PUBLIC.getType(), locId).getNeighbor();
+        int type = SceneType.PUBLIC.getType();
+        String neighbors = SceneResource.getSceneById(type, locId / SceneResource.idTimes).getNeighbor();
         String[] strs = neighbors.split(",");
-        ctx.writeAndFlush("您现在所在场景为：" + SceneResource.getSceneById(SceneType.PUBLIC.getType(), locId).getName() + "\n您可到达的地点有：\n");
+        ctx.writeAndFlush("您现在所在场景为：" + sceneManager.get(type).get(locId).getSceneExcel().getName() + "\n您可到达的地点有：\n");
         for (String str : strs) {
             int canTo = Integer.parseInt(str);
-            SceneExcel sceneExcel = SceneResource.getSceneById(SceneType.PUBLIC.getType(), canTo);
+            SceneExcel sceneExcel = SceneResource.getSceneById(type, canTo);
             ctx.writeAndFlush(sceneExcel.getName() + "代号为："
                     + sceneExcel.getId() + '\n');
         }
@@ -52,19 +53,23 @@ public class SceneService {
      * 移动场景
      */
     public void moveTo(Player player, int sceneId) {
-        Scene oldScene = sceneManager.get(SceneType.PUBLIC.getType()).get(player.getTPlayer().getLoc());
-        if (!oldScene.getSceneExcel(SceneType.PUBLIC.getType()).getNeighbor().contains(String.valueOf(sceneId))) {
+        int type = SceneType.PUBLIC.getType();
+        Scene oldScene = sceneManager.get(type).get(player.getTPlayer().getLoc());
+        if (!oldScene.getSceneExcel().getNeighbor().contains(String.valueOf(sceneId))) {
             notifyScene.notifyPlayer(player, "您还不能到达该处!\n");
             return;
         }
         oldScene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).remove(player.getTPlayer().getRoleId());
-        Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(sceneId);
+        for (int key : sceneManager.get(type).keySet()) {
+            if (key / SceneResource.idTimes == sceneId) {
+                sceneId = key;
+            }
+        }
         player.getTPlayer().setLoc(sceneId);
-        scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).put(player.getTPlayer().getRoleId(), player);
-        player.setNowScene(scene);
+        Scene scene = addPlayer(type, sceneId, player);
         playerData.updateLoc(player);
         notifyScene.notifyScene(scene, MessageFormat.format("欢迎玩家{0}来到场景\n", player.getTPlayer().getName()));
-        notifyScene.notifyPlayer(player, MessageFormat.format("您已到达{0}\n", scene.getSceneExcel(SceneType.PUBLIC.getType()).getName()));
+        notifyScene.notifyPlayer(player, MessageFormat.format("您已到达{0}\n", scene.getSceneExcel().getName()));
     }
 
     /**
@@ -96,5 +101,12 @@ public class SceneService {
                 }
             });
         }
+    }
+
+    public Scene addPlayer(int type, int sceneId, Player player) {
+        Scene scene = sceneManager.get(type).get(sceneId);
+        scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).put(player.getTPlayer().getRoleId(), player);
+        player.setNowScene(scene);
+        return scene;
     }
 }

@@ -13,6 +13,7 @@ import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 
@@ -72,9 +73,10 @@ public class MonsterService {
         monster.getCanUseSkill().remove(randomKey);
         int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getAtk();
         player.setHp(player.getHp() - hurt);
-        ThreadPoolManager.runThread(() -> monster.getCanUseSkill().put(randomKey, skill), skill.getSkillExcel().getCd(), monster.getId());
+        ThreadPoolManager.delayThread(() -> monster.getCanUseSkill().put(randomKey, skill), skill.getSkillExcel().getCd(), monster.getId());
+        notifyScene.notifyPlayer(player, MessageFormat.format("您受到了{0}点伤害", hurt));
         if (!playerService.playerDie(player, monster)) {
-            player.getChannelHandlerContext().writeAndFlush("您受到了：" + hurt + "点的伤害    剩余血量为" + player.getHp() + '\n');
+            notifyScene.notifyPlayer(player, MessageFormat.format("剩余血量为{0}\n", player.getHp()));
             buffService.buff(monster.getSceneId().intValue(), skill, player, monster, player.getNowScene());
         }
     }

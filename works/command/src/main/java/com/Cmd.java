@@ -77,6 +77,14 @@ public enum Cmd {
     ACCEPT_TEAM("accept_team", 10165),
     //退出小队
     LEAVE_TEAM("leave_team", 10166),
+    //查看副本列表
+    LIST_INSTANCE("list_instance", 1017),
+    //申请个人副本
+    PERSONAL_INSTANCE("apply_personal", 10170),
+    //申请小队副本
+    TEAM_INSTANCE("team_instance", 10171),
+    //进入副本
+    INTO_INSTANCE("into_instance", 10172),
     //查看人物状态属性
     PLAYER_STATE("player_state", 888),
     //查看已穿戴装备

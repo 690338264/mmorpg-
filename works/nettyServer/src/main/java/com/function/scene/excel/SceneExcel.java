@@ -27,6 +27,14 @@ public class SceneExcel {
      * 场景类型
      */
     private int type;
+    /**
+     * 副本销毁时间
+     */
+    private Long destroy;
+
+    private String[] monsters;
+
+    private String[] npcs;
 
 
 }

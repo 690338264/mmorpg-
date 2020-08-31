@@ -131,7 +131,7 @@ public class PlayerService {
                     s.setHp(s.getHp() - hurt);
                     player.setMp(player.getMp() - skill.getSkillExcel().getMp());
                     player.getCanUseSkill().remove(skillId);
-                    ThreadPoolManager.runThread(() -> {
+                    ThreadPoolManager.delayThread(() -> {
                         player.getCanUseSkill().put(skillId, skill);
                     }, skill.getSkillExcel().getCd(), player.getChannelHandlerContext().hashCode());
                     //击杀
@@ -253,7 +253,7 @@ public class PlayerService {
     public boolean playerDie(Player player, Monster monster) {
         if (player.getHp() <= 0) {
             notifyScene.notifyPlayer(player, "已阵亡！五秒后复活！\n");
-            ThreadPoolManager.runThread(() -> {
+            ThreadPoolManager.delayThread(() -> {
                 player.setHp(player.getOriHp());
             }, playerRevive, player.getChannelHandlerContext().hashCode());
             buffService.removeBuff(player);

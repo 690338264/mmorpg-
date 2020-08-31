@@ -8,6 +8,8 @@ import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Catherine
@@ -22,11 +24,15 @@ public class Scene {
 
     private int sceneId;
 
+    private int type;
+
     private Map<Integer, Map<Long, SceneObject>> sceneObjectMap = new HashMap<>();
 
     private Map<Long, Monster> waitForRevive = new HashMap<>();
 
-    public SceneExcel getSceneExcel(int type) {
+    private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
+
+    public SceneExcel getSceneExcel() {
         return SceneResource.getSceneById(type, sceneId);
     }
 }

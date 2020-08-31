@@ -101,7 +101,7 @@ public class TeamService {
         team.getApply().put(player.getTPlayer().getRoleId(), player);
         Player leader = team.getMembers().get(team.getLeaderId());
         notifyScene.notifyPlayer(leader, "收到一条小队加入申请\n");
-        ThreadPoolManager.runThread(() -> {
+        ThreadPoolManager.delayThread(() -> {
             Long key = player.getTPlayer().getRoleId();
             if (team.getApply().get(key) != null) {
                 team.getApply().remove(key);
@@ -124,7 +124,7 @@ public class TeamService {
             return;
         }
         team.getInvite().put(playerId, invite);
-        ThreadPoolManager.runThread(() -> {
+        ThreadPoolManager.delayThread(() -> {
             if (team.getInvite().get(playerId) != null) {
                 team.getInvite().remove(playerId);
             }

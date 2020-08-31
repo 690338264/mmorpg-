@@ -3,6 +3,7 @@ package com.function.player.model;
 import com.function.bag.model.Bag;
 import com.function.communicate.model.Email;
 import com.function.item.model.Item;
+import com.function.scene.model.Instance;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
 import com.jpa.entity.TPlayer;
@@ -28,6 +29,10 @@ public class Player extends SceneObject {
      * 玩家当前场景
      */
     private Scene nowScene;
+    /**
+     * 玩家所在副本
+     */
+    private Instance Instance;
 
     private Bag bag;
 

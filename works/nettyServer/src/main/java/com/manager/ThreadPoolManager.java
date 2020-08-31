@@ -24,7 +24,11 @@ public class ThreadPoolManager {
         ThreadPoolManager.services = services;
     }
 
-    public static ScheduledFuture runThread(Runnable r, long l, int id) {
+    public static void currentThread(Runnable r, int id) {
+        services[id % 24].execute(r);
+    }
+
+    public static ScheduledFuture delayThread(Runnable r, long l, int id) {
         return services[id % 24].schedule(r, l, TimeUnit.MILLISECONDS);
     }
 

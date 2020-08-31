@@ -2,8 +2,8 @@ package com.function.team.model;
 
 import com.function.player.model.Player;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Catherine
@@ -25,15 +25,15 @@ public class Team {
     /**
      * 小队成员
      */
-    private Map<Long, Player> members = new HashMap<>();
+    private Map<Long, Player> members = new ConcurrentHashMap<>();
     /**
      * 发送邀请
      */
-    private Map<Long, Player> invite = new HashMap<>();
+    private Map<Long, Player> invite = new ConcurrentHashMap<>();
     /**
      * 申请加入
      */
-    private Map<Long, Player> apply = new HashMap<>();
+    private Map<Long, Player> apply = new ConcurrentHashMap<>();
 
     public Long getLeaderId() {
         return leaderId;

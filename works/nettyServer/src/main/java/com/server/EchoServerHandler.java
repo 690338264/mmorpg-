@@ -42,9 +42,9 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         if (contr == null) {
             ctx.writeAndFlush("指令错误！\n");
         } else {
-            ThreadPoolManager.runThread(() -> {
+            ThreadPoolManager.currentThread(() -> {
                 contr.handle(ctx, message);
-            }, 0, ctx.hashCode());
+            }, ctx.hashCode());
         }
 
     }

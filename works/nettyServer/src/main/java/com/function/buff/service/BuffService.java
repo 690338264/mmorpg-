@@ -100,7 +100,7 @@ public class BuffService {
             else {
                 int atk = buffer.getAtk();
                 buffer.setAtk(atk + flag * buff.getBuffExcel().getAtk());
-                ScheduledFuture buffTask = ThreadPoolManager.runThread(() -> {
+                ScheduledFuture buffTask = ThreadPoolManager.delayThread(() -> {
                     buffer.setAtk(atk);
                 }, time, id);
                 buffer.getBuffs().put(buff.getId(), buffTask);
