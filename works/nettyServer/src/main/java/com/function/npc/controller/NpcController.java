@@ -28,7 +28,7 @@ public class NpcController {
     private void speak(ChannelHandlerContext ctx, Msg msg) {
         Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
-        int npcId = Integer.valueOf(params[1]);
+        Long npcId = Long.parseLong(params[1]);
         npcService.talkToNpc(player, npcId);
     }
 }

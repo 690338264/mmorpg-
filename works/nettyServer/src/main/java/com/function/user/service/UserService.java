@@ -74,6 +74,7 @@ public class UserService {
             ctx.writeAndFlush("用户名已存在\n");
             return;
         }
+        usersDAO.save(u);
         TUser newUser = usersDAO.findByName(userName);
         if (newUser != null) {
             ctx.writeAndFlush("注册成功,您的id为" + newUser.getId() + "用户名为" + newUser.getName() + '\n');

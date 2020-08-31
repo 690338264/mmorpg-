@@ -15,7 +15,7 @@ public class PlayerManager implements InitManager {
         player.setName(roleName);
         player.setOccupation(roleType);
         player.setUserId(userId);
-        player.setLoc(1);
+        player.setLoc(1000000);
         player.setExp(1);
         player.setMoney(0);
         player.setEquip("{}");

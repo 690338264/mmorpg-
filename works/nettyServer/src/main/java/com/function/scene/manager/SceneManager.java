@@ -116,7 +116,7 @@ public class SceneManager {
         SceneExcel sceneExcel = scene.getSceneExcel();
         for (int j = 0; j < sceneExcel.getNpcs().length; j++) {
             int npcId = Integer.parseInt(sceneExcel.getNpcs()[j]);
-            scene.getSceneObjectMap().get(SceneObjectType.NPC.getType()).put((long) j, NpcResource.getNpcById(npcId));
+            scene.getSceneObjectMap().get(SceneObjectType.NPC.getType()).put((long) npcId, NpcResource.getNpcById(npcId));
         }
     }
 
