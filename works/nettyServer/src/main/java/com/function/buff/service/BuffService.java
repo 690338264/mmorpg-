@@ -1,6 +1,5 @@
 package com.function.buff.service;
 
-import com.function.buff.model.Buff;
 import com.function.monster.model.Monster;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerService;
@@ -44,10 +43,9 @@ public class BuffService {
      * buff效果
      */
     public void buff(int id, Skill skill, SceneObject beAttack, SceneObject attacker, Scene scene) {
-        skill.getBuffMap().forEach((k, v) -> {
+        skill.getBuffList().forEach(buff -> {
             SceneObject buffer;
             //正面  负面状态
-            Buff buff = skill.getBuffMap().get(k);
             Random random = new Random();
             double a = random.nextDouble();
             if (a > buff.getBuffExcel().getRate()) {

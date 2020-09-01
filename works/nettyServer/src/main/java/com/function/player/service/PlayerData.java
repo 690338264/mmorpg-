@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.function.bag.model.Bag;
 import com.function.bag.service.BagService;
+import com.function.buff.excel.BuffResource;
+import com.function.buff.model.Buff;
 import com.function.communicate.model.Email;
 import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
@@ -12,6 +14,9 @@ import com.function.occ.excel.OccResource;
 import com.function.occ.manager.OccCache;
 import com.function.player.model.Player;
 import com.function.scene.model.SceneObjectType;
+import com.function.skill.excel.SkillExcel;
+import com.function.skill.excel.SkillResource;
+import com.function.skill.model.Skill;
 import com.jpa.dao.BagDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TBag;
@@ -19,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * @author Catherine
@@ -66,10 +72,18 @@ public class PlayerData {
      * 初始化角色技能
      */
     public void initSkill(Player player) {
-        OccExcel occExcel = occCache.get(player.getTPlayer().getOccupation());
-        for (int i = 0; i < occExcel.getSkills().size(); i++) {
-            player.getCanUseSkill().put(i + 1, occExcel.getSkills().get(i));
-        }
+        OccExcel occExcel = OccResource.getOccById(player.getTPlayer().getOccupation());
+        IntStream.range(0, occExcel.getSkillId().size()).forEach(i -> {
+            SkillExcel skillExcel = SkillResource.getSkillById(occExcel.getSkillId().get(i));
+            Skill skill = new Skill();
+            skill.setSkillId(skillExcel.getId());
+            skillExcel.getBuffId().forEach(buffId -> {
+                Buff buff = new Buff();
+                buff.setId(BuffResource.getBuffById(buffId).getId());
+                skill.getBuffList().add(buff);
+            });
+            player.getCanUseSkill().put(i + 1, skill);
+        });
     }
 
     /**

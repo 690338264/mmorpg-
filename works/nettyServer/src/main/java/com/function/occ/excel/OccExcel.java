@@ -1,6 +1,5 @@
 package com.function.occ.excel;
 
-import com.function.skill.model.Skill;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -40,6 +39,6 @@ public class OccExcel {
      */
     private Integer multiple;
 
-    private List<Skill> skills = new ArrayList<>();
+    private List<Integer> skillId = new ArrayList<>();
 
 }

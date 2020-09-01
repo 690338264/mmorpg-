@@ -2,7 +2,6 @@ package com.function.occ.excel;
 
 import com.function.occ.manager.OccCache;
 import com.function.skill.cache.SkillCache;
-import com.function.skill.model.Skill;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,8 +35,7 @@ public class OccResource {
             String[] occSkill = occExcel.getSkill().split(",");
             for (int j = 0; j < occSkill.length; j++) {
                 int skillId = Integer.parseInt(occSkill[j]);
-                Skill skill = skillCache.get("Skill" + skillId);
-                occExcel.getSkills().add(skill);
+                occExcel.getSkillId().add(skillId);
             }
             occCache.set("Occ" + occExcel.getId(), occExcel);
         }

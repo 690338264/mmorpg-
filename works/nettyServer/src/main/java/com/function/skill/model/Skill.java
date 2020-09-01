@@ -6,7 +6,8 @@ import com.function.skill.excel.SkillExcel;
 import com.function.skill.excel.SkillResource;
 import lombok.Data;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -21,7 +22,9 @@ public class Skill {
 
     private Integer skillId;
 
-    private Map<Integer, Buff> buffMap = new HashMap<>();
+//    private Map<Integer, Buff> buffMap = new HashMap<>();
+
+    private List<Buff> buffList = new ArrayList<>();
 
     private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
 

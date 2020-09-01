@@ -2,6 +2,9 @@ package com.function.skill.excel;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Catherine
  */
@@ -21,4 +24,6 @@ public class SkillExcel {
     private Long cd;
 
     private String buff;
+
+    private List<Integer> buffId = new ArrayList<>();
 }
