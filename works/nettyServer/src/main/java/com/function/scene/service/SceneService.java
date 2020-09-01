@@ -11,7 +11,6 @@ import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
 import com.function.scene.model.SceneObjectType;
 import com.function.scene.model.SceneType;
-import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,17 +34,18 @@ public class SceneService {
     /**
      * 相邻场景
      */
-    public void getNeighbor(Player player, ChannelHandlerContext ctx) {
+    public void getNeighbor(Player player) {
         int locId = player.getTPlayer().getLoc();
         int type = SceneType.PUBLIC.getType();
         String neighbors = SceneResource.getSceneById(type, locId / SceneResource.idTimes).getNeighbor();
         String[] strs = neighbors.split(",");
-        ctx.writeAndFlush("您现在所在场景为：" + sceneManager.get(type).get(locId).getSceneExcel().getName() + "\n您可到达的地点有：\n");
+        notifyScene.notifyPlayer(player, MessageFormat.format("您现在所在场景为：{0}\n您可到达的地点有：\n",
+                sceneManager.get(type).get(locId).getSceneExcel().getName()));
         for (String str : strs) {
             int canTo = Integer.parseInt(str);
             SceneExcel sceneExcel = SceneResource.getSceneById(type, canTo);
-            ctx.writeAndFlush(sceneExcel.getName() + "代号为："
-                    + sceneExcel.getId() + '\n');
+            notifyScene.notifyPlayer(player, MessageFormat.format("{0}代号为:{1}\n",
+                    sceneExcel.getName(), sceneExcel.getId()));
         }
     }
 

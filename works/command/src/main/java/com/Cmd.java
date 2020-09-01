@@ -15,10 +15,10 @@ public enum Cmd {
     USER_LOGIN("user_login", 1001),
     //角色列表
     USER_LISTPLAYER("user_listPlayer", 1002),
-    //角色登录
-    PLAYER_LOG("player_log", 1003),
     //角色创建
-    PLAYER_CREATE("player_create", 1004),
+    PLAYER_CREATE("player_create", 1003),
+    //角色登录
+    PLAYER_LOG("player_log", 1004),
     //查看场景
     AOI("aoi", 1005),
     //和NPC谈话
@@ -86,10 +86,10 @@ public enum Cmd {
     //进入副本
     INTO_INSTANCE("into_instance", 10172),
     //查看人物状态属性
-    PLAYER_STATE("player_state", 888),
+    PLAYER_STATE("player_state", 8888),
     //查看已穿戴装备
-    EQUIP_LIST("equip_list", 999),
-    LOG_OUT("log_out", 666),
+    EQUIP_LIST("equip_list", 7777),
+    LOG_OUT("log_out", 6666),
     UNKNOWN("unknown", 9999);
 
     private String cmd;

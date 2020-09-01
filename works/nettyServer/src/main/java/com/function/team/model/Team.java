@@ -16,10 +16,6 @@ public class Team {
      */
     private Long leaderId;
     /**
-     * 最大成员数量
-     */
-    private int max = 10;
-    /**
      * 小队成员
      */
     private Map<Long, Player> members = new ConcurrentHashMap<>();
@@ -40,10 +36,6 @@ public class Team {
 
     public void setLeaderId(Long leaderId) {
         this.leaderId = leaderId;
-    }
-
-    public int getMax() {
-        return max;
     }
 
     public Map<Long, Player> getMembers() {

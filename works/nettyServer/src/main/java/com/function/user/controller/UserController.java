@@ -66,8 +66,7 @@ public class UserController {
         userservice.logPlayer(roleId, ctx);
     }
 
-    private void logout(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userservice.getPlayerByCtx(ctx);
+    private void logout(Player player, Msg msg) {
         userservice.logout(player);
     }
 }

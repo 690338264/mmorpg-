@@ -5,7 +5,6 @@ import com.function.player.model.Player;
 import com.function.team.service.TeamService;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
-import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import util.Msg;
@@ -33,51 +32,43 @@ public class TeamController {
         ControllerManager.add(Cmd.LEAVE_TEAM, this::leave);
     }
 
-    private void listTeams(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
+    private void listTeams(Player player, Msg msg) {
         teamService.listTeams(player);
     }
 
-    private void createTeam(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
+    private void createTeam(Player player, Msg msg) {
         teamService.createTeam(player);
     }
 
-    private void checkTeam(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
+    private void checkTeam(Player player, Msg msg) {
         teamService.checkTeam(player);
     }
 
-    private void applyAdd(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void applyAdd(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         Long teamId = Long.parseLong(params[1]);
         teamService.applyTeam(player, teamId);
     }
 
-    private void invitePlayer(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void invitePlayer(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         Long playerId = Long.parseLong(params[1]);
         teamService.invitePlayer(player, playerId);
     }
 
-    private void applyAgree(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void applyAgree(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         Long playerId = Long.parseLong(params[1]);
         teamService.agreeApply(player, playerId);
     }
 
-    private void acceptInvite(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void acceptInvite(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         Long teamId = Long.parseLong(params[1]);
         teamService.accept(player, teamId);
     }
 
-    private void leave(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
+    private void leave(Player player, Msg msg) {
         teamService.leaveTeam(player);
     }
 }

@@ -8,10 +8,10 @@ import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.scene.service.NotifyScene;
 import com.jpa.entity.TBag;
-import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 /**
@@ -60,13 +60,13 @@ public class ItemService {
     /**
      * 移除装备
      */
-    public void removeEquip(int equipPlace, Player player, ChannelHandlerContext ctx) {
+    public void removeEquip(int equipPlace, Player player) {
         Item item = player.getEquipMap().get(equipPlace);
         changeAttr(-1, item, player);
         addItem(item, player);
         player.getEquipMap().remove(item.getItemById().getSpace());
         playerData.updateEquip(player);
-        ctx.writeAndFlush("您已摘下[" + item.getItemById().getName() + "]\n");
+        notifyScene.notifyPlayer(player, MessageFormat.format("您已摘下[{0}]\n", item.getItemById().getName()));
     }
 
     /**
@@ -117,52 +117,47 @@ public class ItemService {
     /**
      * 使用药品
      */
-    public void useItem(int index, Player player, ChannelHandlerContext ctx) {
+    public void useItem(int index, Player player) {
         Item item = player.getBag().getItemMap().get(index);
-        if (item.getItemById().getType() != 1) {
-            ctx.writeAndFlush("该物品不可使用！\n");
+        if (item.getItemById().getType() != ItemType.MEDICINAL.getType()) {
+            notifyScene.notifyPlayer(player, "该物品不可使用!\n");
             return;
         }
-        synchronized (this) {
-            removeItem(index, 1, player);
-            int addHp = player.getHp() + item.getItemById().getHp();
-            player.setHp(Math.min(addHp, player.getOriHp()));
-            int addMp = player.getMp() + item.getItemById().getMp();
-            player.setMp(addMp < player.getOriMp() ? addMp : player.getOriMp());
-            ctx.writeAndFlush("您成功使用[" + item.getItemById().getName() + "]\n");
-        }
+        removeItem(index, 1, player);
+        int addHp = player.getHp() + item.getItemById().getHp();
+        player.setHp(Math.min(addHp, player.getOriHp()));
+        int addMp = player.getMp() + item.getItemById().getMp();
+        player.setMp(addMp < player.getOriMp() ? addMp : player.getOriMp());
+        notifyScene.notifyPlayer(player, MessageFormat.format("您成功使用[{0}]\n", item.getItemById().getName()));
     }
 
     /**
      * 穿戴装备
      */
-    public void wearEquipment(int index, Player player, ChannelHandlerContext ctx) {
+    public void wearEquipment(int index, Player player) {
         Item item = player.getBag().getItemMap().get(index);
-        if (item.getItemById().getType() != 2) {
-            ctx.writeAndFlush("该物品不可穿戴！\n");
+        if (item.getItemById().getType() != ItemType.EQUIPMENT.getType()) {
+            notifyScene.notifyPlayer(player, "该物品不可穿戴！\n");
             return;
         }
         removeItem(index, 1, player);
         if (player.getEquipMap().get(item.getItemById().getSpace()) != null) {
-            removeEquip(item.getItemById().getSpace(), player, ctx);
+            removeEquip(item.getItemById().getSpace(), player);
         }
         changeAttr(1, item, player);
-
         player.getEquipMap().put(item.getItemById().getSpace(), item);
         playerData.updateEquip(player);
-
-        ctx.writeAndFlush("您已成功穿戴:[" + item.getItemById().getName() + "]\n");
+        notifyScene.notifyPlayer(player, MessageFormat.format("您已成功穿戴:[{0}]\n", item.getItemById().getName()));
     }
 
     /**
      * 显示已穿戴装备
      */
-    public void listEquip(Player player, ChannelHandlerContext ctx) {
-        ctx.writeAndFlush("您已穿戴:\n");
-        for (Integer key : player.getEquipMap().keySet()) {
-            ctx.writeAndFlush(key + ":[" + player.getEquipMap().get(key).getItemById().getName() +
-                    "]磨损度:[" + player.getEquipMap().get(key).getNowWear() + "]\n");
-        }
+    public void listEquip(Player player) {
+        notifyScene.notifyPlayer(player, "您已穿戴:\n");
+        player.getEquipMap().forEach((k, v) -> notifyScene.notifyPlayer(player, MessageFormat.format(
+                "{0}:[{1}]磨损度:[{2}]\n",
+                k, v.getItemById().getName(), v.getNowWear())));
     }
 
     /**

@@ -5,7 +5,6 @@ import com.function.npc.service.NpcService;
 import com.function.player.model.Player;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
-import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import util.Msg;
@@ -25,9 +24,8 @@ public class NpcController {
     @Autowired
     private UserService userService;
 
-    private void speak(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void speak(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         Long npcId = Long.parseLong(params[1]);
         npcService.talkToNpc(player, npcId);
     }

@@ -28,6 +28,7 @@ public class EchoServer {
         try {
             //创建ServerBootstrap
             ServerBootstrap b = new ServerBootstrap();
+
             b.group(bossGroup, workerGroup)
                     //3 指定channel类型
                     .channel(NioServerSocketChannel.class)

@@ -3,13 +3,15 @@ package com.function.item.controller;
 import com.Cmd;
 import com.function.item.service.ItemService;
 import com.function.player.model.Player;
+import com.function.scene.service.NotifyScene;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
-import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import util.Msg;
 import util.ParamNumCheck;
+
+import java.text.MessageFormat;
 
 
 /**
@@ -22,6 +24,8 @@ public class ItemController {
     private UserService userService;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private NotifyScene notifyScene;
 
     {
         ControllerManager.add(Cmd.ITEM_USE, this::itemUse);
@@ -32,46 +36,41 @@ public class ItemController {
         ControllerManager.add(Cmd.EQUIP_FIX, this::equipFix);
     }
 
-    private void itemUse(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void itemUse(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         int index = Integer.parseInt(params[1]);
-        itemService.useItem(index, player, ctx);
+        itemService.useItem(index, player);
     }
 
-    private void equipOn(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void equipOn(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         int index = Integer.parseInt(params[1]);
-        itemService.wearEquipment(index, player, ctx);
+        itemService.wearEquipment(index, player);
     }
 
-    private void itemDrop(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
+    private void itemDrop(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 3);
         int index = Integer.parseInt(params[1]);
         int num = Integer.parseInt(params[2]);
         String name = player.getBag().getItemMap().get(index).getItemById().getName();
         if (itemService.removeItem(index, num, player)) {
-            ctx.writeAndFlush("您已丢弃:[" + name + "]\n");
+            notifyScene.notifyPlayer(player, MessageFormat.format("您已丢弃:[{0}]\n", name));
+
         }
     }
 
-    private void equipOff(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void equipOff(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         int index = Integer.parseInt(params[1]);
-        itemService.removeEquip(index, player, ctx);
+        itemService.removeEquip(index, player);
     }
 
-    private void equipList(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        itemService.listEquip(player, ctx);
+    private void equipList(Player player, Msg msg) {
+        itemService.listEquip(player);
     }
 
-    private void equipFix(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void equipFix(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         int index = Integer.parseInt(params[1]);
         itemService.fixEquip(player, index);
     }

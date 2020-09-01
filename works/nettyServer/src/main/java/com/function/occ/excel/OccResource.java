@@ -41,7 +41,6 @@ public class OccResource {
             }
             occCache.set("Occ" + occExcel.getId(), occExcel);
         }
-
     }
 
     public static OccExcel getOccById(int id) {

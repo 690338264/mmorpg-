@@ -5,7 +5,6 @@ import com.function.player.model.Player;
 import com.function.scene.service.InstanceService;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
-import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import util.Msg;
@@ -29,27 +28,23 @@ public class InstanceController {
         ControllerManager.add(Cmd.INTO_INSTANCE, this::intoInstance);
     }
 
-    private void listInstance(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
+    private void listInstance(Player player, Msg msg) {
         instanceService.listInstance(player);
     }
 
-    private void personalInstance(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void personalInstance(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         int instanceId = Integer.parseInt(params[1]);
         instanceService.personalCreate(player, instanceId);
     }
 
-    private void teamInstance(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
+    private void teamInstance(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         int instanceId = Integer.parseInt(params[1]);
         instanceService.teamCreate(player, instanceId);
     }
 
-    private void intoInstance(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
+    private void intoInstance(Player player, Msg msg) {
         instanceService.intoInstance(player);
     }
 }

@@ -176,7 +176,7 @@ public class UserService {
         teamService.leaveTeam(player);
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);
-        Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(player.getNowScene().getSceneId());
+        Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(player.getNowScene().getId());
         scene.getSceneObjectMap().remove(player.getTPlayer().getRoleId());
         player.setChannelHandlerContext(null);
     }

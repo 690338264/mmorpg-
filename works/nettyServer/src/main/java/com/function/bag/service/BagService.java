@@ -5,11 +5,12 @@ import com.function.bag.model.Bag;
 import com.function.item.model.Item;
 import com.function.item.model.ItemType;
 import com.function.player.model.Player;
+import com.function.scene.service.NotifyScene;
 import com.jpa.dao.BagDAO;
-import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -19,35 +20,38 @@ import java.util.*;
 public class BagService {
     @Autowired
     private BagDAO bagDAO;
+    @Autowired
+    private NotifyScene notifyScene;
+
+    public static String updateBag = "updateBag";
 
     /**
      * 更新背包
      */
     public void updateBag(Player player) {
-        String json = JSON.toJSONString(player.getBag().getItemMap());
-        player.getBag().getTBag().setItem(json);
-        bagDAO.save(player.getBag().getTBag());
+        if (player.getTaskMap().get(updateBag) == null) {
+            String json = JSON.toJSONString(player.getBag().getItemMap());
+            player.getBag().getTBag().setItem(json);
+            bagDAO.save(player.getBag().getTBag());
+        }
     }
 
     /**
      * 列出背包里的东西
      */
-    public void listBag(Player player, ChannelHandlerContext ctx) {
+    public void listBag(Player player) {
         Bag bag = player.getBag();
-        StringBuilder sb = new StringBuilder("您背包里的物品有：\n");
-
+        notifyScene.notifyPlayer(player, "背包里的物品有:\n");
         for (Integer index : bag.getItemMap().keySet()) {
             Item item = bag.getItemMap().get(index);
-            sb.append("[").append(index).append("]").append(item.getItemById().getName())
-                    .append("[").append(item.getNum()).append("]");
+            notifyScene.notifyPlayer(player, MessageFormat.format("[{0}]{1}[{2}]",
+                    index, item.getItemById().getName(), item.getNum()));
             if (item.getItemById().getType() == ItemType.EQUIPMENT.getType()) {
-                sb.append("磨损度:[").append(item.getNowWear()).append("]");
+                notifyScene.notifyPlayer(player, MessageFormat.format("磨损度:[{3}],", item.getNowWear()));
             }
-            sb.append('\n');
-
+            notifyScene.notifyPlayer(player, "\n");
         }
-        sb.append("金币：").append(player.getTPlayer().getMoney()).append('\n');
-        ctx.writeAndFlush(sb);
+        notifyScene.notifyPlayer(player, MessageFormat.format("金币：{3}\n", player.getTPlayer().getMoney()));
     }
 
     /**

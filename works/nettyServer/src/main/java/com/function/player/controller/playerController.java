@@ -38,17 +38,14 @@ public class PlayerController {
         playerService.roleCreate(ctx, roleName, roleType, user.getId());
     }
 
-    private void attackMonster(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
-        String[] params = ParamNumCheck.numCheck(ctx, msg, 3);
+    private void attackMonster(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 3);
         int skill = Integer.parseInt(params[1]);
         long target = Long.parseLong(params[2]);
-
         playerService.attack(player, skill, target, SceneObjectType.MONSTER.getType());
     }
 
-    private void playerState(ChannelHandlerContext ctx, Msg msg) {
-        Player player = userService.getPlayerByCtx(ctx);
+    private void playerState(Player player, Msg msg) {
         playerService.showState(player);
     }
 }

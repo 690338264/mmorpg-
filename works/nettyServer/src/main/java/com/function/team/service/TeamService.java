@@ -212,7 +212,7 @@ public class TeamService {
             notifyScene.notifyPlayer(leader, "玩家已离线\n");
             return false;
         }
-        if (team.getMax() == team.getMembers().size()) {
+        if (team.getMembers().size() == max) {
             notifyScene.notifyPlayer(leader, "小队人已满\n");
             return false;
         }
