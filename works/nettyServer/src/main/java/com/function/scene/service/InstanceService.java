@@ -90,7 +90,7 @@ public class InstanceService {
         Instance instance = new Instance(scene);
         nextBoss(instance);
         instance.setCreateTime(System.currentTimeMillis());
-        sceneManager.starts(scene.getId(), instance);
+        sceneManager.instanceStart(scene.getId(), instance);
         return instance;
     }
 
@@ -116,6 +116,9 @@ public class InstanceService {
         notifyScene.notifyScene(scene, MessageFormat.format("[{0}]进入副本\n", player.getTPlayer().getName()));
     }
 
+    /**
+     * 副本销毁
+     */
     public void destroy(Instance instance) {
         instance.getPlayers().forEach(player -> {
             player.setInstance(null);

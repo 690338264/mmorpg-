@@ -11,10 +11,11 @@ import java.util.concurrent.TimeUnit;
  * @author Catherine
  * @create 2020-08-20 15:19
  */
+@SuppressWarnings("rawtypes")
 @Component
 public class ThreadPoolManager {
-    public static final int SIZE = 24;
-    public static ScheduledExecutorService[] services;
+    private static final int SIZE = 24;
+    private static ScheduledExecutorService[] services;
 
     static {
         ScheduledExecutorService[] services = new ScheduledExecutorService[SIZE];
@@ -24,16 +25,15 @@ public class ThreadPoolManager {
         ThreadPoolManager.services = services;
     }
 
-    public static void currentThread(Runnable r, int id) {
-        services[id % 24].execute(r);
+    public static void immediateThread(Runnable runnable, int id) {
+        services[id % 24].execute(runnable);
     }
 
-    public static ScheduledFuture delayThread(Runnable r, long l, int id) {
-        return services[id % 24].schedule(r, l, TimeUnit.MILLISECONDS);
+    public static ScheduledFuture delayThread(Runnable runnable, long delay, int id) {
+        return services[id % 24].schedule(runnable, delay, TimeUnit.MILLISECONDS);
     }
 
-    public static ScheduledFuture loopThread(Runnable r, long delay, long period, int id) {
-        ScheduledFuture scheduledFutures = services[id % 24].scheduleAtFixedRate(r, delay, period, TimeUnit.MILLISECONDS);
-        return scheduledFutures;
+    public static ScheduledFuture loopThread(Runnable runnable, long delay, long period, int id) {
+        return services[id % 24].scheduleAtFixedRate(runnable, delay, period, TimeUnit.MILLISECONDS);
     }
 }

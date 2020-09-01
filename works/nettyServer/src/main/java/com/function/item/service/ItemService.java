@@ -3,6 +3,7 @@ package com.function.item.service;
 import com.function.bag.model.Bag;
 import com.function.bag.service.BagService;
 import com.function.item.model.Item;
+import com.function.item.model.ItemType;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.scene.service.NotifyScene;
@@ -72,7 +73,7 @@ public class ItemService {
      * 得到物品
      */
     public boolean getItem(Item item, Player player) {
-        if (item.getItemById().getType() == 1) {
+        if (item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
             Map<Integer, Item> p = player.getBag().getItemMap();
             for (Integer index : p.keySet()) {
                 if (item.getId().equals(p.get(index).getId()) && p.get(index).getNum() < 100) {
@@ -85,7 +86,7 @@ public class ItemService {
                 }
             }
         }
-        return addItem(item, player) ? true : false;
+        return addItem(item, player);
     }
 
     /**
@@ -125,7 +126,7 @@ public class ItemService {
         synchronized (this) {
             removeItem(index, 1, player);
             int addHp = player.getHp() + item.getItemById().getHp();
-            player.setHp(addHp < player.getOriHp() ? addHp : player.getOriHp());
+            player.setHp(Math.min(addHp, player.getOriHp()));
             int addMp = player.getMp() + item.getItemById().getMp();
             player.setMp(addMp < player.getOriMp() ? addMp : player.getOriMp());
             ctx.writeAndFlush("您成功使用[" + item.getItemById().getName() + "]\n");

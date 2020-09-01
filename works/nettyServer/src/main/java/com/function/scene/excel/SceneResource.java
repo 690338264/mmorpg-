@@ -49,7 +49,7 @@ public class SceneResource {
                 sceneManagerCache.createMonster(scene, i);
             });
             sceneManagerCache.createNpc(scene);
-            sceneManagerCache.start(scene);
+            sceneManagerCache.publicStart(scene);
         });
 
     }

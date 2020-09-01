@@ -66,7 +66,7 @@ public class PlayerData {
      * 初始化角色技能
      */
     public void initSkill(Player player) {
-        OccExcel occExcel = occCache.get("Occ" + player.getTPlayer().getOccupation());
+        OccExcel occExcel = occCache.get(player.getTPlayer().getOccupation());
         for (int i = 0; i < occExcel.getSkills().size(); i++) {
             player.getCanUseSkill().put(i + 1, occExcel.getSkills().get(i));
         }

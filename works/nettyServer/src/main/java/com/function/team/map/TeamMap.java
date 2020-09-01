@@ -3,8 +3,8 @@ package com.function.team.map;
 import com.function.team.model.Team;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Catherine
@@ -13,9 +13,9 @@ import java.util.Map;
 @Component
 public class TeamMap {
 
-    private Map<Integer, Team> teamCache = new HashMap<>();
+    private Map<Long, Team> teamCache = new ConcurrentHashMap<>();
 
-    public Map<Integer, Team> getTeamCache() {
+    public Map<Long, Team> getTeamCache() {
         return teamCache;
     }
 }

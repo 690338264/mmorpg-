@@ -6,7 +6,6 @@ import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
 import lombok.Data;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -26,9 +25,9 @@ public class Scene {
 
     private int type;
 
-    private Map<Integer, Map<Long, SceneObject>> sceneObjectMap = new HashMap<>();
+    private Map<Integer, Map<Long, SceneObject>> sceneObjectMap = new ConcurrentHashMap<>();
 
-    private Map<Long, Monster> waitForRevive = new HashMap<>();
+    private Map<Long, Monster> waitForRevive = new ConcurrentHashMap<>();
 
     private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
 

@@ -51,7 +51,7 @@ public class TeamController {
     private void applyAdd(ChannelHandlerContext ctx, Msg msg) {
         Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
-        int teamId = Integer.parseInt(params[1]);
+        Long teamId = Long.parseLong(params[1]);
         teamService.applyTeam(player, teamId);
     }
 
@@ -72,7 +72,7 @@ public class TeamController {
     private void acceptInvite(ChannelHandlerContext ctx, Msg msg) {
         Player player = userService.getPlayerByCtx(ctx);
         String[] params = ParamNumCheck.numCheck(ctx, msg, 2);
-        int teamId = Integer.parseInt(params[1]);
+        Long teamId = Long.parseLong(params[1]);
         teamService.accept(player, teamId);
     }
 

@@ -36,7 +36,7 @@ public class Player extends SceneObject {
 
     private Bag bag;
 
-    private Integer teamId;
+    private Long teamId;
     /**
      * 玩家当前mp
      */

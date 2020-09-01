@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
 /**
@@ -36,23 +37,25 @@ public class SceneManager {
     public static int jump = 1000;
     public static String heartBeat = "heartBeat";
 
-    private Map<Integer, Map<Integer, Scene>> scene = new HashMap<>();
+    private Map<Integer, Map<Integer, Scene>> sceneCache = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
         for (SceneType s : SceneType.values()) {
-            scene.put(s.getType(), new HashMap<>());
+            sceneCache.put(s.getType(), new ConcurrentHashMap<>());
         }
     }
 
     /**
      * 场景加载完成
      */
-    public void start(Scene s) {
-        ThreadPoolManager.loopThread(() -> monsterService.monsterRevive(s), 0, jump, s.getId());
+    public void publicStart(Scene s) {
+        ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() ->
+                monsterService.monsterRevive(s), 0, jump, s.getId());
+        s.getTaskMap().put(heartBeat, scheduledFuture);
     }
 
-    public void starts(int sceneId, Instance instance) {
+    public void instanceStart(int sceneId, Instance instance) {
         Scene s = instance.getScene();
         ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
             if (instance.getScene().getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).isEmpty()) {
@@ -72,7 +75,7 @@ public class SceneManager {
     }
 
     public Map<Integer, Scene> get(int type) {
-        return scene.get(type);
+        return sceneCache.get(type);
     }
 
     /**
@@ -80,13 +83,13 @@ public class SceneManager {
      */
     public Scene createScene(int type, int sceneId) {
         Scene s = new Scene();
-        s.setId(sceneId * SceneResource.idTimes + scene.get(type).size());
+        s.setId(sceneId * SceneResource.idTimes + sceneCache.get(type).size());
         s.setSceneId(sceneId);
         s.setType(type);
         for (SceneObjectType object : SceneObjectType.values()) {
             s.getSceneObjectMap().put(object.getType(), new HashMap<>());
         }
-        scene.get(type).put(s.getId(), s);
+        sceneCache.get(type).put(s.getId(), s);
         return s;
     }
 
@@ -119,39 +122,4 @@ public class SceneManager {
             scene.getSceneObjectMap().get(SceneObjectType.NPC.getType()).put((long) npcId, NpcResource.getNpcById(npcId));
         }
     }
-
-//    public Scene initObject(int type, int sceneId) {
-//        SceneExcel sceneExcel = SceneResource.getSceneById(type, sceneId);
-//        Scene s = new Scene();
-//        s.setId(sceneId * SceneResource.idTimes + scene.get(type).size());
-//        s.setSceneId(sceneId);
-//        s.setType(type);
-//        for (SceneObjectType object : SceneObjectType.values()) {
-//            s.getSceneObjectMap().put(object.getType(), new HashMap<>());
-//        }
-//        for (int j = 0; j < sceneExcel.getMonsters().length; j++) {
-//            int monsterId = Integer.parseInt(sceneExcel.getMonsters()[j]);
-//            Monster monster = new Monster();
-//            monster.setId(monsterId);
-//            monster.setSceneId((long) j);
-//            monster.setHp(monster.getMonsterExcel().getHp());
-//            monster.setAtk(monster.getMonsterExcel().getAggr());
-//            monster.getCanUseSkill().putAll(monster.getMonsterExcel().getMonsterSkill());
-//            monster.setType(SceneObjectType.MONSTER.getType());
-//            s.getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).put(monster.getSceneId(), monster);
-//        }
-//        for (int j = 0; j < sceneExcel.getNpcs().length; j++) {
-//            int npcId = Integer.parseInt(sceneExcel.getNpcs()[j]);
-//            s.getSceneObjectMap().get(SceneObjectType.NPC.getType()).put((long) j, NpcResource.getNpcById(npcId));
-//        }
-//        scene.get(type).put(sceneId, s);
-//        if (type == SceneType.PUBLIC.getType()) {
-//            start(s.getId(), s);
-//        } else {
-//
-//        }
-//        return s;
-//    }
-
-
 }

@@ -3,6 +3,7 @@ package com.function.bag.service;
 import com.alibaba.fastjson.JSON;
 import com.function.bag.model.Bag;
 import com.function.item.model.Item;
+import com.function.item.model.ItemType;
 import com.function.player.model.Player;
 import com.jpa.dao.BagDAO;
 import io.netty.channel.ChannelHandlerContext;
@@ -39,7 +40,7 @@ public class BagService {
             Item item = bag.getItemMap().get(index);
             sb.append("[").append(index).append("]").append(item.getItemById().getName())
                     .append("[").append(item.getNum()).append("]");
-            if (item.getItemById().getType() == 2) {
+            if (item.getItemById().getType() == ItemType.EQUIPMENT.getType()) {
                 sb.append("磨损度:[").append(item.getNowWear()).append("]");
             }
             sb.append('\n');

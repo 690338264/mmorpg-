@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
-import java.util.stream.IntStream;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Catherine
@@ -21,7 +23,6 @@ import java.util.stream.IntStream;
  */
 @Component
 public class TeamService {
-
     @Autowired
     private TeamMap teamMap;
     @Autowired
@@ -31,15 +32,21 @@ public class TeamService {
     @Autowired
     private UserMap userMap;
 
+    public static Long inviteTime = 60000L;
+    public static Long jump = 1000L;
+    public static String task = "check";
+
+    private static final int max = 10;
+    private static AtomicLong incTeamId = new AtomicLong();
+
     /**
      * 查看小队列表
      */
     public void listTeams(Player player) {
-        for (Integer key : teamMap.getTeamCache().keySet()) {
+        for (Long key : teamMap.getTeamCache().keySet()) {
             Team team = teamMap.getTeamCache().get(key);
-            String s = MessageFormat.format("队伍ID:{0}  队伍人数:{1}\n", key, team.getMembers().size());
-            StringBuilder sb = new StringBuilder(s);
-            notifyScene.notifyPlayer(player, sb);
+            notifyScene.notifyPlayer(player, MessageFormat.format("队伍ID:{0}   队伍人数:{1}\n",
+                    key, team.getMembers().size()));
         }
     }
 
@@ -53,15 +60,18 @@ public class TeamService {
         }
         Team team = new Team();
         team.setLeaderId(player.getTPlayer().getRoleId());
-        IntStream.range(0, teamMap.getTeamCache().size() + 1).forEach(i -> {
-            if (teamMap.getTeamCache().get(i) == null) {
-                teamMap.getTeamCache().put(i, team);
-                player.setTeamId(i);
-                team.getMembers().put(player.getTPlayer().getRoleId(), player);
-                notifyScene.notifyPlayer(player, "成功创建小队!\n");
-                return;
-            }
-        });
+        Long teamId = incTeamId.longValue();
+        teamMap.getTeamCache().put(teamId, team);
+        player.setTeamId(teamId);
+        team.getMembers().put(player.getTPlayer().getRoleId(), player);
+        addTeamId();
+        ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
+            check(team.getApply());
+            check(team.getInvite());
+            System.out.println("123");
+        }, 0, jump, teamId.intValue());
+        team.setScheduledFuture(scheduledFuture);
+        notifyScene.notifyPlayer(player, "小队创建成功!\n");
     }
 
     /**
@@ -83,7 +93,7 @@ public class TeamService {
         if (leaderId.equals(player.getTPlayer().getRoleId())) {
             notifyScene.notifyPlayer(player, "申请列表:\n");
             for (Long key : team.getApply().keySet()) {
-                Player apply = team.getApply().get(key);
+                Player apply = userMap.getPlayers(key);
                 showMember(player, apply);
             }
         }
@@ -92,27 +102,29 @@ public class TeamService {
     /**
      * 申请加入小队
      */
-    public void applyTeam(Player player, int teamId) {
+    public void applyTeam(Player player, Long teamId) {
         if (isInTeam(player)) {
             notifyScene.notifyPlayer(player, "您已加入一支小队\n");
             return;
         }
         Team team = teamMap.getTeamCache().get(teamId);
-        team.getApply().put(player.getTPlayer().getRoleId(), player);
+        if (team == null) {
+            notifyScene.notifyPlayer(player, "小队不存在\n");
+            return;
+        }
+        team.getApply().put(player.getTPlayer().getRoleId(), System.currentTimeMillis());
         Player leader = team.getMembers().get(team.getLeaderId());
         notifyScene.notifyPlayer(leader, "收到一条小队加入申请\n");
-        ThreadPoolManager.delayThread(() -> {
-            Long key = player.getTPlayer().getRoleId();
-            if (team.getApply().get(key) != null) {
-                team.getApply().remove(key);
-            }
-        }, 60000, player.getChannelHandlerContext().hashCode());
     }
 
     /**
      * 邀请玩家加入小队
      */
     public void invitePlayer(Player player, Long playerId) {
+        if (!isInTeam(player)) {
+            notifyScene.notifyPlayer(player, "您尚未加入小队\n");
+            return;
+        }
         Team team = teamMap.getTeamCache().get(player.getTeamId());
         Player invite = userMap.getPlayers(playerId);
         if (invite.getChannelHandlerContext() == null) {
@@ -123,12 +135,7 @@ public class TeamService {
             notifyScene.notifyPlayer(player, "该玩家已在小队\n");
             return;
         }
-        team.getInvite().put(playerId, invite);
-        ThreadPoolManager.delayThread(() -> {
-            if (team.getInvite().get(playerId) != null) {
-                team.getInvite().remove(playerId);
-            }
-        }, 60000, player.getChannelHandlerContext().hashCode());
+        team.getInvite().put(playerId, System.currentTimeMillis());
     }
 
     /**
@@ -140,11 +147,11 @@ public class TeamService {
             notifyScene.notifyPlayer(player, "你还不是队长\n");
             return;
         }
-        Player apply = team.getApply().get(playerId);
-        if (apply == null) {
+        if (team.getApply().get(playerId) == null) {
             notifyScene.notifyPlayer(player, "玩家申请过时或未申请\n");
             return;
         }
+        Player apply = userMap.getPlayers(playerId);
         if (addMember(apply, team)) {
             team.getApply().remove(playerId);
             notifyScene.notifyTeam(team, MessageFormat.format("[{0}]加入小队\n", apply.getTPlayer().getName()));
@@ -154,7 +161,7 @@ public class TeamService {
     /**
      * 接受小队的邀请
      */
-    public void accept(Player player, int teamId) {
+    public void accept(Player player, Long teamId) {
         Team team = teamMap.getTeamCache().get(teamId);
         if (team == null) {
             notifyScene.notifyPlayer(player, "小队不存在\n");
@@ -180,6 +187,7 @@ public class TeamService {
         }
         Team team = teamMap.getTeamCache().get(player.getTeamId());
         if (team.getMembers().size() == 1) {
+            team.getScheduledFuture().cancel(true);
             teamMap.getTeamCache().remove(player.getTeamId());
             player.setTeamId(null);
             notifyScene.notifyPlayer(player, "您已离开小队\n");
@@ -218,10 +226,17 @@ public class TeamService {
     }
 
     /**
+     * teamId
+     */
+    public void addTeamId() {
+        incTeamId.getAndIncrement();
+    }
+
+    /**
      * 成员信息
      */
     public void showMember(Player player, Player member) {
-        OccExcel occExcel = occCache.get("Occ" + member.getTPlayer().getOccupation());
+        OccExcel occExcel = occCache.get(member.getTPlayer().getOccupation());
         TPlayer tPlayer = member.getTPlayer();
         notifyScene.notifyPlayer(player, MessageFormat.format("[{0}]  {1}  门派:{2}  等级{3}\n"
                 , tPlayer.getRoleId(), tPlayer.getName(), occExcel.getName(), tPlayer.getLevel()));
@@ -232,5 +247,13 @@ public class TeamService {
      */
     public boolean isInTeam(Player player) {
         return player.getTeamId() != null;
+    }
+
+    public void check(Map<Long, Long> map) {
+        map.forEach((k, v) -> {
+            if (System.currentTimeMillis() - v > inviteTime) {
+                map.remove(k);
+            }
+        });
     }
 }

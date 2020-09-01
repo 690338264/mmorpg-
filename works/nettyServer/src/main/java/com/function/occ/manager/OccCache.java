@@ -40,10 +40,11 @@ public class OccCache {
     /**
      * 普通缓存获取
      *
-     * @param key 键
+     * @param id 键
      * @return 值
      */
-    public OccExcel get(String key) {
+    public OccExcel get(int id) {
+        String key = "Occ" + id;
         System.out.println("从缓存中取出");
         return key == null ? null : redisTemplate.opsForValue().get(key);
     }
