@@ -31,12 +31,16 @@ public class SceneObject {
      * 原始Hp
      */
     private int oriHp;
+    /**
+     * 所在地
+     */
+    private int sceneId;
 
     ReentrantLock lock = new ReentrantLock();
     /**
      * 线程任务列表
      */
-    private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
+    private Map<Integer, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
     /**
      * buff
      */
@@ -86,6 +90,14 @@ public class SceneObject {
         this.oriHp = oriHp;
     }
 
+    public int getSceneId() {
+        return sceneId;
+    }
+
+    public void setSceneId(int sceneId) {
+        this.sceneId = sceneId;
+    }
+
     public ReentrantLock getLock() {
         return lock;
     }
@@ -94,30 +106,16 @@ public class SceneObject {
         this.lock = lock;
     }
 
-    public Map<String, ScheduledFuture> getTaskMap() {
+    public Map<Integer, ScheduledFuture> getTaskMap() {
         return taskMap;
-    }
-
-
-    public void setTaskMap(Map<String, ScheduledFuture> taskMap) {
-        this.taskMap = taskMap;
     }
 
     public Map<Integer, ScheduledFuture> getBuffs() {
         return buffs;
     }
 
-    public void setBuffs(Map<Integer, ScheduledFuture> buffs) {
-        this.buffs = buffs;
-    }
-
     public Map<Integer, Skill> getCanUseSkill() {
         return canUseSkill;
     }
-
-    public void setCanUseSkill(Map<Integer, Skill> canUseSkill) {
-        this.canUseSkill = canUseSkill;
-    }
-
 
 }

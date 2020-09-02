@@ -6,6 +6,7 @@ import com.function.scene.model.SceneType;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import util.excel.ClassName;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -29,13 +30,13 @@ public class SceneResource {
 
     @PostConstruct
     private void init() {
-        int num = excelManager.getMap().get("Scene").size();
+        int num = excelManager.getMap().get(ClassName.Scene.name()).size();
         for (SceneType s : SceneType.values()) {
             sceneMap.put(s.getType(), new HashMap<>());
         }
 
         for (int i = 0; i < num; i++) {
-            SceneExcel sceneExcel = (SceneExcel) excelManager.getMap().get("Scene").get(i);
+            SceneExcel sceneExcel = (SceneExcel) excelManager.getMap().get(ClassName.Scene.name()).get(i);
             sceneMap.get(sceneExcel.getType()).put(sceneExcel.getId(), sceneExcel);
             String str = sceneExcel.getMonster();
             String[] strs = str.split(",");
@@ -45,9 +46,7 @@ public class SceneResource {
         }
         sceneMap.get(SceneType.PUBLIC.getType()).forEach((k, v) -> {
             Scene scene = sceneManagerCache.createScene(SceneType.PUBLIC.getType(), k);
-            IntStream.range(0, v.getMonsters().length).forEach(i -> {
-                sceneManagerCache.createMonster(scene, i);
-            });
+            IntStream.range(0, v.getMonsters().length).forEach(i -> sceneManagerCache.createMonster(scene, i));
             sceneManagerCache.createNpc(scene);
             sceneManagerCache.publicStart(scene);
         });

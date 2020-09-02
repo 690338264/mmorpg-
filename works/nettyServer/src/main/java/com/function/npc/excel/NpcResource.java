@@ -4,6 +4,7 @@ import com.function.scene.model.SceneObjectType;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import util.excel.ClassName;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -22,9 +23,9 @@ public class NpcResource {
 
     @PostConstruct
     private void init() {
-        int num = excelManager.getMap().get("Npc").size();
+        int num = excelManager.getMap().get(ClassName.Npc.name()).size();
         for (int i = 0; i < num; i++) {
-            NpcExcel npcExcel = (NpcExcel) excelManager.getMap().get("Npc").get(i);
+            NpcExcel npcExcel = (NpcExcel) excelManager.getMap().get(ClassName.Npc.name()).get(i);
             npcExcel.setType(SceneObjectType.NPC.getType());
             npcMap.put(npcExcel.getId(), npcExcel);
         }

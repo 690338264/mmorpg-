@@ -72,16 +72,18 @@ public class BuffService {
             //多次效果
             if (buff.getBuffExcel().getTimes() != 1) {
                 ScheduledFuture buffTask = ThreadPoolManager.loopThread(() -> {
-                    if (buff.getRemainTimes() == 0) {
+                    //效果结束或者玩家不在场景内
+                    if (buff.getRemainTimes() == 0 || attacker.getSceneId() != beAttack.getSceneId()) {
                         buffer.getBuffs().get(buff.getId()).cancel(true);
+                        buffer.getBuffs().remove(buff.getId());
                     }
                     buffer.setHp(buffer.getHp() + flag * buff.getBuffExcel().getHp());
-                    System.out.println("Hp" + flag * buff.getBuffExcel().getHp());
+
                     buff.setRemainTimes(buff.getRemainTimes() - 1);
                     if (buffer.getHp() <= 0) {
                         if (buffer.getType() == SceneObjectType.MONSTER.getType()) {
                             Monster m = (Monster) buffer;
-                            playerService.killMonster(m, scene, m.getSceneId(), (Player) attacker);
+                            playerService.killMonster(m, scene, m.getId(), (Player) attacker);
                         } else {
                             Monster m = (Monster) attacker;
                             Player p = (Player) buffer;

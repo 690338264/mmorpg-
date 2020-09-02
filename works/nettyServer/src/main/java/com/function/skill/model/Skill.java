@@ -8,9 +8,6 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Catherine
@@ -22,11 +19,7 @@ public class Skill {
 
     private Integer skillId;
 
-//    private Map<Integer, Buff> buffMap = new HashMap<>();
-
     private List<Buff> buffList = new ArrayList<>();
-
-    private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
 
     public SkillExcel getSkillExcel() {
         return SkillResource.getSkillById(skillId);

@@ -126,7 +126,6 @@ public class InstanceService {
             notifyScene.notifyPlayer(player, "您已退出副本!\n");
         });
         instance.getPlayers().clear();
-        instance.getScene().getTaskMap().forEach((k, v) -> v.cancel(true));
-        instance.getScene().getTaskMap().clear();
+        instance.getScene().getHeartBeat().cancel(true);
     }
 }

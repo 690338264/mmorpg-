@@ -35,7 +35,6 @@ public class SceneManager {
     private NotifyScene notifyScene;
 
     public static int jump = 1000;
-    public static String heartBeat = "heartBeat";
 
     private Map<Integer, Map<Integer, Scene>> sceneCache = new ConcurrentHashMap<>();
 
@@ -52,7 +51,7 @@ public class SceneManager {
     public void publicStart(Scene s) {
         ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() ->
                 monsterService.monsterRevive(s), 0, jump, s.getId());
-        s.getTaskMap().put(heartBeat, scheduledFuture);
+        s.setHeartBeat(scheduledFuture);
     }
 
     public void instanceStart(int sceneId, Instance instance) {
@@ -71,7 +70,7 @@ public class SceneManager {
                 return;
             }
         }, 0, jump, sceneId);
-        s.getTaskMap().put(heartBeat, scheduledFuture);
+        s.setHeartBeat(scheduledFuture);
     }
 
     public Map<Integer, Scene> get(int type) {
@@ -102,13 +101,14 @@ public class SceneManager {
         }
         int monsterId = Integer.parseInt(s.getSceneExcel().getMonsters()[num]);
         Monster monster = new Monster();
-        monster.setId(monsterId);
-        monster.setSceneId((long) num);
+        monster.setExcelId(monsterId);
+        monster.setId((long) num);
         monster.setHp(monster.getMonsterExcel().getHp());
         monster.setAtk(monster.getMonsterExcel().getAggr());
+        monster.setSceneId(s.getSceneId());
         monster.getCanUseSkill().putAll(monster.getMonsterExcel().getMonsterSkill());
         monster.setType(SceneObjectType.MONSTER.getType());
-        s.getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).put(monster.getSceneId(), monster);
+        s.getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).put(monster.getId(), monster);
         return true;
     }
 

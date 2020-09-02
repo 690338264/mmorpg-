@@ -29,7 +29,7 @@ public class Scene {
 
     private Map<Long, Monster> waitForRevive = new ConcurrentHashMap<>();
 
-    private Map<String, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
+    private ScheduledFuture heartBeat;
 
     public SceneExcel getSceneExcel() {
         return SceneResource.getSceneById(type, sceneId);

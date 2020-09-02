@@ -5,6 +5,7 @@ import com.function.bag.model.Bag;
 import com.function.item.model.Item;
 import com.function.item.model.ItemType;
 import com.function.player.model.Player;
+import com.function.player.model.SceneObjectTask;
 import com.function.scene.service.NotifyScene;
 import com.jpa.dao.BagDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,11 @@ public class BagService {
     @Autowired
     private NotifyScene notifyScene;
 
-    public static String updateBag = "updateBag";
-
     /**
      * 更新背包
      */
     public void updateBag(Player player) {
-        if (player.getTaskMap().get(updateBag) == null) {
+        if (player.getTaskMap().get(SceneObjectTask.UPDATE_BAG.getKey()) == null) {
             String json = JSON.toJSONString(player.getBag().getItemMap());
             player.getBag().getTBag().setItem(json);
             bagDAO.save(player.getBag().getTBag());
@@ -51,7 +50,7 @@ public class BagService {
             }
             notifyScene.notifyPlayer(player, "\n");
         }
-        notifyScene.notifyPlayer(player, MessageFormat.format("金币：{3}\n", player.getTPlayer().getMoney()));
+        notifyScene.notifyPlayer(player, MessageFormat.format("金币：{0}\n", player.getTPlayer().getMoney()));
     }
 
     /**
@@ -59,10 +58,7 @@ public class BagService {
      */
     public void orderBag(Player player, Map<Integer, Item> itemMap) {
         List<Map.Entry<Integer, Item>> list = new LinkedList<>(itemMap.entrySet());
-        Collections.sort(list, (o1, o2) -> {
-            int compare = (o1.getValue().getId()).compareTo(o2.getValue().getId());
-            return compare;
-        });
+        list.sort(Comparator.comparing(o -> (o.getValue().getId())));
         Map<Integer, Item> result = new HashMap<>();
         int key = 0;
         for (Map.Entry<Integer, Item> entry : list) {

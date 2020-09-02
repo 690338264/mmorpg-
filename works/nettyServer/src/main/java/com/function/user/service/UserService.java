@@ -2,6 +2,7 @@ package com.function.user.service;
 
 import com.function.bag.service.BagService;
 import com.function.player.model.Player;
+import com.function.player.model.SceneObjectTask;
 import com.function.player.service.PlayerData;
 import com.function.player.service.PlayerService;
 import com.function.scene.manager.SceneManager;
@@ -56,10 +57,6 @@ public class UserService {
     private BagService bagService;
     @Autowired
     private TeamService teamService;
-
-    public static String mpKey = "MpResume";
-
-    public static String Player = "Player";
 
     public static int mpAdd = 5;
 
@@ -150,6 +147,7 @@ public class UserService {
      * mp定时器开启
      */
     public void mpResume(Player player) {
+        int mpKey = SceneObjectTask.MP_ADD.getKey();
         if (player.getTaskMap().get(mpKey) != null) {
             return;
         }
@@ -177,7 +175,7 @@ public class UserService {
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);
         Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(player.getNowScene().getId());
-        scene.getSceneObjectMap().remove(player.getTPlayer().getRoleId());
+        scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).remove(player.getTPlayer().getRoleId());
         player.setChannelHandlerContext(null);
     }
 

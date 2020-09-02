@@ -5,6 +5,7 @@ import com.function.skill.cache.SkillCache;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import util.excel.ClassName;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
@@ -23,15 +24,13 @@ public class SkillResource {
     @Autowired
     private BuffResource buffResource;
 
-    public static String className = "Skill";
-
     private static Map<Integer, SkillExcel> skillMap = new HashMap<>();
 
     @PostConstruct
     private void init() {
-        int num = excelManager.getMap().get(className).size();
+        int num = excelManager.getMap().get(ClassName.Skill.name()).size();
         for (int i = 0; i < num; i++) {
-            SkillExcel skillExcel = (SkillExcel) excelManager.getMap().get(className).get(i);
+            SkillExcel skillExcel = (SkillExcel) excelManager.getMap().get(ClassName.Skill.name()).get(i);
             skillMap.put(skillExcel.getId(), skillExcel);
             if (skillExcel.getBuff() != null) {
                 String[] buffs = skillExcel.getBuff().split(",");

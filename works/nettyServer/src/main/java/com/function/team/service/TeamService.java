@@ -68,7 +68,6 @@ public class TeamService {
         ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
             check(team.getApply());
             check(team.getInvite());
-            System.out.println("123");
         }, 0, jump, teamId.intValue());
         team.setScheduledFuture(scheduledFuture);
         notifyScene.notifyPlayer(player, "小队创建成功!\n");

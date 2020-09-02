@@ -3,6 +3,7 @@ package com.function.monster.service;
 import com.function.buff.service.BuffService;
 import com.function.monster.model.Monster;
 import com.function.player.model.Player;
+import com.function.player.model.SceneObjectTask;
 import com.function.player.service.PlayerService;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObjectType;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
 
 
 /**
@@ -42,7 +44,7 @@ public class MonsterService {
         monster.setDeathTime(System.currentTimeMillis());
         buffService.removeBuff(monster);
         scene.getSceneObjectMap().get(type).remove(index);
-        scene.getWaitForRevive().put(monster.getSceneId(), monster);
+        scene.getWaitForRevive().put(monster.getId(), monster);
         monster.getHurtList().clear();
     }
 
@@ -55,7 +57,7 @@ public class MonsterService {
             if (System.currentTimeMillis() - monster.getDeathTime() > monster.getMonsterExcel().getReviveTime()) {
                 scene.getWaitForRevive().remove(k);
                 monster.setHp(monster.getOriHp());
-                scene.getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).put(monster.getSceneId(), monster);
+                scene.getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).put(monster.getId(), monster);
             }
         });
 
@@ -73,11 +75,13 @@ public class MonsterService {
         monster.getCanUseSkill().remove(randomKey);
         int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getAtk();
         player.setHp(player.getHp() - hurt);
-        ThreadPoolManager.delayThread(() -> monster.getCanUseSkill().put(randomKey, skill), skill.getSkillExcel().getCd(), monster.getId());
+        ScheduledFuture skillCd = ThreadPoolManager.delayThread(() ->
+                monster.getCanUseSkill().put(randomKey, skill), skill.getSkillExcel().getCd(), monster.getExcelId());
+        monster.getTaskMap().put(SceneObjectTask.SKILL_CD.getKey(), skillCd);
         notifyScene.notifyPlayer(player, MessageFormat.format("您受到了{0}点伤害", hurt));
         if (!playerService.playerDie(player, monster)) {
             notifyScene.notifyPlayer(player, MessageFormat.format("剩余血量为{0}\n", player.getHp()));
-            buffService.buff(monster.getSceneId().intValue(), skill, player, monster, player.getNowScene());
+            buffService.buff(monster.getId().intValue(), skill, player, monster, player.getNowScene());
         }
     }
 
@@ -85,13 +89,26 @@ public class MonsterService {
      * 仇恨排名
      */
     public Long hurtSort(Monster monster) {
+        inScene(monster);
         Map<Long, Integer> hurtMap = monster.getHurtList();
         List<Map.Entry<Long, Integer>> list = new LinkedList<>(hurtMap.entrySet());
-        Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
         Map<Long, Integer> result = new LinkedHashMap<>();
         for (Map.Entry<Long, Integer> entry : list) {
             result.put(entry.getKey(), entry.getValue());
         }
         return result.entrySet().iterator().next().getKey();
+    }
+
+    /**
+     * 移除仇恨列表中移出场景的玩家
+     */
+    public void inScene(Monster monster) {
+        monster.getHurtList().forEach((k, v) -> {
+            Player player = userMap.getPlayers(k);
+            if (player.getNowScene().getSceneId() != monster.getSceneId()) {
+                monster.getHurtList().remove(k);
+            }
+        });
     }
 }

@@ -27,7 +27,9 @@ public class Team {
      * 申请加入
      */
     private Map<Long, Long> apply = new ConcurrentHashMap<>();
-
+    /**
+     * 处理入队邀请和请求
+     */
     private ScheduledFuture scheduledFuture;
 
     public Long getLeaderId() {

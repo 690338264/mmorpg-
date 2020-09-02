@@ -5,6 +5,7 @@ import com.function.skill.cache.SkillCache;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import util.excel.ClassName;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -28,9 +29,9 @@ public class OccResource {
 
     @PostConstruct
     private void init() {
-        int num = excelManager.getMap().get("Occ").size();
+        int num = excelManager.getMap().get(ClassName.Occ.name()).size();
         for (int i = 0; i < num; i++) {
-            OccExcel occExcel = (OccExcel) excelManager.getMap().get("Occ").get(i);
+            OccExcel occExcel = (OccExcel) excelManager.getMap().get(ClassName.Occ.name()).get(i);
             occupationMap.put(occExcel.getId(), occExcel);
             String[] occSkill = occExcel.getSkill().split(",");
             for (int j = 0; j < occSkill.length; j++) {

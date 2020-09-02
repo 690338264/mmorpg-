@@ -3,6 +3,7 @@ package com.function.buff.excel;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import util.excel.ClassName;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -19,13 +20,11 @@ public class BuffResource {
 
     private static Map<Integer, BuffExcel> buffMap = new HashMap<>();
 
-    public static String key = "Buff";
-
     @PostConstruct
     private void init() {
-        int num = excelManager.getMap().get(key).size();
+        int num = excelManager.getMap().get(ClassName.Buff.name()).size();
         for (int i = 0; i < num; i++) {
-            BuffExcel buffExcel = (BuffExcel) excelManager.getMap().get(key).get(i);
+            BuffExcel buffExcel = (BuffExcel) excelManager.getMap().get(ClassName.Buff.name()).get(i);
             buffMap.put(buffExcel.getId(), buffExcel);
         }
 

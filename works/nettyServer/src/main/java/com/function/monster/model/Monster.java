@@ -16,11 +16,11 @@ public class Monster extends SceneObject {
     /**
      * 怪物类型id
      */
-    private int id;
+    private int excelId;
     /**
      * 怪物场景自己的id
      */
-    private Long sceneId;
+    private Long id;
     /**
      * 仇恨列表
      */
@@ -41,7 +41,7 @@ public class Monster extends SceneObject {
     }
 
     public MonsterExcel getMonsterExcel() {
-        return MonsterResource.getMonById(id);
+        return MonsterResource.getMonById(excelId);
     }
 
 }

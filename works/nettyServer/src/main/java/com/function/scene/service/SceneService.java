@@ -97,7 +97,7 @@ public class SceneService {
                 if (sceneObject.getType() == SceneObjectType.MONSTER.getType()) {
                     Monster monster = (Monster) sceneObject;
                     notifyScene.notifyPlayer(player, MessageFormat.format("怪物:id:[{0}]{1}  Hp:[{2}]\n",
-                            monster.getSceneId(), monster.getMonsterExcel().getName(), monster.getHp()));
+                            monster.getId(), monster.getMonsterExcel().getName(), monster.getHp()));
                 }
             });
         }

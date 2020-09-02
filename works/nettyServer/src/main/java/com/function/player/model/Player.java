@@ -61,4 +61,9 @@ public class Player extends SceneObject {
     public String getName() {
         return tPlayer.getName();
     }
+
+    @Override
+    public int getSceneId() {
+        return nowScene.getSceneId();
+    }
 }

@@ -9,6 +9,7 @@ import com.function.monster.service.MonsterService;
 import com.function.player.manager.BagManager;
 import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
+import com.function.player.model.SceneObjectTask;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
 import com.function.scene.model.SceneObjectType;
@@ -56,8 +57,6 @@ public class PlayerService {
     @Autowired
     private UserMap userMap;
 
-    public static String attack = "attack";
-
     public Long period = 5000L;
 
     public Long playerRevive = 5000L;
@@ -103,6 +102,7 @@ public class PlayerService {
      * 攻击
      */
     public void attack(Player player, int skillId, Long target, int type) {
+
         Scene scene = player.getNowScene();
         SceneObject s = scene.getSceneObjectMap().get(type).get(target);
         Skill skill = player.getCanUseSkill().get(skillId);
@@ -131,9 +131,7 @@ public class PlayerService {
                     s.setHp(s.getHp() - hurt);
                     player.setMp(player.getMp() - skill.getSkillExcel().getMp());
                     player.getCanUseSkill().remove(skillId);
-                    ThreadPoolManager.delayThread(() -> {
-                        player.getCanUseSkill().put(skillId, skill);
-                    }, skill.getSkillExcel().getCd(), player.getChannelHandlerContext().hashCode());
+                    ThreadPoolManager.delayThread(() -> player.getCanUseSkill().put(skillId, skill), skill.getSkillExcel().getCd(), player.getChannelHandlerContext().hashCode());
                     //击杀
                     if (s.getHp() <= 0) {
                         //击杀怪物
@@ -158,17 +156,14 @@ public class PlayerService {
                             if (monster.getHurtList().isEmpty()) {
                                 flag = 1;
                             }
-                            if (!monster.getHurtList().containsKey(player.getTPlayer().getRoleId())) {
-                                oriHurt = 0;
-                            } else {
-                                oriHurt = monster.getHurtList().get(player.getTPlayer().getRoleId());
-                            }
+                            oriHurt = monster.getHurtList().getOrDefault(player.getTPlayer().getRoleId(), 0);
                             monster.getHurtList().put(player.getTPlayer().getRoleId(), hurt + oriHurt);
-                            buffService.buff(monster.getSceneId().intValue(), skill, monster, player, scene);
+                            buffService.buff(monster.getId().intValue(), skill, monster, player, scene);
                             notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]释放了技能[{1}]对怪物[{2}]产生伤害:{3}\n",
                                     player.getTPlayer().getName(), skill.getSkillExcel().getName(),
                                     monster.getMonsterExcel().getName(), hurt));
                             if (flag == 1) {
+                                int attack = SceneObjectTask.ATTACK.getKey();
                                 ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
                                     if (monster.getHurtList().isEmpty()) {
                                         monster.getTaskMap().get(attack).cancel(true);
@@ -176,7 +171,7 @@ public class PlayerService {
                                     }
                                     Long hate = monsterService.hurtSort(monster);
                                     monsterService.monsterAtk(monster, hate);
-                                }, 0, period, monster.getId());
+                                }, 0, period, monster.getExcelId());
                                 monster.getTaskMap().put(attack, scheduledFuture);
                             }
                         }
@@ -199,7 +194,7 @@ public class PlayerService {
      * 击杀怪物
      */
     public void killMonster(Monster monster, Scene scene, Long target, Player player) {
-
+        int attack = SceneObjectTask.ATTACK.getKey();
         if (!monster.getHurtList().isEmpty()) {
             monster.getTaskMap().get(attack).cancel(true);
             monster.getTaskMap().remove(attack);
@@ -253,9 +248,7 @@ public class PlayerService {
     public boolean playerDie(Player player, Monster monster) {
         if (player.getHp() <= 0) {
             notifyScene.notifyPlayer(player, "已阵亡！五秒后复活！\n");
-            ThreadPoolManager.delayThread(() -> {
-                player.setHp(player.getOriHp());
-            }, playerRevive, player.getChannelHandlerContext().hashCode());
+            ThreadPoolManager.delayThread(() -> player.setHp(player.getOriHp()), playerRevive, player.getChannelHandlerContext().hashCode());
             buffService.removeBuff(player);
             monster.getHurtList().remove(player.getTPlayer().getRoleId());
             return true;
