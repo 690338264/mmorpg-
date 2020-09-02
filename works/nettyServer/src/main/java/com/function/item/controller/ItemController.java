@@ -1,6 +1,7 @@
 package com.function.item.controller;
 
 import com.Cmd;
+import com.function.item.model.Item;
 import com.function.item.service.ItemService;
 import com.function.player.model.Player;
 import com.function.scene.service.NotifyScene;
@@ -37,13 +38,13 @@ public class ItemController {
     }
 
     private void itemUse(Player player, Msg msg) {
-        String[] params = ParamNumCheck.numCheck(player, msg, 2);
+        String[] params = ParamNumCheck.numCheck(player, msg, 3);
         int index = Integer.parseInt(params[1]);
         itemService.useItem(index, player);
     }
 
     private void equipOn(Player player, Msg msg) {
-        String[] params = ParamNumCheck.numCheck(player, msg, 2);
+        String[] params = ParamNumCheck.numCheck(player, msg, 3);
         int index = Integer.parseInt(params[1]);
         itemService.wearEquipment(index, player);
     }
@@ -52,8 +53,10 @@ public class ItemController {
         String[] params = ParamNumCheck.numCheck(player, msg, 3);
         int index = Integer.parseInt(params[1]);
         int num = Integer.parseInt(params[2]);
-        String name = player.getBag().getItemMap().get(index).getItemById().getName();
-        if (itemService.removeItem(index, num, player)) {
+        Item item = player.getBag().getItemMap().get(index);
+        String name = item.getItemById().getName();
+        Long id = item.getItemId();
+        if (itemService.removeItem(id, index, num, player)) {
             notifyScene.notifyPlayer(player, MessageFormat.format("您已丢弃:[{0}]\n", name));
 
         }

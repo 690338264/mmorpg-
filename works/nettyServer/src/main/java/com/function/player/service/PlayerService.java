@@ -17,6 +17,7 @@ import com.function.scene.service.NotifyScene;
 import com.function.skill.model.Skill;
 import com.function.user.map.UserMap;
 import com.jpa.dao.BagDAO;
+import com.jpa.dao.EmailDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TBag;
 import com.jpa.entity.TPlayer;
@@ -54,6 +55,8 @@ public class PlayerService {
     private PlayerDAO playerDAO;
     @Autowired
     private BagDAO bagDAO;
+    @Autowired
+    private EmailDAO emailDAO;
     @Autowired
     private UserMap userMap;
 

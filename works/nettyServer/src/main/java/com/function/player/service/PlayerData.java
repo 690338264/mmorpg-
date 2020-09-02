@@ -6,7 +6,7 @@ import com.function.bag.model.Bag;
 import com.function.bag.service.BagService;
 import com.function.buff.excel.BuffResource;
 import com.function.buff.model.Buff;
-import com.function.communicate.model.Email;
+import com.function.email.model.Email;
 import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
 import com.function.occ.excel.OccExcel;
@@ -18,11 +18,14 @@ import com.function.skill.excel.SkillExcel;
 import com.function.skill.excel.SkillResource;
 import com.function.skill.model.Skill;
 import com.jpa.dao.BagDAO;
+import com.jpa.dao.EmailDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TBag;
+import com.jpa.entity.TEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -38,6 +41,8 @@ public class PlayerData {
     private BagDAO bagDAO;
     @Autowired
     private PlayerDAO playerDAO;
+    @Autowired
+    private EmailDAO emailDAO;
     @Autowired
     private OccCache occCache;
 
@@ -101,13 +106,16 @@ public class PlayerData {
      * 初始化邮件
      */
     public void initEmail(Player player) {
-        if (player.getTPlayer().getEmail() == null) {
-            player.getTPlayer().setEmail("{}");
-        }
-        String json = player.getTPlayer().getEmail();
-        Map<Integer, Email> email = JSON.parseObject(json, new TypeReference<Map<Integer, Email>>() {
+        List<TEmail> tEmails = emailDAO.findByPlayerId(player.getTPlayer().getRoleId());
+        tEmails.forEach(tEmail -> {
+            Email email = new Email();
+            email.settEmail(tEmail);
+            String json = tEmail.getGift();
+            List<Item> gifts = JSON.parseObject(json, new TypeReference<List<Item>>() {
+            });
+            email.setGifts(gifts);
+            player.getEmails().add(email);
         });
-        player.setEmailMap(email);
     }
 
     /**
@@ -152,9 +160,9 @@ public class PlayerData {
         playerDAO.save(player.getTPlayer());
     }
 
-    public void updateEmail(Player player) {
-        String json = JSON.toJSONString(player.getEmailMap());
-        player.getTPlayer().setEmail(json);
-        playerDAO.save(player.getTPlayer());
-    }
+//    public void updateEmail(Player player) {
+//        String json = JSON.toJSONString(player.getEmailMap());
+//        player.getTPlayer().setEmail(json);
+//        playerDAO.save(player.getTPlayer());
+//    }
 }

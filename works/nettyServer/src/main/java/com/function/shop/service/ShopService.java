@@ -3,6 +3,7 @@ package com.function.shop.service;
 import com.function.item.excel.ItemExcel;
 import com.function.item.excel.ItemResource;
 import com.function.item.model.Item;
+import com.function.item.model.ItemType;
 import com.function.item.service.ItemService;
 import com.function.player.model.Player;
 import com.function.scene.service.NotifyScene;
@@ -55,10 +56,10 @@ public class ShopService {
             notifyScene.notifyPlayer(player, fail);
             return;
         }
-        if (sellItem.getItemById().getType() == 2) {
+        if (sellItem.getItemById().getType() == ItemType.EQUIPMENT.getType()) {
             itemService.fixEquip(player, index);
         }
-        itemService.removeItem(index, num, player);
+        itemService.removeItem(sellItem.getItemId(), index, num, player);
         int getMoney = sellItem.getItemById().getMoney() * num;
         int orgMoney = player.getTPlayer().getMoney();
         player.getTPlayer().setMoney(orgMoney + getMoney);

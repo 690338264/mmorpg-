@@ -46,9 +46,9 @@ public class BagService {
             notifyScene.notifyPlayer(player, MessageFormat.format("[{0}]{1}[{2}]",
                     index, item.getItemById().getName(), item.getNum()));
             if (item.getItemById().getType() == ItemType.EQUIPMENT.getType()) {
-                notifyScene.notifyPlayer(player, MessageFormat.format("磨损度:[{3}],", item.getNowWear()));
+                notifyScene.notifyPlayer(player, MessageFormat.format("磨损度:[{0}],", item.getNowWear()));
             }
-            notifyScene.notifyPlayer(player, "\n");
+            notifyScene.notifyPlayer(player, MessageFormat.format("  id:{0}\n", item.getItemId()));
         }
         notifyScene.notifyPlayer(player, MessageFormat.format("金币：{0}\n", player.getTPlayer().getMoney()));
     }

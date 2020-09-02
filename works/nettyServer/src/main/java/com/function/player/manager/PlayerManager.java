@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
  * @create 2020-08-06 18:44
  */
 @Component
-public class PlayerManager implements InitManager {
+public class PlayerManager {
 
     public TPlayer newPlayer(String roleName, Integer roleType, Long userId) {
         TPlayer player = new TPlayer();

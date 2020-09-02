@@ -1,7 +1,7 @@
 package com.function.player.model;
 
 import com.function.bag.model.Bag;
-import com.function.communicate.model.Email;
+import com.function.email.model.Email;
 import com.function.item.model.Item;
 import com.function.scene.model.Instance;
 import com.function.scene.model.Scene;
@@ -12,8 +12,7 @@ import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -33,7 +32,9 @@ public class Player extends SceneObject {
      * 玩家所在副本
      */
     private Instance Instance;
-
+    /**
+     * 玩家背包
+     */
     private Bag bag;
 
     private Long teamId;
@@ -55,7 +56,8 @@ public class Player extends SceneObject {
     private boolean init;
 
     private Map<Integer, Item> equipMap = new HashMap<>();
-    private Map<Integer, Email> emailMap = new HashMap<>();
+    private List<Email> emails = Collections.synchronizedList(new ArrayList<>());
+//    private Map<Integer, Email> emailMap = new ConcurrentHashMap<>();
 
     @Override
     public String getName() {

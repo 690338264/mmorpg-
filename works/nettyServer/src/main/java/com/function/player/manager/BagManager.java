@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * @create 2020-08-06 18:36
  */
 @Component
-public class BagManager implements InitManager {
+public class BagManager {
 
     public TBag newBag(TPlayer player) {
         TBag bag = new TBag();

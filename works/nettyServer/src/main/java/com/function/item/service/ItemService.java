@@ -30,7 +30,12 @@ public class ItemService {
     /**
      * 移除背包中的物品
      */
-    public boolean removeItem(int index, int num, Player player) {
+    public boolean removeItem(Long id, int index, int num, Player player) {
+
+        if (player.getBag().getItemMap().get(index).getItemId().equals(id)) {
+            notifyScene.notifyPlayer(player, "失败！\n");
+            return false;
+        }
         int all = player.getBag().getItemMap().get(index).getNum();
         if (all < num) {
             StringBuilder wrongNum = new StringBuilder("失败！你没有足够数量的该物品，请重试\n");
@@ -100,7 +105,7 @@ public class ItemService {
             if (bag.getItemMap().get(i) == null) {
                 bag.getItemMap().put(i, item);
                 if (item.getItemId() == null) {
-                    item.setItemId(player.getTPlayer().getRoleId() * 10000 + tBag.getMaxId());
+                    item.setItemId(player.getTPlayer().getRoleId() * 1000000 + tBag.getMaxId());
                     tBag.setMaxId(tBag.getMaxId() + 1);
                 }
                 bagService.updateBag(player);
@@ -123,7 +128,7 @@ public class ItemService {
             notifyScene.notifyPlayer(player, "该物品不可使用!\n");
             return;
         }
-        removeItem(index, 1, player);
+        removeItem(item.getItemId(), index, 1, player);
         int addHp = player.getHp() + item.getItemById().getHp();
         player.setHp(Math.min(addHp, player.getOriHp()));
         int addMp = player.getMp() + item.getItemById().getMp();
@@ -140,7 +145,7 @@ public class ItemService {
             notifyScene.notifyPlayer(player, "该物品不可穿戴！\n");
             return;
         }
-        removeItem(index, 1, player);
+        removeItem(item.getItemId(), index, 1, player);
         if (player.getEquipMap().get(item.getItemById().getSpace()) != null) {
             removeEquip(item.getItemById().getSpace(), player);
         }
@@ -175,6 +180,14 @@ public class ItemService {
                 notifyScene.notifyPlayer(player, fix);
             }
         }
+    }
+
+    /***/
+    public Item copyItem(Item item, int num) {
+        Item copyItem = new Item();
+        copyItem.setId(item.getId());
+        copyItem.setNum(num);
+        return copyItem;
     }
 
     /**
