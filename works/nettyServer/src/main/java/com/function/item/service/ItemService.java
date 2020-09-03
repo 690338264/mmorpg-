@@ -183,7 +183,7 @@ public class ItemService {
         }
     }
 
-    /***/
+
     public Item copyItem(Item item, int num) {
         Item copyItem = new Item();
         copyItem.setId(item.getId());
@@ -202,6 +202,7 @@ public class ItemService {
             return false;
         } else {
             player.getTPlayer().setMoney(remain);
+            playerData.updatePlayerInfo(player);
             return true;
         }
     }

@@ -6,6 +6,7 @@ import com.function.item.model.Item;
 import com.function.item.model.ItemType;
 import com.function.item.service.ItemService;
 import com.function.player.model.Player;
+import com.function.player.service.PlayerData;
 import com.function.scene.service.NotifyScene;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,12 @@ public class ShopService {
     private NotifyScene notifyScene;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private PlayerData playerData;
 
+    /**
+     * 显示商店
+     */
     public void show(Player player) {
         StringBuilder good = new StringBuilder("商店:\n");
         for (Integer key : ItemResource.getMap().keySet()) {
@@ -33,6 +39,9 @@ public class ShopService {
         notifyScene.notifyPlayer(player, good);
     }
 
+    /**
+     * 买东西
+     */
     public void buy(Player player, int itemId, int num) {
         int money = 0;
         int remain = num;
@@ -57,6 +66,9 @@ public class ShopService {
 
     }
 
+    /**
+     * 卖东西
+     */
     public void sell(Player player, int index, int num) {
         Item sellItem = player.getBag().getItemMap().get(index);
         int total = sellItem.getNum();
@@ -72,6 +84,7 @@ public class ShopService {
         int getMoney = sellItem.getItemById().getMoney() * num;
         int orgMoney = player.getTPlayer().getMoney();
         player.getTPlayer().setMoney(orgMoney + getMoney);
+        playerData.updatePlayerInfo(player);
         StringBuilder success = new StringBuilder("出售成功！   获得金币：").append(getMoney).append('\n');
         notifyScene.notifyPlayer(player, success);
     }
