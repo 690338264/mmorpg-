@@ -171,7 +171,7 @@ public class ItemService {
      */
     public void fixEquip(Player player, int index) {
         Item equip = player.getBag().getItemMap().get(index);
-        if (equip.getItemById().getType() == 2) {
+        if (equip.getItemById().getType() == ItemType.EQUIPMENT.getType()) {
             int oriWear = equip.getItemById().getWear();
             int money = (oriWear - equip.getNowWear()) * 50;
             if (subMoney(player, money)) {
