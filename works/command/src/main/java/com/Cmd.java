@@ -33,9 +33,7 @@ public enum Cmd {
     BAG_LIST("bag_list", 1010),
     //整理背包
     BAG_INORDER("bag_inorder", 1011),
-    //穿戴装备
-    EQUIP_ON("equip_on", 10101),
-    //使用药品
+    //使用物品
     ITEM_USE("item_use", 10102),
     //丢弃物品
     ITEM_DROP("item_drop", 10103),
@@ -87,9 +85,12 @@ public enum Cmd {
     INTO_INSTANCE("into_instance", 10172),
     //查看人物状态属性
     PLAYER_STATE("player_state", 8888),
+
     //查看已穿戴装备
     EQUIP_LIST("equip_list", 7777),
+
     LOG_OUT("log_out", 6666),
+
     UNKNOWN("unknown", 9999);
 
     private String cmd;

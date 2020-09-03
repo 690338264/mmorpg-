@@ -46,8 +46,7 @@ public class ShopService {
         int money = 0;
         int remain = num;
         while (true) {
-            Item item = new Item();
-            item.setId(itemId);
+            Item item = new Item(itemId);
             num = Math.min(remain, item.getMaxNum());
             item.setNum(num);
             int part = ItemResource.getItemById(itemId).getMoney() * num;

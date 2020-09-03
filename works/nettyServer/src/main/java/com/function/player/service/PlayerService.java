@@ -218,10 +218,8 @@ public class PlayerService {
         Random random = new Random();
         List<ItemExcel> list = monster.getMonsterExcel().getItemList();
         int index = random.nextInt(list.size());
-        Item item = new Item();
+        Item item = new Item(list.get(index).getId());
         item.setNum(1);
-        item.setId(list.get(index).getId());
-        item.setNowWear(item.getItemById().getWear());
         itemService.getItem(item, player);
     }
 

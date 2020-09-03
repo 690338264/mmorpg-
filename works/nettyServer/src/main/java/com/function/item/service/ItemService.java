@@ -21,6 +21,8 @@ import java.util.Map;
 public class ItemService {
 
     @Autowired
+    private ItemEffect itemEffect;
+    @Autowired
     private BagService bagService;
     @Autowired
     private PlayerData playerData;
@@ -121,39 +123,12 @@ public class ItemService {
     }
 
     /**
-     * 使用药品
+     * 使用物品
      */
     public void useItem(int index, Player player) {
         Item item = player.getBag().getItemMap().get(index);
-        if (item.getItemById().getType() != ItemType.MEDICINAL.getType()) {
-            notifyScene.notifyPlayer(player, "该物品不可使用!\n");
-            return;
-        }
         removeItem(item.getItemId(), index, 1, player);
-        int addHp = player.getHp() + item.getItemById().getHp();
-        player.setHp(Math.min(addHp, player.getOriHp()));
-        int addMp = player.getMp() + item.getItemById().getMp();
-        player.setMp(addMp < player.getOriMp() ? addMp : player.getOriMp());
-        notifyScene.notifyPlayer(player, MessageFormat.format("您成功使用[{0}]\n", item.getItemById().getName()));
-    }
-
-    /**
-     * 穿戴装备
-     */
-    public void wearEquipment(int index, Player player) {
-        Item item = player.getBag().getItemMap().get(index);
-        if (item.getItemById().getType() != ItemType.EQUIPMENT.getType()) {
-            notifyScene.notifyPlayer(player, "该物品不可穿戴！\n");
-            return;
-        }
-        removeItem(item.getItemId(), index, 1, player);
-        if (player.getEquipMap().get(item.getItemById().getSpace()) != null) {
-            removeEquip(item.getItemById().getSpace(), player);
-        }
-        changeAttr(1, item, player);
-        player.getEquipMap().put(item.getItemById().getSpace(), item);
-        playerData.updatePlayerInfo(player);
-        notifyScene.notifyPlayer(player, MessageFormat.format("您已成功穿戴:[{0}]\n", item.getItemById().getName()));
+        itemEffect.useItem(player, item);
     }
 
     /**
@@ -185,8 +160,7 @@ public class ItemService {
 
 
     public Item copyItem(Item item, int num) {
-        Item copyItem = new Item();
-        copyItem.setId(item.getId());
+        Item copyItem = new Item(item.getId());
         copyItem.setNum(num);
         return copyItem;
     }

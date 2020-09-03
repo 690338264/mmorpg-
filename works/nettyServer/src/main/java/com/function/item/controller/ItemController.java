@@ -30,7 +30,6 @@ public class ItemController {
 
     {
         ControllerManager.add(Cmd.ITEM_USE, this::itemUse);
-        ControllerManager.add(Cmd.EQUIP_ON, this::equipOn);
         ControllerManager.add(Cmd.ITEM_DROP, this::itemDrop);
         ControllerManager.add(Cmd.EQUIP_OFF, this::equipOff);
         ControllerManager.add(Cmd.EQUIP_LIST, this::equipList);
@@ -38,15 +37,9 @@ public class ItemController {
     }
 
     private void itemUse(Player player, Msg msg) {
-        String[] params = ParamNumCheck.numCheck(player, msg, 3);
+        String[] params = ParamNumCheck.numCheck(player, msg, 2);
         int index = Integer.parseInt(params[1]);
         itemService.useItem(index, player);
-    }
-
-    private void equipOn(Player player, Msg msg) {
-        String[] params = ParamNumCheck.numCheck(player, msg, 3);
-        int index = Integer.parseInt(params[1]);
-        itemService.wearEquipment(index, player);
     }
 
     private void itemDrop(Player player, Msg msg) {

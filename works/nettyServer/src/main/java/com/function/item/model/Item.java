@@ -27,6 +27,11 @@ public class Item {
      */
     private int nowWear;
 
+    public Item(Integer id) {
+        this.id = id;
+        this.setNowWear(getItemById().getWear());
+    }
+
     public int getMaxNum() {
         if (getItemById().getType() == ItemType.MEDICINAL.getType()) {
             return 99;
