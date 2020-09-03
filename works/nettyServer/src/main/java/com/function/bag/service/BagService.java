@@ -69,15 +69,25 @@ public class BagService {
         int index = 0;
         Map<Integer, Item> items = new HashMap<>();
         for (Integer i : result.keySet()) {
+            Item item = result.get(i);
             if (i < result.size() - 1) {
-                if (result.get(i + 1).getId().equals(result.get(i).getId()) && result.get(i).getItemById().getType() == 1) {
-                    result.get(i + 1).setNum(result.get(i + 1).getNum() + result.get(i).getNum());
+                Item nextItem = result.get(i + 1);
+                if (nextItem.getId().equals(item.getId()) && item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
+                    if (nextItem.getNum() + item.getNum() > item.getMaxNum()) {
+                        int num = nextItem.getNum() - item.getMaxNum() + item.getNum();
+                        item.setNum(item.getMaxNum());
+                        nextItem.setNum(num);
+                        items.put(index, result.get(i));
+                        index++;
+                    } else {
+                        nextItem.setNum(nextItem.getNum() + item.getNum());
+                    }
                 } else {
-                    items.put(index, result.get(i));
+                    items.put(index, item);
                     index++;
                 }
             } else {
-                items.put(index, result.get(i));
+                items.put(index, item);
             }
         }
         player.getBag().setItemMap(items);

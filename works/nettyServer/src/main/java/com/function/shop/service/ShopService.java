@@ -10,7 +10,7 @@ import com.function.scene.service.NotifyScene;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.IntStream;
+import java.text.MessageFormat;
 
 /**
  * @author Catherine
@@ -34,16 +34,25 @@ public class ShopService {
     }
 
     public void buy(Player player, int itemId, int num) {
-        int money = ItemResource.getItemById(itemId).getMoney() * num;
-        if (itemService.subMoney(player, money)) {
-            IntStream.range(0, num).forEach(i -> {
-                        Item item = new Item();
-                        item.setId(itemId);
-                        itemService.getItem(item, player);
-                    }
-            );
-            StringBuilder success = new StringBuilder("购买成功！   花费:").append(money).append("金币\n");
-            notifyScene.notifyPlayer(player, success);
+        int money = 0;
+        int remain = num;
+        while (true) {
+            Item item = new Item();
+            item.setId(itemId);
+            num = remain > item.getMaxNum() ? item.getMaxNum() : remain;
+            item.setNum(num);
+            int part = ItemResource.getItemById(itemId).getMoney() * num;
+            remain = remain - num;
+            if (num == 0) {
+                notifyScene.notifyPlayer(player, MessageFormat.format("购买成功！   花费:{0}金币\n", money));
+                return;
+            }
+            if (itemService.getItem(item, player) && itemService.subMoney(player, part)) {
+                money = money + part;
+            } else {
+                notifyScene.notifyPlayer(player, "购买失败！\n");
+                return;
+            }
         }
 
     }

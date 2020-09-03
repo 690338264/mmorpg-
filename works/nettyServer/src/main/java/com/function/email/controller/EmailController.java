@@ -46,8 +46,10 @@ public class EmailController {
             List<Integer> indexs = new ArrayList<>();
             List<Integer> itemNum = new ArrayList<>();
             IntStream.range(0, items.length).forEach((i) -> {
-                indexs.add(Integer.parseInt(items[i]));
-                itemNum.add(Integer.parseInt(num[i]));
+                if (Integer.parseInt(num[i]) > 0) {
+                    indexs.add(Integer.parseInt(items[i]));
+                    itemNum.add(Integer.parseInt(num[i]));
+                }
             });
             emailService.sendHasGift(player, playerId, text, indexs, itemNum);
         } else {

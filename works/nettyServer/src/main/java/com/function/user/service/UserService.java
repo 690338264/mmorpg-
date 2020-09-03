@@ -170,7 +170,7 @@ public class UserService {
         ChannelHandlerContext ctx = player.getChannelHandlerContext();
         bagService.updateBag(player);
         playerData.updateEquip(player);
-        playerData.updateEmail(player);
+//        playerData.updateEmail(player);
         teamService.leaveTeam(player);
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);

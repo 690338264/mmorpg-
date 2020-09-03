@@ -27,6 +27,14 @@ public class Item {
      */
     private int nowWear;
 
+    public int getMaxNum() {
+        if (getItemById().getType() == ItemType.MEDICINAL.getType()) {
+            return 99;
+        } else {
+            return 1;
+        }
+    }
+
     public ItemExcel getItemById() {
         return ItemResource.getItemById(id);
     }

@@ -32,7 +32,7 @@ public class ItemService {
      */
     public boolean removeItem(Long id, int index, int num, Player player) {
 
-        if (player.getBag().getItemMap().get(index).getItemId().equals(id)) {
+        if (!player.getBag().getItemMap().get(index).getItemId().equals(id)) {
             notifyScene.notifyPlayer(player, "失败！\n");
             return false;
         }
@@ -78,14 +78,15 @@ public class ItemService {
      * 得到物品
      */
     public boolean getItem(Item item, Player player) {
+        int num = item.getNum();
         if (item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
             Map<Integer, Item> p = player.getBag().getItemMap();
-            for (Integer index : p.keySet()) {
-                if (item.getId().equals(p.get(index).getId()) && p.get(index).getNum() < 100) {
-                    p.get(index).setNum(p.get(index).getNum() + 1);
+            for (Item value : p.values()) {
+                if (item.getId().equals(value.getId()) && value.getNum() + num < item.getMaxNum()) {
+                    value.setNum(value.getNum() + num);
                     bagService.updateBag(player);
                     StringBuilder put = new StringBuilder("[")
-                            .append(p.get(index).getItemById().getName()).append("]已放入背包\n");
+                            .append(value.getItemById().getName()).append("]已放入背包\n");
                     notifyScene.notifyPlayer(player, put);
                     return true;
                 }
@@ -98,13 +99,13 @@ public class ItemService {
      * 找空插入物品
      */
     public boolean addItem(Item item, Player player) {
-        item.setNum(1);
         Bag bag = player.getBag();
         TBag tBag = bag.getTBag();
         for (int i = 0; i < tBag.getVolume(); i++) {
             if (bag.getItemMap().get(i) == null) {
                 bag.getItemMap().put(i, item);
                 if (item.getItemId() == null) {
+                    //设置物品唯一id
                     item.setItemId(player.getTPlayer().getRoleId() * 1000000 + tBag.getMaxId());
                     tBag.setMaxId(tBag.getMaxId() + 1);
                 }

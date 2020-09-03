@@ -38,27 +38,6 @@ public class EmailService {
     @Autowired
     private EmailDAO emailDAO;
 
-    public Email createEmail(Player player, Long playerId, String text) {
-        Email email = new Email();
-        TEmail tEmail = email.gettEmail();
-        tEmail.setState(EmailState.UNREAD.getType());
-        tEmail.setPlayerId(playerId);
-        tEmail.setSender(player.getTPlayer().getRoleId());
-        tEmail.setText(text);
-        return email;
-    }
-
-    public void toReceiver(Long playerId, Email email) {
-        Player player = findPlayer(playerId);
-        if (player != null) {
-            player.getEmails().add(email);
-            notifyScene.notifyPlayer(player, "您收到一封邮件，请及时查收\n");
-        } else {
-            email.gettEmail().setGift(JSON.toJSONString(email.getGifts()));
-            ThreadPoolManager.immediateThread(() -> emailDAO.save(email.gettEmail()), playerId.intValue());
-        }
-    }
-
     /**
      * 发送邮件仅文字
      */
@@ -67,7 +46,9 @@ public class EmailService {
         toReceiver(playerId, email);
     }
 
-    /***/
+    /**
+     * 发送礼物
+     */
     public void sendHasGift(Player player, Long playerId, String text, List<Integer> indexs, List<Integer> num) {
         Email email = createEmail(player, playerId, text);
         IntStream.range(0, indexs.size()).forEach((i) -> {
@@ -83,59 +64,6 @@ public class EmailService {
         });
         toReceiver(playerId, email);
     }
-
-//    /**
-//     * 发送邮件
-//     */
-//    public void sendEmail(Player player, String text, Long playerId, String[] items, String[] num) {
-//        Emails email = new Emails(player, text);
-//        email.setText(text);
-//        //有礼物送出
-//        if (Integer.parseInt(items[0]) != -1) {
-//            IntStream.range(0, items.length).forEach(i -> {
-//                int index = Integer.parseInt(items[i]);
-//                int n = Integer.parseInt(num[i]);
-//                Item item = player.getBag().getItemMap().get(index);
-//                //将物品从背包移除
-//                if (!itemService.removeItem(item.getItemId(), index, n, player)) {
-//                    return;
-//                }
-//                //药物
-//                if (item.getItemById().getType() == 1) {
-//                    Item gift = new Item();
-//                    gift.setId(item.getId());
-//                    gift.setNum(n);
-//                    email.getGifts().put(i, gift);
-//                } else {
-//                    //装备
-//                    email.getGifts().put(i, item);
-//                }
-//            });
-//        }
-//        //玩家被加载
-//        if (findPlayer(playerId).getClass() == Player.class) {
-//            Player receiver = findPlayer(playerId);
-//            int emailId = receiver.getEmailMap().size();
-//            receiver.getEmailMap().put(emailId, email);
-//            if (player.getChannelHandlerContext() != null) {
-//                notifyScene.notifyPlayer(receiver, "您有一封新邮件 请查收\n");
-//            }
-//        } else {
-//            //玩家未被加载
-//            TPlayer receiver = findPlayer(playerId);
-//            String emails = receiver.getEmail();
-//            if (email == null) {
-//                emails = "{}";
-//            }
-//            Map<Integer, Emails> m = JSON.parseObject(emails, new TypeReference<Map<Integer, Emails>>() {
-//            });
-//            m.put(m.size(), email);
-//            String json = JSON.toJSONString(m);
-//            player.getTPlayer().setEmail(json);
-//            playerDAO.save(player.getTPlayer());
-//        }
-//
-//    }
 
     /**
      * 查看邮件
@@ -185,6 +113,28 @@ public class EmailService {
                 }
                 iterator.remove();
             });
+        }
+    }
+
+    public Email createEmail(Player player, Long playerId, String text) {
+        Email email = new Email();
+        TEmail tEmail = new TEmail();
+        tEmail.setState(EmailState.UNREAD.getType());
+        tEmail.setPlayerId(playerId);
+        tEmail.setSender(player.getTPlayer().getRoleId());
+        tEmail.setText(text);
+        email.settEmail(tEmail);
+        return email;
+    }
+
+    public void toReceiver(Long playerId, Email email) {
+        Player player = findPlayer(playerId);
+        if (player != null) {
+            player.getEmails().add(email);
+            notifyScene.notifyPlayer(player, "您收到一封邮件，请及时查收\n");
+        } else {
+            email.gettEmail().setGift(JSON.toJSONString(email.getGifts()));
+            ThreadPoolManager.immediateThread(() -> emailDAO.save(email.gettEmail()), playerId.intValue());
         }
     }
 
