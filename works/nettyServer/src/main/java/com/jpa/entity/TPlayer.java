@@ -42,9 +42,6 @@ public class TPlayer {
     @Column(name = "level")
     private int level;
 
-    @Column(name = "email")
-    private String email;
-
     public Long getUserId() {
         return userId;
     }
@@ -125,14 +122,6 @@ public class TPlayer {
         this.level = level;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     @Override
     public String toString() {
         return "TPlayer{" +
@@ -146,7 +135,6 @@ public class TPlayer {
                 ", friend='" + friend + '\'' +
                 ", roleId=" + roleId +
                 ", level=" + level +
-                ", email='" + email + '\'' +
                 '}';
     }
 }

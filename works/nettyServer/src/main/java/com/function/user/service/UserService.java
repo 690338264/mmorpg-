@@ -168,9 +168,7 @@ public class UserService {
      */
     public void logout(Player player) {
         ChannelHandlerContext ctx = player.getChannelHandlerContext();
-        bagService.updateBag(player);
-        playerData.updateEquip(player);
-//        playerData.updateEmail(player);
+        playerData.updatePlayerInfo(player);
         teamService.leaveTeam(player);
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);

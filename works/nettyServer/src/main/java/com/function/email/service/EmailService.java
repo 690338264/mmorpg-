@@ -95,8 +95,9 @@ public class EmailService {
         notifyScene.notifyPlayer(player, MessageFormat.format("来自  {0}:\n{1}\n礼物:\n",
                 sender.getTPlayer().getName(), email.gettEmail().getText()));
         email.getGifts().forEach((gift) ->
-                notifyScene.notifyPlayer(player, MessageFormat.format("{0}[1]\n", gift.getItemById().getName(), gift.getNum())));
+                notifyScene.notifyPlayer(player, MessageFormat.format("{0}{1}\n", gift.getItemById().getName(), gift.getNum())));
         email.gettEmail().setState(EmailState.READ.getType());
+        updateEmail(email);
     }
 
     /**
@@ -107,13 +108,12 @@ public class EmailService {
         Iterator<Item> iterator = email.getGifts().iterator();
         while (iterator.hasNext()) {
             Item gift = iterator.next();
-            IntStream.range(0, gift.getNum()).forEach(i -> {
-                if (!itemService.getItem(gift, player)) {
-                    return;
-                }
-                iterator.remove();
-            });
+            if (!itemService.getItem(gift, player)) {
+                return;
+            }
+            iterator.remove();
         }
+        updateEmail(email);
     }
 
     public Email createEmail(Player player, Long playerId, String text) {
@@ -132,6 +132,7 @@ public class EmailService {
         if (player != null) {
             player.getEmails().add(email);
             notifyScene.notifyPlayer(player, "您收到一封邮件，请及时查收\n");
+            updateEmail(email);
         } else {
             email.gettEmail().setGift(JSON.toJSONString(email.getGifts()));
             ThreadPoolManager.immediateThread(() -> emailDAO.save(email.gettEmail()), playerId.intValue());
@@ -141,5 +142,11 @@ public class EmailService {
     public Player findPlayer(Long playerId) {
         return userMap.getPlayers(playerId);
 
+    }
+
+    public void updateEmail(Email email) {
+        String json = JSON.toJSONString(email.getGifts());
+        email.gettEmail().setGift(json);
+        emailDAO.save(email.gettEmail());
     }
 }

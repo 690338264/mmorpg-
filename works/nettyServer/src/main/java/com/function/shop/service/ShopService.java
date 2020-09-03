@@ -39,16 +39,16 @@ public class ShopService {
         while (true) {
             Item item = new Item();
             item.setId(itemId);
-            num = remain > item.getMaxNum() ? item.getMaxNum() : remain;
+            num = Math.min(remain, item.getMaxNum());
             item.setNum(num);
             int part = ItemResource.getItemById(itemId).getMoney() * num;
             remain = remain - num;
-            if (num == 0) {
-                notifyScene.notifyPlayer(player, MessageFormat.format("购买成功！   花费:{0}金币\n", money));
-                return;
-            }
             if (itemService.getItem(item, player) && itemService.subMoney(player, part)) {
                 money = money + part;
+                if (remain == 0) {
+                    notifyScene.notifyPlayer(player, MessageFormat.format("购买成功！   花费:{0}金币\n", money));
+                    return;
+                }
             } else {
                 notifyScene.notifyPlayer(player, "购买失败！\n");
                 return;

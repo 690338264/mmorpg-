@@ -8,11 +8,13 @@ import com.function.player.model.Player;
 import com.function.player.model.SceneObjectTask;
 import com.function.scene.service.NotifyScene;
 import com.jpa.dao.BagDAO;
+import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Catherine
@@ -28,10 +30,15 @@ public class BagService {
      * 更新背包
      */
     public void updateBag(Player player) {
-        if (player.getTaskMap().get(SceneObjectTask.UPDATE_BAG.getKey()) == null) {
-            String json = JSON.toJSONString(player.getBag().getItemMap());
-            player.getBag().getTBag().setItem(json);
-            bagDAO.save(player.getBag().getTBag());
+        int key = SceneObjectTask.UPDATE_BAG.getKey();
+        if (player.getTaskMap().get(key) == null) {
+            ScheduledFuture update = ThreadPoolManager.delayThread(() -> {
+                String json = JSON.toJSONString(player.getBag().getItemMap());
+                player.getBag().getTBag().setItem(json);
+                bagDAO.save(player.getBag().getTBag());
+                player.getTaskMap().remove(key);
+            }, SceneObjectTask.UPDATE_TIME.getKey(), player.getTPlayer().getRoleId().intValue());
+            player.getTaskMap().put(key, update);
         }
     }
 

@@ -13,6 +13,7 @@ import com.function.occ.excel.OccExcel;
 import com.function.occ.excel.OccResource;
 import com.function.occ.manager.OccCache;
 import com.function.player.model.Player;
+import com.function.player.model.SceneObjectTask;
 import com.function.scene.model.SceneObjectType;
 import com.function.skill.excel.SkillExcel;
 import com.function.skill.excel.SkillResource;
@@ -22,11 +23,13 @@ import com.jpa.dao.EmailDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TBag;
 import com.jpa.entity.TEmail;
+import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.stream.IntStream;
 
 /**
@@ -144,25 +147,16 @@ public class PlayerData {
         bag.setItemMap(m);
     }
 
-    /**
-     * 更新数据库位置信息
-     */
-    public void updateLoc(Player player) {
-        playerDAO.save(player.getTPlayer());
+    public void updatePlayerInfo(Player player) {
+        if (player.getTaskMap().get(SceneObjectTask.UPDATE_PLAYER.getKey()) == null) {
+            ScheduledFuture update = ThreadPoolManager.delayThread(() -> {
+                String json = JSON.toJSONString((player.getEquipMap()));
+                player.getTPlayer().setEquip(json);
+                playerDAO.save(player.getTPlayer());
+                player.getTaskMap().remove(SceneObjectTask.UPDATE_PLAYER.getKey());
+            }, SceneObjectTask.UPDATE_TIME.getKey(), player.getTPlayer().getRoleId().intValue());
+            player.getTaskMap().put(SceneObjectTask.UPDATE_PLAYER.getKey(), update);
+        }
     }
 
-    /**
-     * 更新数据库装备配置
-     */
-    public void updateEquip(Player player) {
-        String json = JSON.toJSONString(player.getEquipMap());
-        player.getTPlayer().setEquip(json);
-        playerDAO.save(player.getTPlayer());
-    }
-
-//    public void updateEmail(Player player) {
-//        String json = JSON.toJSONString(player.getEmailMap());
-//        player.getTPlayer().setEmail(json);
-//        playerDAO.save(player.getTPlayer());
-//    }
 }

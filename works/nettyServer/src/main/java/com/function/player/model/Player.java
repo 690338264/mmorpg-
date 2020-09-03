@@ -56,8 +56,8 @@ public class Player extends SceneObject {
     private boolean init;
 
     private Map<Integer, Item> equipMap = new HashMap<>();
+
     private List<Email> emails = Collections.synchronizedList(new ArrayList<>());
-//    private Map<Integer, Email> emailMap = new ConcurrentHashMap<>();
 
     @Override
     public String getName() {

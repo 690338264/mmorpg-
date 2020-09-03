@@ -8,8 +8,10 @@ public enum SceneObjectTask {
     //
     MP_ADD(1),
     ATTACK(2),
-    UPDATE_BAG(3),
-    SKILL_CD(4),
+    SKILL_CD(3),
+    UPDATE_BAG(4),
+    UPDATE_PLAYER(5),
+    UPDATE_TIME(60000),
     ;
     Integer key;
 

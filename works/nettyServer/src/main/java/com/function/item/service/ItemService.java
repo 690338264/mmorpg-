@@ -70,7 +70,7 @@ public class ItemService {
         changeAttr(-1, item, player);
         addItem(item, player);
         player.getEquipMap().remove(item.getItemById().getSpace());
-        playerData.updateEquip(player);
+        playerData.updatePlayerInfo(player);
         notifyScene.notifyPlayer(player, MessageFormat.format("您已摘下[{0}]\n", item.getItemById().getName()));
     }
 
@@ -82,7 +82,7 @@ public class ItemService {
         if (item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
             Map<Integer, Item> p = player.getBag().getItemMap();
             for (Item value : p.values()) {
-                if (item.getId().equals(value.getId()) && value.getNum() + num < item.getMaxNum()) {
+                if (item.getId().equals(value.getId()) && value.getNum() + num <= item.getMaxNum()) {
                     value.setNum(value.getNum() + num);
                     bagService.updateBag(player);
                     StringBuilder put = new StringBuilder("[")
@@ -152,7 +152,7 @@ public class ItemService {
         }
         changeAttr(1, item, player);
         player.getEquipMap().put(item.getItemById().getSpace(), item);
-        playerData.updateEquip(player);
+        playerData.updatePlayerInfo(player);
         notifyScene.notifyPlayer(player, MessageFormat.format("您已成功穿戴:[{0}]\n", item.getItemById().getName()));
     }
 
