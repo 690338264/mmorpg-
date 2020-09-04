@@ -42,11 +42,16 @@ public class TradeService {
             notifyScene.notifyPlayer(player, "发起交易失败，请面对面发起交易\n");
             return;
         }
-        if (receiver.getTradeBoard() != null || player.getTradeBoard() != null || tradeManager.getTradeBoardMap().containsKey(playerId)) {
+        if (player.getTradeBoard() != null || tradeManager.getTradeBoardMap().containsKey(playerId)) {
             notifyScene.notifyPlayer(player, "可能仍在交易中\n");
             return;
         }
+        if (player == receiver) {
+            notifyScene.notifyPlayer(player, "不能和自己交易！\n");
+            return;
+        }
         TradeBoard tradeBoard = new TradeBoard(player, receiver);
+        player.setTradeBoard(tradeBoard);
         tradeManager.getTradeBoardMap().put(playerId, tradeBoard);
         notifyScene.notifyPlayer(player, "交易邀请发起成功\n");
         notifyScene.notifyPlayer(receiver, "您收到一条交易请求\n");
@@ -101,10 +106,14 @@ public class TradeService {
             return;
         }
         TPlayer tPlayer = player.getTPlayer();
-        tPlayer.setMoney(tPlayer.getMoney() + tradeBoard.getMoneyMap().getOrDefault(tPlayer.getRoleId(), 0));
+        tPlayer.setMoney(tPlayer.getMoney() + tradeBoard.getMoneyMap().get(tPlayer.getRoleId()));
+        tradeBoard.getMoneyMap().put(tPlayer.getRoleId(), money);
         notifyScene.notifyPlayer(player, "交易金币更新成功\n");
     }
 
+    /**
+     * 查看交易面板
+     */
     public void listTradeBoard(Player player) {
         TradeBoard tradeBoard = player.getTradeBoard();
         if (noTrading(tradeBoard, player)) {
@@ -116,7 +125,7 @@ public class TradeService {
         tradeBoard.getChangeMap().get(initiatorId).forEach((item) ->
                 notifyScene.notifyPlayer(player, MessageFormat.format("{0} [{1}]\n",
                         item.getItemById().getName(), item.getNum())));
-        notifyScene.notifyPlayer(player, MessageFormat.format("金币:{0}\n",
+        notifyScene.notifyPlayer(player, MessageFormat.format("金币:{0}\n接收者:\n",
                 tradeBoard.getMoneyMap().get(initiatorId)));
         tradeBoard.getChangeMap().get(recipientId).forEach((item) ->
                 notifyScene.notifyPlayer(player, MessageFormat.format("{0} [{1}]\n",
@@ -142,8 +151,7 @@ public class TradeService {
     /**
      * 取消交易
      */
-    public void cancelTrade(Player player) {
-        TradeBoard tradeBoard = player.getTradeBoard();
+    public void cancelTrade(TradeBoard tradeBoard) {
         Player initiator = tradeBoard.getInitiator();
         Player recipient = tradeBoard.getRecipient();
         cancelOne(initiator, tradeBoard);
@@ -166,6 +174,9 @@ public class TradeService {
         tradeBoard.getStateMap().clear();
     }
 
+    /**
+     * 逐个取消
+     */
     public void cancelOne(Player player, TradeBoard tradeBoard) {
         Long playerId = player.getTPlayer().getRoleId();
         getChange(tradeBoard.getChangeMap().get(playerId), tradeBoard.getMoneyMap().get(playerId), player);

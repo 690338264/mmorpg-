@@ -20,9 +20,9 @@ public class PlayerManager {
     @Autowired
     private UserMap userMap;
 
-    private static final long outlineTime = 3600 * 60 * 24;
+    private static final long OUTLINE_TIME = 3600 * 60 * 24;
 
-    private static final long jump = 5000;
+    private static final long JUMP = 5000;
 
     public TPlayer newPlayer(String roleName, Integer roleType, Long userId) {
         TPlayer player = new TPlayer();
@@ -38,13 +38,11 @@ public class PlayerManager {
 
     @PostConstruct
     private void check() {
-        ThreadPoolManager.loopThread(() -> {
-            playerMap.getOfflinePlayer().forEach((playerId, time) -> {
-                if (System.currentTimeMillis() - time > outlineTime) {
-                    userMap.getPlayers().remove(playerId);
-                    playerMap.getOfflinePlayer().remove(playerId);
-                }
-            });
-        }, 0, jump, getClass().hashCode());
+        ThreadPoolManager.loopThread(() -> playerMap.getOfflinePlayer().forEach((playerId, time) -> {
+            if (System.currentTimeMillis() - time > OUTLINE_TIME) {
+                userMap.getPlayers().remove(playerId);
+                playerMap.getOfflinePlayer().remove(playerId);
+            }
+        }), 0, JUMP, getClass().hashCode());
     }
 }

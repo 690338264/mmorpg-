@@ -44,6 +44,8 @@ public class TradeBoard {
         this.startTime = System.currentTimeMillis();
         this.changeMap.put(initiator.getTPlayer().getRoleId(), new ArrayList<>());
         this.changeMap.put(recipient.getTPlayer().getRoleId(), new ArrayList<>());
+        this.moneyMap.put(initiator.getTPlayer().getRoleId(), 0);
+        this.moneyMap.put(recipient.getTPlayer().getRoleId(), 0);
     }
 
     public Player getInitiator() {

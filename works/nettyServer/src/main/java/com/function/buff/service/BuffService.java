@@ -87,7 +87,8 @@ public class BuffService {
                         } else {
                             Monster m = (Monster) attacker;
                             Player p = (Player) buffer;
-                            playerService.playerDie(p, m);
+                            playerService.playerDie(p);
+                            m.getHurtList().remove(p.getTPlayer().getRoleId());
                         }
                     }
                     if (buffer.getHp() > buffer.getOriHp()) {
@@ -102,6 +103,7 @@ public class BuffService {
                 buffer.setAtk(atk + flag * buff.getBuffExcel().getAtk());
                 ScheduledFuture buffTask = ThreadPoolManager.delayThread(() -> {
                     buffer.setAtk(atk);
+                    buffer.getBuffs().remove(buff.getId());
                 }, time, id);
                 buffer.getBuffs().put(buff.getId(), buffTask);
 

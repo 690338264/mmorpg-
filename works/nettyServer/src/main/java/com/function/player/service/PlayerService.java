@@ -114,6 +114,10 @@ public class PlayerService {
             player.getChannelHandlerContext().writeAndFlush("攻击目标无效，请重新选择！\n");
             return;
         }
+        if (type == SceneObjectType.PLAYER.getType() && s == player) {
+            notifyScene.notifyPlayer(player, "不能攻击自己哦！\n");
+            return;
+        }
         //判断技能CD
         if (skill != null) {
             //判断玩家mp
@@ -146,6 +150,7 @@ public class PlayerService {
 
                         if (s.getType() == SceneObjectType.PLAYER.getType()) {
                             Player p = (Player) s;
+                            playerDie(p);
                             notifyScene.notifyScene(scene, MessageFormat.format("玩家{0}击败玩家{1}\n",
                                     player.getTPlayer().getName(), p.getTPlayer().getName()));
                             return;
@@ -177,6 +182,13 @@ public class PlayerService {
                                 }, 0, period, monster.getExcelId());
                                 monster.getTaskMap().put(attack, scheduledFuture);
                             }
+                            return;
+                        }
+                        if (s.getType() == SceneObjectType.PLAYER.getType()) {
+                            Player beAttack = (Player) s;
+                            buffService.buff(beAttack.getTPlayer().getRoleId().intValue(), skill, beAttack, player, scene);
+                            notifyScene.notifyPlayer(beAttack, MessageFormat.format("受到来自{0}的攻击 损失{1}点血\n",
+                                    player.getTPlayer().getName(), hurt));
                         }
                     }
                 } finally {
@@ -247,12 +259,11 @@ public class PlayerService {
     /**
      * 玩家阵亡
      */
-    public boolean playerDie(Player player, Monster monster) {
+    public boolean playerDie(Player player) {
         if (player.getHp() <= 0) {
             notifyScene.notifyPlayer(player, "已阵亡！五秒后复活！\n");
             ThreadPoolManager.delayThread(() -> player.setHp(player.getOriHp()), playerRevive, player.getChannelHandlerContext().hashCode());
             buffService.removeBuff(player);
-            monster.getHurtList().remove(player.getTPlayer().getRoleId());
             return true;
         }
         return false;

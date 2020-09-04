@@ -182,10 +182,13 @@ public class ItemService {
      * 扣除金币
      */
     public boolean subMoney(Player player, int money) {
+        if (money < 0) {
+            notifyScene.notifyPlayer(player, "数量非法！\n");
+            return false;
+        }
         int remain = player.getTPlayer().getMoney() - money;
         if (remain < 0) {
-            StringBuilder fail = new StringBuilder("失败！金币不足\n");
-            notifyScene.notifyPlayer(player, fail);
+            notifyScene.notifyPlayer(player, "失败！金币不足\n");
             return false;
         } else {
             player.getTPlayer().setMoney(remain);

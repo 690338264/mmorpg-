@@ -87,12 +87,18 @@ public enum Cmd {
     CREATE_TRADE("create_trade", 10180),
     //同意交易
     AGREE_TRADE("agree_trade", 10181),
+    //提交物品
+    PUT_CHANGE("put_change", 10182),
+    //提交金币
+    PUT_MONEY("put_money", 10183),
     //查看交易面板
-    LIST_TRADE("list_trade", 10182),
+    LIST_TRADE("list_trade", 10184),
     //提交交易
-    COMMIT_TRADE("commit_trade", 10183),
+    COMMIT_TRADE("commit_trade", 10185),
     //取消交易
-    CANCEL_TRADE("cancel_trade", 10184),
+    CANCEL_TRADE("cancel_trade", 10186),
+    //攻击玩家
+    PVP("pvp", 1019),
     //查看人物状态属性
     PLAYER_STATE("player_state", 8888),
 
