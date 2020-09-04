@@ -5,7 +5,7 @@ import com.function.player.model.Player;
 import com.function.user.service.UserService;
 import com.handler.Controller;
 import com.handler.ControllerManager;
-import com.handler.LoggedController;
+import com.handler.LoggedInController;
 import com.manager.ThreadPoolManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -27,12 +27,12 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     private UserService userService;
 
-    private static EchoServerHandler echoServerHandler;
+    private static EchoServerHandler self;
 
     @PostConstruct
     private void init() {
-        echoServerHandler = this;
-        echoServerHandler.userService = this.userService;
+        self = this;
+        self.userService = this.userService;
     }
 
     @Override
@@ -43,15 +43,15 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         String cmdIds = split[0];
         int cmdId = Integer.parseInt(cmdIds.trim());
         Controller contr = ControllerManager.getSelf().get(cmdId);
-        LoggedController controller = ControllerManager.getSelf().gets(cmdId);
+        LoggedInController controller = ControllerManager.getSelf().gets(cmdId);
         Msg message = new Msg();
         message.setCmdId(cmdId);
         message.setContent(cmd);
         if (contr == null && controller == null) {
             ctx.writeAndFlush("指令错误！\n");
         } else {
-            Player player = echoServerHandler.userService.getPlayerByCtx(ctx);
-            if (echoServerHandler.userService.getUserByCtx(ctx) == null || player == null) {
+            Player player = self.userService.getPlayerByCtx(ctx);
+            if (self.userService.getUserByCtx(ctx) == null || player == null) {
                 if (cmdId > Cmd.PLAYER_LOG.getCmdId()) {
                     ctx.writeAndFlush("请先登录！\n");
                 } else {
@@ -73,8 +73,8 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         //保存数据
-        Player player = echoServerHandler.userService.getPlayerByCtx(ctx);
-        echoServerHandler.userService.logout(player);
+        Player player = self.userService.getPlayerByCtx(ctx);
+        self.userService.logout(player);
         log.info("客户端已离线");
     }
 

@@ -53,4 +53,8 @@ public class UserMap {
     public void remove(ChannelHandlerContext ctx) {
         userCtxMap.remove(ctx);
     }
+
+    public Map<Long, Player> getPlayers() {
+        return players;
+    }
 }

@@ -8,7 +8,7 @@ import util.Msg;
  * @create 2020-09-01 18:07
  */
 @FunctionalInterface
-public interface LoggedController {
+public interface LoggedInController {
     /**
      * 接收数据处理业务
      *

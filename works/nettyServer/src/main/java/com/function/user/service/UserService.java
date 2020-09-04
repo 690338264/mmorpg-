@@ -137,6 +137,7 @@ public class UserService {
         }
         player.setChannelHandlerContext(ctx);
         playerMap.putPlayerCtx(ctx, player);
+        playerMap.getOfflinePlayer().remove(playerId);
         mpResume(player);
         //通知场景
         notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]进入场景\n", player.getTPlayer().getName()));
@@ -175,6 +176,7 @@ public class UserService {
         Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(player.getNowScene().getId());
         scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).remove(player.getTPlayer().getRoleId());
         player.setChannelHandlerContext(null);
+        playerMap.getOfflinePlayer().put(player.getTPlayer().getRoleId(), System.currentTimeMillis());
     }
 
     public User getUserByCtx(ChannelHandlerContext ctx) {

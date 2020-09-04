@@ -1,7 +1,5 @@
 package com.function.occ.excel;
 
-import com.function.occ.manager.OccCache;
-import com.function.skill.cache.SkillCache;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,11 +17,6 @@ public class OccResource {
 
     @Autowired
     private ExcelManager excelManager;
-    @Autowired
-    private OccCache occCache;
-    @Autowired
-    private SkillCache skillCache;
-
 
     private static Map<Integer, OccExcel> occupationMap = new HashMap<>();
 
@@ -38,7 +31,6 @@ public class OccResource {
                 int skillId = Integer.parseInt(occSkill[j]);
                 occExcel.getSkillId().add(skillId);
             }
-            occCache.set("Occ" + occExcel.getId(), occExcel);
         }
     }
 

@@ -1,10 +1,10 @@
 package com.function.team.service;
 
 import com.function.occ.excel.OccExcel;
-import com.function.occ.manager.OccCache;
+import com.function.occ.excel.OccResource;
 import com.function.player.model.Player;
 import com.function.scene.service.NotifyScene;
-import com.function.team.map.TeamMap;
+import com.function.team.manager.TeamManager;
 import com.function.team.model.Team;
 import com.function.user.map.UserMap;
 import com.jpa.entity.TPlayer;
@@ -24,11 +24,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @Component
 public class TeamService {
     @Autowired
-    private TeamMap teamMap;
+    private TeamManager teamManager;
     @Autowired
     private NotifyScene notifyScene;
-    @Autowired
-    private OccCache occCache;
     @Autowired
     private UserMap userMap;
 
@@ -43,8 +41,8 @@ public class TeamService {
      * 查看小队列表
      */
     public void listTeams(Player player) {
-        for (Long key : teamMap.getTeamCache().keySet()) {
-            Team team = teamMap.getTeamCache().get(key);
+        for (Long key : teamManager.getTeamCache().keySet()) {
+            Team team = teamManager.getTeamCache().get(key);
             notifyScene.notifyPlayer(player, MessageFormat.format("队伍ID:{0}   队伍人数:{1}\n",
                     key, team.getMembers().size()));
         }
@@ -61,7 +59,7 @@ public class TeamService {
         Team team = new Team();
         team.setLeaderId(player.getTPlayer().getRoleId());
         Long teamId = incTeamId.longValue();
-        teamMap.getTeamCache().put(teamId, team);
+        teamManager.getTeamCache().put(teamId, team);
         player.setTeamId(teamId);
         team.getMembers().put(player.getTPlayer().getRoleId(), player);
         addTeamId();
@@ -81,7 +79,7 @@ public class TeamService {
             notifyScene.notifyPlayer(player, "请先加入一支小队!\n");
             return;
         }
-        Team team = teamMap.getTeamCache().get(player.getTeamId());
+        Team team = teamManager.getTeamCache().get(player.getTeamId());
         Long leaderId = team.getLeaderId();
         notifyScene.notifyPlayer(player, MessageFormat.format("队伍id{0}  队长{1}\n",
                 player.getTeamId(), team.getMembers().get(leaderId).getTPlayer().getName()));
@@ -106,7 +104,7 @@ public class TeamService {
             notifyScene.notifyPlayer(player, "您已加入一支小队\n");
             return;
         }
-        Team team = teamMap.getTeamCache().get(teamId);
+        Team team = teamManager.getTeamCache().get(teamId);
         if (team == null) {
             notifyScene.notifyPlayer(player, "小队不存在\n");
             return;
@@ -124,7 +122,7 @@ public class TeamService {
             notifyScene.notifyPlayer(player, "您尚未加入小队\n");
             return;
         }
-        Team team = teamMap.getTeamCache().get(player.getTeamId());
+        Team team = teamManager.getTeamCache().get(player.getTeamId());
         Player invite = userMap.getPlayers(playerId);
         if (invite.getChannelHandlerContext() == null) {
             notifyScene.notifyPlayer(player, "玩家不在线！\n");
@@ -141,7 +139,7 @@ public class TeamService {
      * 同意入队申请
      */
     public void agreeApply(Player player, Long playerId) {
-        Team team = teamMap.getTeamCache().get(player.getTeamId());
+        Team team = teamManager.getTeamCache().get(player.getTeamId());
         if (!player.getTPlayer().getRoleId().equals(team.getLeaderId())) {
             notifyScene.notifyPlayer(player, "你还不是队长\n");
             return;
@@ -161,7 +159,7 @@ public class TeamService {
      * 接受小队的邀请
      */
     public void accept(Player player, Long teamId) {
-        Team team = teamMap.getTeamCache().get(teamId);
+        Team team = teamManager.getTeamCache().get(teamId);
         if (team == null) {
             notifyScene.notifyPlayer(player, "小队不存在\n");
             return;
@@ -184,10 +182,10 @@ public class TeamService {
         if (!isInTeam(player)) {
             return;
         }
-        Team team = teamMap.getTeamCache().get(player.getTeamId());
+        Team team = teamManager.getTeamCache().get(player.getTeamId());
         if (team.getMembers().size() == 1) {
             team.getScheduledFuture().cancel(true);
-            teamMap.getTeamCache().remove(player.getTeamId());
+            teamManager.getTeamCache().remove(player.getTeamId());
             player.setTeamId(null);
             notifyScene.notifyPlayer(player, "您已离开小队\n");
             return;
@@ -235,7 +233,7 @@ public class TeamService {
      * 成员信息
      */
     public void showMember(Player player, Player member) {
-        OccExcel occExcel = occCache.get(member.getTPlayer().getOccupation());
+        OccExcel occExcel = OccResource.getOccById(member.getTPlayer().getOccupation());
         TPlayer tPlayer = member.getTPlayer();
         notifyScene.notifyPlayer(player, MessageFormat.format("[{0}]  {1}  门派:{2}  等级{3}\n"
                 , tPlayer.getRoleId(), tPlayer.getName(), occExcel.getName(), tPlayer.getLevel()));

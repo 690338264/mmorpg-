@@ -1,4 +1,4 @@
-package com.function.team.map;
+package com.function.team.manager;
 
 import com.function.team.model.Team;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @create 2020-08-24 15:04
  */
 @Component
-public class TeamMap {
+public class TeamManager {
 
     private Map<Long, Team> teamCache = new ConcurrentHashMap<>();
 

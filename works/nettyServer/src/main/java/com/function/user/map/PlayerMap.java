@@ -17,6 +17,8 @@ public class PlayerMap {
 
     private Map<Long, ChannelHandlerContext> ctxPlayer = new HashMap<>();
 
+    private Map<Long, Long> offlinePlayer = new HashMap<>();
+
     public void putPlayerCtx(ChannelHandlerContext ctx, Player player) {
         playerModelMap.put(ctx, player);
         ctxPlayer.put(player.getTPlayer().getRoleId(), ctx);
@@ -28,6 +30,10 @@ public class PlayerMap {
 
     public ChannelHandlerContext getCtxPlayer(Long playerId) {
         return ctxPlayer.get(playerId);
+    }
+
+    public Map<Long, Long> getOfflinePlayer() {
+        return offlinePlayer;
     }
 
     public void remove(ChannelHandlerContext ctx, Long playerId) {

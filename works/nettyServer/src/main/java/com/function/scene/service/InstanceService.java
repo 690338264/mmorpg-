@@ -7,7 +7,7 @@ import com.function.scene.manager.SceneManager;
 import com.function.scene.model.Instance;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneType;
-import com.function.team.map.TeamMap;
+import com.function.team.manager.TeamManager;
 import com.function.team.model.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class InstanceService {
     @Autowired
     private SceneManager sceneManager;
     @Autowired
-    private TeamMap teamMap;
+    private TeamManager teamManager;
     @Autowired
     private SceneService sceneService;
 
@@ -67,7 +67,7 @@ public class InstanceService {
      * 小队副本创建
      */
     public void teamCreate(Player player, int id) {
-        Team team = teamMap.getTeamCache().get(player.getTeamId());
+        Team team = teamManager.getTeamCache().get(player.getTeamId());
         if (player.getTeamId() == null || !team.getLeaderId().equals(player.getTPlayer().getRoleId()) || player.getInstance() != null) {
             notifyScene.notifyPlayer(player, "创建失败!\n");
             return;

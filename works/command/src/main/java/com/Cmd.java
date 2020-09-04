@@ -83,6 +83,16 @@ public enum Cmd {
     TEAM_INSTANCE("team_instance", 10171),
     //进入副本
     INTO_INSTANCE("into_instance", 10172),
+    //创建交易
+    CREATE_TRADE("create_trade", 10180),
+    //同意交易
+    AGREE_TRADE("agree_trade", 10181),
+    //查看交易面板
+    LIST_TRADE("list_trade", 10182),
+    //提交交易
+    COMMIT_TRADE("commit_trade", 10183),
+    //取消交易
+    CANCEL_TRADE("cancel_trade", 10184),
     //查看人物状态属性
     PLAYER_STATE("player_state", 8888),
 

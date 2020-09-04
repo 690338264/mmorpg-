@@ -1,7 +1,6 @@
 package com.function.skill.excel;
 
 import com.function.buff.excel.BuffResource;
-import com.function.skill.cache.SkillCache;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,8 +18,7 @@ import java.util.Map;
 public class SkillResource {
     @Autowired
     private ExcelManager excelManager;
-    @Autowired
-    private SkillCache skillCache;
+
     @Autowired
     private BuffResource buffResource;
 

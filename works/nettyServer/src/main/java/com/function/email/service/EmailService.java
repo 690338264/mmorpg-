@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -105,14 +104,7 @@ public class EmailService {
      */
     public void receive(Player player, int index) {
         Email email = player.getEmails().get(index);
-        Iterator<Item> iterator = email.getGifts().iterator();
-        while (iterator.hasNext()) {
-            Item gift = iterator.next();
-            if (!itemService.getItem(gift, player)) {
-                return;
-            }
-            iterator.remove();
-        }
+        itemService.getItem(player, email.getGifts());
         updateEmail(email);
     }
 

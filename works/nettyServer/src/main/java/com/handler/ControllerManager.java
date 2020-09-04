@@ -20,7 +20,7 @@ public class ControllerManager {
 
     private final static Map<Cmd, Controller> CONTROLLER_MAP = new ConcurrentHashMap<>();
 
-    private final static Map<Cmd, LoggedController> LOGGED_CONTROLLER_MAP = new ConcurrentHashMap<>();
+    private final static Map<Cmd, LoggedInController> LOGGED_CONTROLLER_MAP = new ConcurrentHashMap<>();
 
     @PostConstruct
     private void init() {
@@ -31,7 +31,7 @@ public class ControllerManager {
         CONTROLLER_MAP.put(cmd, contr);
     }
 
-    public static void add(Cmd cmd, LoggedController controller) {
+    public static void add(Cmd cmd, LoggedInController controller) {
         LOGGED_CONTROLLER_MAP.put(cmd, controller);
     }
 
@@ -39,7 +39,7 @@ public class ControllerManager {
         return CONTROLLER_MAP.get(Cmd.find(cmdId, Cmd.UNKNOWN));
     }
 
-    public LoggedController gets(int cmdId) {
+    public LoggedInController gets(int cmdId) {
         return LOGGED_CONTROLLER_MAP.get(Cmd.find(cmdId, Cmd.UNKNOWN));
     }
 

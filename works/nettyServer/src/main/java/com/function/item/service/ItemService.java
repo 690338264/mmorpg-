@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -163,6 +165,17 @@ public class ItemService {
         Item copyItem = new Item(item.getId());
         copyItem.setNum(num);
         return copyItem;
+    }
+
+    public void getItem(Player player, List<Item> items) {
+        Iterator<Item> iterator = items.iterator();
+        while (iterator.hasNext()) {
+            Item gift = iterator.next();
+            if (!getItem(gift, player)) {
+                return;
+            }
+            iterator.remove();
+        }
     }
 
     /**

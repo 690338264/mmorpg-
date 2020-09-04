@@ -1,8 +1,9 @@
 package com.function.monster.excel;
 
 import com.function.item.excel.ItemResource;
-import com.function.skill.cache.SkillCache;
+import com.function.skill.excel.SkillExcel;
 import com.function.skill.excel.SkillResource;
+import com.function.skill.manager.SkillManager;
 import com.function.skill.model.Skill;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class MonsterResource {
     @Autowired
     private ExcelManager excelManager;
     @Autowired
-    private SkillCache skillCache;
+    private SkillManager skillManager;
 
     private static Map<Integer, MonsterExcel> monsterMap = new HashMap<>();
 
@@ -38,7 +39,8 @@ public class MonsterResource {
             String[] drops = monster.getDrop().split(",");
             for (int j = 0; j < strs.length; j++) {
                 int skillId = Integer.parseInt(strs[j]);
-                Skill skill = skillCache.get("Skill" + skillId);
+                SkillExcel skillExcel = SkillResource.getSkillById(skillId);
+                Skill skill = skillManager.initSkill(skillExcel);
                 monster.getMonsterSkill().put(j, skill);
             }
             IntStream.range(0, drops.length).forEach(j
