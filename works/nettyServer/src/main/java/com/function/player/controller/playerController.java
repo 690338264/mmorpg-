@@ -24,10 +24,12 @@ public class PlayerController {
 
     @Autowired
     private UserService userService;
+
     {
         ControllerManager.add(Cmd.PLAYER_CREATE, this::createRole);
         ControllerManager.add(Cmd.ATTACK, this::attackMonster);
         ControllerManager.add(Cmd.PLAYER_STATE, this::playerState);
+        ControllerManager.add(Cmd.PVP, this::pvp);
     }
 
     private void createRole(ChannelHandlerContext ctx, Msg msg) {
@@ -43,6 +45,13 @@ public class PlayerController {
         int skill = Integer.parseInt(params[1]);
         long target = Long.parseLong(params[2]);
         playerService.attack(player, skill, target, SceneObjectType.MONSTER.getType());
+    }
+
+    private void pvp(Player player, Msg msg) {
+        String[] params = ParamNumCheck.numCheck(player, msg, 3);
+        int skill = Integer.parseInt(params[1]);
+        long target = Long.parseLong(params[2]);
+        playerService.attack(player, skill, target, SceneObjectType.PLAYER.getType());
     }
 
     private void playerState(Player player, Msg msg) {

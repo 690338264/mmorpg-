@@ -42,6 +42,12 @@ public class TPlayer {
     @Column(name = "level")
     private int level;
 
+    @Column(name = "sectId")
+    private Integer sectId;
+
+    @Column(name = "sectPosition")
+    private int sectPosition;
+
     public Long getUserId() {
         return userId;
     }
@@ -122,6 +128,22 @@ public class TPlayer {
         this.level = level;
     }
 
+    public Integer getSectId() {
+        return sectId;
+    }
+
+    public void setSectId(Integer sectId) {
+        this.sectId = sectId;
+    }
+
+    public int getSectPosition() {
+        return sectPosition;
+    }
+
+    public void setSectPosition(int sectPosition) {
+        this.sectPosition = sectPosition;
+    }
+
     @Override
     public String toString() {
         return "TPlayer{" +
@@ -135,6 +157,8 @@ public class TPlayer {
                 ", friend='" + friend + '\'' +
                 ", roleId=" + roleId +
                 ", level=" + level +
+                ", sectId=" + sectId +
+                ", sectPosition=" + sectPosition +
                 '}';
     }
 }
