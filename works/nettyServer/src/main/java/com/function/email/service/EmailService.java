@@ -6,18 +6,22 @@ import com.function.email.model.EmailState;
 import com.function.item.model.Item;
 import com.function.item.model.ItemType;
 import com.function.item.service.ItemService;
+import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
+import com.function.player.model.SceneObjectTask;
 import com.function.scene.service.NotifyScene;
 import com.function.user.map.UserMap;
 import com.jpa.dao.EmailDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TEmail;
+import com.jpa.entity.TPlayerInfo;
 import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 import java.util.stream.IntStream;
 
 /**
@@ -36,6 +40,8 @@ public class EmailService {
     private PlayerDAO playerDAO;
     @Autowired
     private EmailDAO emailDAO;
+    @Autowired
+    private PlayerManager playerManager;
 
     /**
      * 发送邮件仅文字
@@ -68,20 +74,13 @@ public class EmailService {
      * 查看邮件
      */
     public void showEmail(Player player) {
-        String e = "收件箱：\n";
+        notifyScene.notifyPlayer(player, "收件箱：\n");
         IntStream.range(0, player.getEmails().size()).forEach((index) -> {
             Email email = player.getEmails().get(index);
-            String state;
-            if (email.gettEmail().getState() == EmailState.READ.getType()) {
-                state = EmailState.READ.getOut();
-            } else {
-                state = EmailState.UNREAD.getOut();
-            }
-            Player sender = userMap.getPlayers(email.gettEmail().getPlayerId());
-            String result = MessageFormat.format("{0}{1}来自{2}的邮件\n",
-                    index, state, sender.getTPlayer().getName());
+            TPlayerInfo senderInfo = playerManager.getPlayerInfoMap().get(email.gettEmail().getSender());
+            notifyScene.notifyPlayer(player, MessageFormat.format("{0}{1}来自{2}的邮件\n",
+                    index, EmailState.values()[email.gettEmail().getState() - 1].getOut(), senderInfo.getName()));
 
-            notifyScene.notifyPlayer(player, e + result);
         });
     }
 
@@ -90,13 +89,15 @@ public class EmailService {
      */
     public void showDetail(Player player, int index) {
         Email email = player.getEmails().get(index);
-        Player sender = userMap.getPlayers(email.gettEmail().getPlayerId());
+        TPlayerInfo senderInfo = playerManager.getPlayerInfoMap().get(email.gettEmail().getSender());
         notifyScene.notifyPlayer(player, MessageFormat.format("来自  {0}:\n{1}\n礼物:\n",
-                sender.getTPlayer().getName(), email.gettEmail().getText()));
+                senderInfo.getName(), email.gettEmail().getText()));
         email.getGifts().forEach((gift) ->
                 notifyScene.notifyPlayer(player, MessageFormat.format("{0}{1}\n", gift.getItemById().getName(), gift.getNum())));
-        email.gettEmail().setState(EmailState.READ.getType());
-        updateEmail(email);
+        if (email.gettEmail().getState() == EmailState.UNREAD.getType()) {
+            email.gettEmail().setState(EmailState.READ.getType());
+            updateEmail(email);
+        }
     }
 
     /**
@@ -137,8 +138,15 @@ public class EmailService {
     }
 
     public void updateEmail(Email email) {
-        String json = JSON.toJSONString(email.getGifts());
-        email.gettEmail().setGift(json);
-        emailDAO.save(email.gettEmail());
+        if (email.getUpdate() == null) {
+            ScheduledFuture update = ThreadPoolManager.delayThread(() -> {
+                String json = JSON.toJSONString(email.getGifts());
+                email.gettEmail().setGift(json);
+                emailDAO.save(email.gettEmail());
+                email.setUpdate(null);
+            }, SceneObjectTask.UPDATE_TIME.getKey(), email.gettEmail().getSender().intValue());
+            email.setUpdate(update);
+        }
+
     }
 }

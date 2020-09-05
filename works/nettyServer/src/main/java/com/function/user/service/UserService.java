@@ -84,10 +84,6 @@ public class UserService {
      * 用户登录
      */
     public boolean login(long userId, String psw, ChannelHandlerContext ctx) {
-        if (userMap.getUserById(userId) != null) {
-            userMap.putUserctx(ctx, userMap.getUserById(userId));
-            return true;
-        }
         User user = new User();
         TUser logUser = usersDAO.findByIdAndPsw(userId, psw);
         if (logUser == null) {
@@ -169,7 +165,7 @@ public class UserService {
      */
     public void logout(Player player) {
         ChannelHandlerContext ctx = player.getChannelHandlerContext();
-        playerData.updatePlayerInfo(player);
+        playerData.updatePlayer(player);
         teamService.leaveTeam(player);
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);

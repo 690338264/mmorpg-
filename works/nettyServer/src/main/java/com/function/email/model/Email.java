@@ -5,6 +5,7 @@ import com.jpa.entity.TEmail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Catherine
@@ -17,6 +18,8 @@ public class Email {
      * 礼物列表
      */
     private List<Item> gifts = new ArrayList<>();
+
+    private ScheduledFuture update;
 
     public TEmail gettEmail() {
         return tEmail;
@@ -34,11 +37,20 @@ public class Email {
         this.gifts = gifts;
     }
 
+    public ScheduledFuture getUpdate() {
+        return update;
+    }
+
+    public void setUpdate(ScheduledFuture update) {
+        this.update = update;
+    }
+
     @Override
     public String toString() {
-        return "Emails{" +
+        return "Email{" +
                 "tEmail=" + tEmail +
                 ", gifts=" + gifts +
+                ", update=" + update +
                 '}';
     }
 }

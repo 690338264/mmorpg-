@@ -58,7 +58,7 @@ public class ItemEffect {
         }
         itemService.changeAttr(1, item, player);
         player.getEquipMap().put(item.getItemById().getSpace(), item);
-        playerData.updatePlayerInfo(player);
+        playerData.updatePlayer(player);
         notifyScene.notifyPlayer(player, MessageFormat.format("您已成功穿戴:[{0}]\n", item.getItemById().getName()));
     }
 

@@ -43,10 +43,10 @@ public class TPlayer {
     private int level;
 
     @Column(name = "sectId")
-    private Integer sectId;
+    private Long sectId;
 
     @Column(name = "sectPosition")
-    private int sectPosition;
+    private Integer sectPosition;
 
     public Long getUserId() {
         return userId;
@@ -128,11 +128,11 @@ public class TPlayer {
         this.level = level;
     }
 
-    public Integer getSectId() {
+    public Long getSectId() {
         return sectId;
     }
 
-    public void setSectId(Integer sectId) {
+    public void setSectId(Long sectId) {
         this.sectId = sectId;
     }
 

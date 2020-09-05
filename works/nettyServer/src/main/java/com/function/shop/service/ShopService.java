@@ -83,7 +83,7 @@ public class ShopService {
         int getMoney = sellItem.getItemById().getMoney() * num;
         int orgMoney = player.getTPlayer().getMoney();
         player.getTPlayer().setMoney(orgMoney + getMoney);
-        playerData.updatePlayerInfo(player);
+        playerData.updatePlayer(player);
         StringBuilder success = new StringBuilder("出售成功！   获得金币：").append(getMoney).append('\n');
         notifyScene.notifyPlayer(player, success);
     }

@@ -99,6 +99,26 @@ public enum Cmd {
     CANCEL_TRADE("cancel_trade", 10186),
     //攻击玩家
     PVP("pvp", 1019),
+    //查看自己所在工会
+    CHECK_SECT("check_sect", 1020),
+    //建立公会
+    CREATE_SECT("create_sect", 10200),
+    //申请加入公会
+    REQUEST_JOIN("request", 10201),
+    //接受申请
+    ACCEPT_SECT("accept", 10202),
+    //拒绝申请
+    REJECT_SECT("reject", 10203),
+    //从公会仓库拿东西
+    GET_WAREHOUSE("get_warehouse", 10204),
+    //向公会仓库捐献东西
+    PUT_WAREHOUSE("put_warehouse", 10205),
+    //更改职位
+    SET_POSITION("set_position", 10206),
+    //退出公会
+    QUIT_SECT("quit_sect", 10207),
+    //列出所有工会
+    LIST_SECT("list_sect", 10208),
     //查看人物状态属性
     PLAYER_STATE("player_state", 8888),
 

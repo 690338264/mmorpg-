@@ -19,8 +19,10 @@ import com.function.user.map.UserMap;
 import com.jpa.dao.BagDAO;
 import com.jpa.dao.EmailDAO;
 import com.jpa.dao.PlayerDAO;
+import com.jpa.dao.PlayerInfoDAO;
 import com.jpa.entity.TBag;
 import com.jpa.entity.TPlayer;
+import com.jpa.entity.TPlayerInfo;
 import com.manager.ThreadPoolManager;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +61,8 @@ public class PlayerService {
     private EmailDAO emailDAO;
     @Autowired
     private UserMap userMap;
+    @Autowired
+    private PlayerInfoDAO playerInfoDAO;
 
     public Long period = 5000L;
 
@@ -79,6 +83,9 @@ public class PlayerService {
             p.setTPlayer(player);
             p.setInit(false);
             userMap.getPlayerMap(userId).put(player.getRoleId(), p);
+            TPlayerInfo playerInfo = new TPlayerInfo(player.getRoleId(), player.getName(), player.getOccupation());
+            playerManager.getPlayerInfoMap().put(player.getRoleId(), playerInfo);
+            playerInfoDAO.save(playerInfo);
             ctx.writeAndFlush("角色创建成功，角色id:" + player.getRoleId() + "角色昵称为：" + player.getName() + '\n');
         } else {
             ctx.writeAndFlush("角色创建失败！\n");

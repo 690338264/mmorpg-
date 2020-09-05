@@ -12,7 +12,7 @@ public class TSect {
     @Id
     @GeneratedValue
     @Column(name = "sectId")
-    private int sectId;
+    private Long sectId;
 
     @Column(name = "name")
     private String name;
@@ -26,19 +26,22 @@ public class TSect {
     @Column(name = "warehouse")
     private String warehouse;
 
-    @Column(name = "join")
-    private String join;
+    @Column(name = "joinRequest")
+    private String joinRequest;
+
+    public TSect() {
+    }
 
     public TSect(String name) {
         this.level = 1;
         this.name = name;
     }
 
-    public int getSectId() {
+    public Long getSectId() {
         return sectId;
     }
 
-    public void setSectId(int sectId) {
+    public void setSectId(Long sectId) {
         this.sectId = sectId;
     }
 
@@ -74,12 +77,12 @@ public class TSect {
         this.warehouse = warehouse;
     }
 
-    public String getJoin() {
-        return join;
+    public String getJoinRequest() {
+        return joinRequest;
     }
 
-    public void setJoin(String join) {
-        this.join = join;
+    public void setJoinRequest(String joinRequest) {
+        this.joinRequest = joinRequest;
     }
 
     @Override
@@ -90,7 +93,7 @@ public class TSect {
                 ", member='" + member + '\'' +
                 ", level=" + level +
                 ", warehouse='" + warehouse + '\'' +
-                ", join='" + join + '\'' +
+                ", join='" + joinRequest + '\'' +
                 '}';
     }
 }

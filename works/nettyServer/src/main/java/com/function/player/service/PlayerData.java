@@ -139,10 +139,10 @@ public class PlayerData {
         bag.setItemMap(m);
     }
 
-    public void updatePlayerInfo(Player player) {
+    public void updatePlayer(Player player) {
         if (player.getTaskMap().get(SceneObjectTask.UPDATE_PLAYER.getKey()) == null) {
             ScheduledFuture update = ThreadPoolManager.delayThread(() -> {
-                String json = JSON.toJSONString((player.getEquipMap()));
+                String json = JSON.toJSONString(player.getEquipMap());
                 player.getTPlayer().setEquip(json);
                 playerDAO.save(player.getTPlayer());
                 player.getTaskMap().remove(SceneObjectTask.UPDATE_PLAYER.getKey());

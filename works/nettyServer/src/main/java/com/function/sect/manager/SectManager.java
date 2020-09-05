@@ -1,10 +1,22 @@
 package com.function.sect.manager;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.function.item.model.Item;
+import com.function.player.model.Player;
+import com.function.player.model.SceneObjectTask;
 import com.function.sect.model.Sect;
+import com.jpa.dao.SectDAO;
+import com.jpa.entity.TSect;
+import com.manager.ThreadPoolManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Catherine
@@ -12,9 +24,39 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 public class SectManager {
-    private Map<Integer, Sect> sectMap = new ConcurrentHashMap<>();
+    @Autowired
+    private SectDAO sectDAO;
+    private Map<Long, Sect> sectMap = new ConcurrentHashMap<>();
 
-    public Map<Integer, Sect> getSectMap() {
+    public Map<Long, Sect> getSectMap() {
         return sectMap;
+    }
+
+    @PostConstruct
+    private void init() {
+        sectDAO.findAll().forEach((tSect) -> {
+            Sect sect = new Sect(tSect);
+            sect.setMembers(JSON.parseObject(tSect.getMember(), new TypeReference<List<Long>>() {
+            }));
+            sect.setJoinRequest(JSON.parseObject(tSect.getJoinRequest(), new TypeReference<Map<Long, Player>>() {
+            }));
+            sect.setWareHouse(JSON.parseObject(tSect.getWarehouse(), new TypeReference<Map<Integer, Item>>() {
+            }));
+            sectMap.put(tSect.getSectId(), sect);
+        });
+    }
+
+    public void update(Sect sect) {
+        if (sect.getUpdate() == null) {
+            ScheduledFuture update = ThreadPoolManager.delayThread(() -> {
+                TSect tSect = sect.gettSect();
+                tSect.setMember(JSON.toJSONString(sect.getMembers()));
+                tSect.setJoinRequest(JSON.toJSONString(sect.getJoinRequest()));
+                tSect.setWarehouse(JSON.toJSONString(sect.getWareHouse()));
+                sectDAO.save(tSect);
+                sect.setUpdate(null);
+            }, SceneObjectTask.UPDATE_TIME.getKey(), sect.gettSect().getSectId().intValue());
+            sect.setUpdate(update);
+        }
     }
 }

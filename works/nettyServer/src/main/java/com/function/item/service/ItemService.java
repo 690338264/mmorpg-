@@ -74,7 +74,7 @@ public class ItemService {
         changeAttr(-1, item, player);
         addItem(item, player);
         player.getEquipMap().remove(item.getItemById().getSpace());
-        playerData.updatePlayerInfo(player);
+        playerData.updatePlayer(player);
         notifyScene.notifyPlayer(player, MessageFormat.format("您已摘下[{0}]\n", item.getItemById().getName()));
     }
 
@@ -192,7 +192,7 @@ public class ItemService {
             return false;
         } else {
             player.getTPlayer().setMoney(remain);
-            playerData.updatePlayerInfo(player);
+            playerData.updatePlayer(player);
             return true;
         }
     }
