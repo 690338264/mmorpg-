@@ -10,6 +10,7 @@ import com.function.item.model.Item;
 import com.function.occ.excel.OccExcel;
 import com.function.occ.excel.OccResource;
 import com.function.player.model.Player;
+import com.function.player.model.PlayerInfo;
 import com.function.player.model.SceneObjectTask;
 import com.function.scene.model.SceneObjectType;
 import com.function.skill.excel.SkillExcel;
@@ -19,6 +20,7 @@ import com.function.skill.model.Skill;
 import com.jpa.dao.BagDAO;
 import com.jpa.dao.EmailDAO;
 import com.jpa.dao.PlayerDAO;
+import com.jpa.dao.PlayerInfoDAO;
 import com.jpa.entity.TBag;
 import com.jpa.entity.TEmail;
 import com.manager.ThreadPoolManager;
@@ -46,6 +48,8 @@ public class PlayerData {
     private EmailDAO emailDAO;
     @Autowired
     private SkillManager skillManager;
+    @Autowired
+    private PlayerInfoDAO playerInfoDAO;
 
     /**
      * 初始化角色属性
@@ -148,6 +152,17 @@ public class PlayerData {
                 player.getTaskMap().remove(SceneObjectTask.UPDATE_PLAYER.getKey());
             }, SceneObjectTask.UPDATE_TIME.getKey(), player.getTPlayer().getRoleId().intValue());
             player.getTaskMap().put(SceneObjectTask.UPDATE_PLAYER.getKey(), update);
+        }
+    }
+
+    public void updatePlayerInfo(PlayerInfo playerInfo) {
+        if (playerInfo.getUpdate() == null) {
+            ScheduledFuture update = ThreadPoolManager.delayThread(() ->
+            {
+                playerInfoDAO.save(playerInfo.gettPlayerInfo());
+                playerInfo.setUpdate(null);
+            }, SceneObjectTask.UPDATE_TIME.getKey(), playerInfo.gettPlayerInfo().getPlayerId().intValue());
+            playerInfo.setUpdate(update);
         }
     }
 

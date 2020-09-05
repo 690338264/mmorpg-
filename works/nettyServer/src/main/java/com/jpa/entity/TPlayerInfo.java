@@ -34,7 +34,7 @@ public class TPlayerInfo {
         this.occupation = occupation;
     }
 
-    public long getPlayerId() {
+    public Long getPlayerId() {
         return playerId;
     }
 

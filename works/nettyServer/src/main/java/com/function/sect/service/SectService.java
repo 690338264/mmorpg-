@@ -6,6 +6,7 @@ import com.function.item.service.ItemService;
 import com.function.occ.excel.OccResource;
 import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
+import com.function.player.model.PlayerInfo;
 import com.function.player.service.PlayerData;
 import com.function.scene.service.NotifyScene;
 import com.function.sect.manager.SectManager;
@@ -78,8 +79,10 @@ public class SectService {
         sectManager.update(sect);
         player.getTPlayer().setSectId(tSect.getSectId());
         player.getTPlayer().setSectPosition(SectPosition.PRESIDENT.getType());
-        playerManager.getPlayerInfoMap().get(player.getTPlayer().getRoleId()).setSectPosition(SectPosition.PRESIDENT.getType());
+        PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(player.getTPlayer().getRoleId());
+        playerInfo.gettPlayerInfo().setSectPosition(SectPosition.PRESIDENT.getType());
         playerData.updatePlayer(player);
+        playerData.updatePlayerInfo(playerInfo);
         notifyScene.notifyPlayer(player, MessageFormat.format("创建公会成功,公会id:{0}\n", tSect.getSectId()));
     }
 
@@ -112,7 +115,7 @@ public class SectService {
         notifyScene.notifyPlayer(player, MessageFormat.format("公会id:{0}  公会名称:{1}  公会人数:{2}\n成员列表:\n",
                 sect.gettSect().getSectId(), sect.gettSect().getName(), sect.getMembers().size()));
         sect.getMembers().forEach((playerId) -> {
-            TPlayerInfo memberInfo = playerManager.getPlayerInfoMap().get(playerId);
+            TPlayerInfo memberInfo = playerManager.getPlayerInfoMap().get(playerId).gettPlayerInfo();
             notifyScene.notifyPlayer(player, MessageFormat.format("职位[{0}]姓名:{1},门派:{2}\n",
                     SectPosition.values()[memberInfo.getSectPosition() - 1].getRole(),
                     memberInfo.getName(), OccResource.getOccById(memberInfo.getOccupation()).getName()));
@@ -149,8 +152,10 @@ public class SectService {
         sectManager.update(sect);
         request.getTPlayer().setSectId(sect.gettSect().getSectId());
         request.getTPlayer().setSectPosition(SectPosition.NORMAL_MEMBER.getType());
-        playerManager.getPlayerInfoMap().get(playerId).setSectPosition(SectPosition.NORMAL_MEMBER.getType());
+        PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(playerId);
+        playerInfo.gettPlayerInfo().setSectPosition(SectPosition.NORMAL_MEMBER.getType());
         playerData.updatePlayer(request);
+        playerData.updatePlayerInfo(playerInfo);
         notifyScene.notifyPlayer(request, "加入公会\n");
     }
 
@@ -225,9 +230,11 @@ public class SectService {
             player.getTPlayer().setSectPosition(SectPosition.VICE_PRESIDENT.getType());
         }
         TPlayer member = userMap.getPlayers().containsKey(playerId) ? userMap.getPlayers(playerId).getTPlayer() : playerDAO.findByRoleId(playerId);
-        playerManager.getPlayerInfoMap().get(playerId).setSectPosition(position);
+        PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(playerId);
+        playerInfo.gettPlayerInfo().setSectPosition(position);
         member.setSectPosition(position);
         playerDAO.save(member);
+        playerData.updatePlayerInfo(playerInfo);
         notifyScene.notifyPlayer(player, "更改职位成功\n");
     }
 

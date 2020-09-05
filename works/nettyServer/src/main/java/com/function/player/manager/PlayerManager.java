@@ -1,10 +1,10 @@
 package com.function.player.manager;
 
+import com.function.player.model.PlayerInfo;
 import com.function.user.map.PlayerMap;
 import com.function.user.map.UserMap;
 import com.jpa.dao.PlayerInfoDAO;
 import com.jpa.entity.TPlayer;
-import com.jpa.entity.TPlayerInfo;
 import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,17 +26,17 @@ public class PlayerManager {
     @Autowired
     private PlayerInfoDAO playerInfoDAO;
 
-    private Map<Long, TPlayerInfo> playerInfoMap = new ConcurrentHashMap<>();
+    private Map<Long, PlayerInfo> playerInfoMap = new ConcurrentHashMap<>();
 
     private static final long OUTLINE_TIME = 3600 * 60 * 24;
 
     private static final long JUMP = 5000;
 
-    public Map<Long, TPlayerInfo> getPlayerInfoMap() {
+    public Map<Long, PlayerInfo> getPlayerInfoMap() {
         return playerInfoMap;
     }
 
-    public void setPlayerInfoMap(Map<Long, TPlayerInfo> playerInfoMap) {
+    public void setPlayerInfoMap(Map<Long, PlayerInfo> playerInfoMap) {
         this.playerInfoMap = playerInfoMap;
     }
 
@@ -64,7 +64,9 @@ public class PlayerManager {
 
     @PostConstruct
     private void init() {
-        playerInfoDAO.findAll().forEach((playerInfo) ->
-                playerInfoMap.put(playerInfo.getPlayerId(), playerInfo));
+        playerInfoDAO.findAll().forEach((tPlayerInfo) -> {
+            PlayerInfo playerInfo = new PlayerInfo(tPlayerInfo);
+            playerInfoMap.put(tPlayerInfo.getPlayerId(), playerInfo);
+        });
     }
 }

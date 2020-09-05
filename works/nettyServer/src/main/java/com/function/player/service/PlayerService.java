@@ -9,6 +9,7 @@ import com.function.monster.service.MonsterService;
 import com.function.player.manager.BagManager;
 import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
+import com.function.player.model.PlayerInfo;
 import com.function.player.model.SceneObjectTask;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
@@ -68,6 +69,9 @@ public class PlayerService {
 
     public Long playerRevive = 5000L;
 
+    /**
+     * 角色创建
+     */
     public void roleCreate(ChannelHandlerContext ctx, String roleName, Integer roleType, Long userId) {
         TPlayer tPlayer = playerManager.newPlayer(roleName, roleType, userId);
         if (playerDAO.findByName(roleName) != null) {
@@ -83,9 +87,10 @@ public class PlayerService {
             p.setTPlayer(player);
             p.setInit(false);
             userMap.getPlayerMap(userId).put(player.getRoleId(), p);
-            TPlayerInfo playerInfo = new TPlayerInfo(player.getRoleId(), player.getName(), player.getOccupation());
+            TPlayerInfo tplayerInfo = new TPlayerInfo(player.getRoleId(), player.getName(), player.getOccupation());
+            PlayerInfo playerInfo = new PlayerInfo(tplayerInfo);
             playerManager.getPlayerInfoMap().put(player.getRoleId(), playerInfo);
-            playerInfoDAO.save(playerInfo);
+            playerInfoDAO.save(tplayerInfo);
             ctx.writeAndFlush("角色创建成功，角色id:" + player.getRoleId() + "角色昵称为：" + player.getName() + '\n');
         } else {
             ctx.writeAndFlush("角色创建失败！\n");
