@@ -128,89 +128,89 @@ public class PlayerService {
             notifyScene.notifyPlayer(player, "不能攻击自己哦！\n");
             return;
         }
+        if (skill == null) {
+            notifyScene.notifyPlayer(player, "无效技能\n");
+            return;
+        }
         //判断技能CD
-        if (skill != null) {
-            //判断玩家mp
-            if (player.getMp() >= skill.getSkillExcel().getMp()) {
-                //判断装备磨损度
-                for (Integer key : player.getEquipMap().keySet()) {
-                    if (player.getEquipMap().get(key).getNowWear() <= 10) {
-                        StringBuilder eqpBreak = new StringBuilder("装备损坏过于严重！请维修\n");
-                        notifyScene.notifyPlayer(player, eqpBreak);
-                        return;
-                    }
-                    player.getEquipMap().get(key).setNowWear(player.getEquipMap().get(key).getNowWear() - 2);
+        if (System.currentTimeMillis() - skill.getLastTime() < skill.getSkillExcel().getCd()) {
+            notifyScene.notifyPlayer(player, "技能冷却中\n");
+            return;
+        }
+        //判断玩家mp
+        if (player.getMp() < skill.getSkillExcel().getMp()) {
+            notifyScene.notifyPlayer(player, "mp不足，技能释放失败\n");
+            return;
+        }
+        //判断装备磨损度
+        for (Item equipment : player.getEquipMap().values()) {
+            if (equipment.getNowWear() <= 10) {
+                notifyScene.notifyPlayer(player, "装备损坏过于严重！请维修\n");
+                return;
+            }
+            equipment.setNowWear(equipment.getNowWear() - 2);
+        }
+        //造成的伤害
+        try {
+            s.getLock().lock();
+            int hurt = player.getAtk() * skill.getSkillExcel().getAtk();
+            s.setHp(s.getHp() - hurt);
+            player.setMp(player.getMp() - skill.getSkillExcel().getMp());
+            skill.setLastTime(System.currentTimeMillis());
+            //击杀
+            if (s.getHp() <= 0) {
+                //击杀怪物
+                if (s.getType() == SceneObjectType.MONSTER) {
+                    Monster monster = (Monster) s;
+                    killMonster(monster, scene, target, player);
+                    return;
                 }
-                //造成的伤害
-                try {
-                    s.getLock().lock();
-                    int hurt = player.getAtk() * skill.getSkillExcel().getAtk();
-                    s.setHp(s.getHp() - hurt);
-                    player.setMp(player.getMp() - skill.getSkillExcel().getMp());
-                    player.getCanUseSkill().remove(skillId);
-                    ThreadPoolManager.delayThread(() -> player.getCanUseSkill().put(skillId, skill), skill.getSkillExcel().getCd(), player.getChannelHandlerContext().hashCode());
-                    //击杀
-                    if (s.getHp() <= 0) {
-                        //击杀怪物
-                        if (s.getType() == SceneObjectType.MONSTER) {
-                            Monster monster = (Monster) s;
-                            killMonster(monster, scene, target, player);
-                            return;
-                        }
 
-                        if (s.getType() == SceneObjectType.PLAYER) {
-                            Player p = (Player) s;
-                            playerDie(p);
-                            notifyScene.notifyScene(scene, MessageFormat.format("玩家{0}击败玩家{1}\n",
-                                    player.getTPlayer().getName(), p.getTPlayer().getName()));
-                            return;
-                        }
-                    } else {
-                        //攻击
-                        if (s.getType() == SceneObjectType.MONSTER) {
-                            Monster monster = (Monster) s;
-                            int oriHurt;
-                            int flag = 0;
-                            if (monster.getHurtList().isEmpty()) {
-                                flag = 1;
-                            }
-                            oriHurt = monster.getHurtList().getOrDefault(player.getTPlayer().getRoleId(), 0);
-                            monster.getHurtList().put(player.getTPlayer().getRoleId(), hurt + oriHurt);
-                            buffService.buff(monster.getId().intValue(), skill, monster, player, scene);
-                            notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]释放了技能[{1}]对怪物[{2}]产生伤害:{3}\n",
-                                    player.getTPlayer().getName(), skill.getSkillExcel().getName(),
-                                    monster.getMonsterExcel().getName(), hurt));
-                            if (flag == 1) {
-                                ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
-                                    if (monster.getHurtList().isEmpty()) {
-                                        monster.getTaskMap().get(SceneObjectTask.ATTACK).cancel(true);
-                                        monster.getTaskMap().remove(SceneObjectTask.ATTACK);
-                                    }
-                                    Long hate = monsterService.hurtSort(monster);
-                                    monsterService.monsterAtk(monster, hate);
-                                }, 0, period, monster.getExcelId());
-                                monster.getTaskMap().put(SceneObjectTask.ATTACK, scheduledFuture);
-                            }
-                            return;
-                        }
-                        if (s.getType() == SceneObjectType.PLAYER) {
-                            Player beAttack = (Player) s;
-                            buffService.buff(beAttack.getTPlayer().getRoleId().intValue(), skill, beAttack, player, scene);
-                            notifyScene.notifyScene(scene, MessageFormat.format("{0}受到来自{1}的攻击 损失{2}点血\n",
-                                    beAttack.getTPlayer().getName(), player.getTPlayer().getName(), hurt));
-                        }
-                    }
-                } finally {
-                    s.getLock().unlock();
+                if (s.getType() == SceneObjectType.PLAYER) {
+                    Player p = (Player) s;
+                    playerDie(p);
+                    notifyScene.notifyScene(scene, MessageFormat.format("玩家{0}击败玩家{1}\n",
+                            player.getTPlayer().getName(), p.getTPlayer().getName()));
                 }
             } else {
-                notifyScene.notifyPlayer(player, "技能释放失败！原因：mp不足！\n");
+                //攻击
+                if (s.getType() == SceneObjectType.MONSTER) {
+                    Monster monster = (Monster) s;
+                    int oriHurt;
+                    int flag = 0;
+                    if (monster.getHurtList().isEmpty()) {
+                        flag = 1;
+                    }
+                    oriHurt = monster.getHurtList().getOrDefault(player.getTPlayer().getRoleId(), 0);
+                    monster.getHurtList().put(player.getTPlayer().getRoleId(), hurt + oriHurt);
+                    buffService.buff(monster.getId().intValue(), skill, monster, player, scene);
+                    notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]释放了技能[{1}]对怪物[{2}]产生伤害:{3}\n",
+                            player.getTPlayer().getName(), skill.getSkillExcel().getName(),
+                            monster.getMonsterExcel().getName(), hurt));
+                    if (flag == 1) {
+                        ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
+                            if (monster.getHurtList().isEmpty()) {
+                                monster.getTaskMap().get(SceneObjectTask.ATTACK).cancel(true);
+                                monster.getTaskMap().remove(SceneObjectTask.ATTACK);
+                            }
+                            Long hate = monsterService.hurtSort(monster);
+                            monsterService.monsterAtk(monster, hate);
+                        }, 0, period, monster.getExcelId());
+                        monster.getTaskMap().put(SceneObjectTask.ATTACK, scheduledFuture);
+                    }
+                    return;
+                }
+                //pvp
+                if (s.getType() == SceneObjectType.PLAYER) {
+                    Player beAttack = (Player) s;
+                    buffService.buff(beAttack.getTPlayer().getRoleId().intValue(), skill, beAttack, player, scene);
+                    notifyScene.notifyScene(scene, MessageFormat.format("{0}受到来自{1}的攻击 损失{2}点血\n",
+                            beAttack.getTPlayer().getName(), player.getTPlayer().getName(), hurt));
+                }
             }
-        } else {
-            notifyScene.notifyPlayer(player, "技能冷却中\n");
+        } finally {
+            s.getLock().unlock();
         }
-
-
     }
 
 
