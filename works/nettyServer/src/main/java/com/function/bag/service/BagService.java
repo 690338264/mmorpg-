@@ -1,6 +1,5 @@
 package com.function.bag.service;
 
-import com.alibaba.fastjson.JSON;
 import com.function.bag.model.Bag;
 import com.function.item.model.Item;
 import com.function.item.model.ItemType;
@@ -8,7 +7,7 @@ import com.function.player.model.Player;
 import com.function.player.model.SceneObjectTask;
 import com.function.scene.service.NotifyScene;
 import com.jpa.dao.BagDAO;
-import com.manager.ThreadPoolManager;
+import com.jpa.manager.JpaManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,26 +19,25 @@ import java.util.concurrent.ScheduledFuture;
  * @author Catherine
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class BagService {
     @Autowired
     private BagDAO bagDAO;
     @Autowired
     private NotifyScene notifyScene;
+    @Autowired
+    private JpaManager jpaManager;
 
     /**
      * 更新背包
      */
     public void updateBag(Player player) {
-        int key = SceneObjectTask.UPDATE_BAG.getKey();
-        if (player.getTaskMap().get(key) == null) {
-            ScheduledFuture update = ThreadPoolManager.delayThread(() -> {
-                String json = JSON.toJSONString(player.getBag().getItemMap());
-                player.getBag().getTBag().setItem(json);
-                bagDAO.save(player.getBag().getTBag());
-                player.getTaskMap().remove(key);
-            }, SceneObjectTask.UPDATE_TIME.getKey(), player.getTPlayer().getRoleId().intValue());
-            player.getTaskMap().put(key, update);
-        }
+        ScheduledFuture update = jpaManager.update(player.getTaskMap().get(SceneObjectTask.UPDATE_BAG), () -> {
+            player.getBag().toJson();
+            bagDAO.save(player.getBag().getTBag());
+            player.getTaskMap().remove(SceneObjectTask.UPDATE_BAG);
+        }, player.getTPlayer().getRoleId().intValue());
+        player.getTaskMap().putIfAbsent(SceneObjectTask.UPDATE_BAG, update);
     }
 
     /**
@@ -80,9 +78,10 @@ public class BagService {
             if (i < result.size() - 1) {
                 Item nextItem = result.get(i + 1);
                 if (nextItem.getId().equals(item.getId()) && item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
-                    if (nextItem.getNum() + item.getNum() > item.getMaxNum()) {
-                        int num = nextItem.getNum() - item.getMaxNum() + item.getNum();
-                        item.setNum(item.getMaxNum());
+                    int max = item.getItemById().getMaxNum();
+                    if (nextItem.getNum() + item.getNum() > max) {
+                        int num = nextItem.getNum() - max + item.getNum();
+                        item.setNum(max);
                         nextItem.setNum(num);
                         items.put(index, result.get(i));
                         index++;

@@ -1,5 +1,6 @@
 package com.function.bag.model;
 
+import com.alibaba.fastjson.JSON;
 import com.function.item.model.Item;
 import com.jpa.entity.TBag;
 import lombok.Data;
@@ -12,9 +13,15 @@ import java.util.Map;
  * @create 2020-08-04 10:44
  */
 @Data
-
 public class Bag {
+
     private TBag tBag;
+
     private Map<Integer, Item> itemMap = new HashMap<>();
+
+    public void toJson() {
+        String json = JSON.toJSONString(itemMap);
+        tBag.setItem(json);
+    }
 
 }

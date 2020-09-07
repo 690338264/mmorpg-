@@ -22,7 +22,7 @@ public class TradeManager {
     /**
      * 交易接收者的id为key
      */
-    private Map<Long, TradeBoard> tradeBoardMap = new ConcurrentHashMap<>();
+    private final Map<Long, TradeBoard> tradeBoardMap = new ConcurrentHashMap<>();
 
     private static final long TRADE_LAST = 300000;
 
@@ -38,9 +38,12 @@ public class TradeManager {
                 () -> tradeBoardMap.forEach((playerId, trade) -> {
                     Player initiator = trade.getInitiator();
                     Player recipient = trade.getRecipient();
-                    if (System.currentTimeMillis() - trade.getStartTime() > TRADE_LAST || initiator.getNowScene() != recipient.getNowScene()) {
-                        tradeService.cancelTrade(trade);
-                        tradeBoardMap.remove(playerId);
+                    long lastTime = System.currentTimeMillis() - trade.getStartTime();
+                    if (lastTime > TRADE_LAST || initiator.getNowScene() != recipient.getNowScene()) {
+                        if (!trade.getIsTrading().get()) {
+                            tradeService.cancelTrade(trade);
+                            tradeBoardMap.remove(playerId);
+                        }
                     }
                 }), 0, JUMP, getClass().hashCode()
         );

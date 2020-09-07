@@ -1,5 +1,6 @@
 package com.function.scene.model;
 
+import com.function.player.model.SceneObjectTask;
 import com.function.skill.model.Skill;
 
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Catherine
  * @create 2020-08-13 16:07
  */
+@SuppressWarnings("rawtypes")
 public class SceneObject {
 
     private String name;
@@ -26,7 +28,7 @@ public class SceneObject {
     /**
      * 种类
      */
-    private int type;
+    private SceneObjectType type;
     /**
      * 原始Hp
      */
@@ -40,15 +42,15 @@ public class SceneObject {
     /**
      * 线程任务列表
      */
-    private Map<Integer, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
+    private final Map<SceneObjectTask, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
     /**
      * buff
      */
-    private Map<Integer, ScheduledFuture> buffs = new ConcurrentHashMap<>();
+    private final Map<Integer, ScheduledFuture> buffs = new ConcurrentHashMap<>();
     /**
      * 可用技能
      */
-    private Map<Integer, Skill> canUseSkill = new HashMap<>();
+    private final Map<Integer, Skill> canUseSkill = new HashMap<>();
 
     public String getName() {
         return name;
@@ -74,11 +76,11 @@ public class SceneObject {
         this.atk = atk;
     }
 
-    public int getType() {
+    public SceneObjectType getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(SceneObjectType type) {
         this.type = type;
     }
 
@@ -106,7 +108,7 @@ public class SceneObject {
         this.lock = lock;
     }
 
-    public Map<Integer, ScheduledFuture> getTaskMap() {
+    public Map<SceneObjectTask, ScheduledFuture> getTaskMap() {
         return taskMap;
     }
 

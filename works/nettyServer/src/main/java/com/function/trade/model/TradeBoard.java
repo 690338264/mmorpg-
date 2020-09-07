@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Catherine
@@ -16,27 +17,31 @@ public class TradeBoard {
     /**
      * 交易发起者
      */
-    private Player initiator;
+    private final Player initiator;
     /**
      * 交易接收者
      */
-    private Player recipient;
+    private final Player recipient;
     /**
      * 交易开始时间
      */
-    private Long startTime;
+    private final Long startTime;
     /**
      * 物品交易栏
      */
-    private Map<Long, List<Item>> changeMap = new ConcurrentHashMap<>();
+    private final Map<Long, List<Item>> changeMap = new ConcurrentHashMap<>();
     /**
      * 金币交易
      */
-    private Map<Long, Integer> moneyMap = new ConcurrentHashMap<>();
+    private final Map<Long, Integer> moneyMap = new ConcurrentHashMap<>();
     /**
      * 双方确认状态
      */
-    private Map<Long, Boolean> stateMap = new ConcurrentHashMap<>();
+    private final Map<Long, Boolean> stateMap = new ConcurrentHashMap<>();
+    /**
+     * 是否正在交换物品
+     */
+    private AtomicBoolean isTrading = new AtomicBoolean();
 
     public TradeBoard(Player initiator, Player recipient) {
         this.initiator = initiator;
@@ -70,5 +75,13 @@ public class TradeBoard {
 
     public Map<Long, Boolean> getStateMap() {
         return stateMap;
+    }
+
+    public AtomicBoolean getIsTrading() {
+        return isTrading;
+    }
+
+    public void setIsTrading(AtomicBoolean isTrading) {
+        this.isTrading = isTrading;
     }
 }

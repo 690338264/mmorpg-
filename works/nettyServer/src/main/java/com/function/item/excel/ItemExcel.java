@@ -49,5 +49,9 @@ public class ItemExcel {
      * 耐久度
      */
     private int wear;
+    /**
+     * 最大堆叠数量
+     */
+    private int maxNum;
 
 }

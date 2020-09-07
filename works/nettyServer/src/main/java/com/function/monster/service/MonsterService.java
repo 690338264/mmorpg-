@@ -78,7 +78,7 @@ public class MonsterService {
         player.setHp(player.getHp() - hurt);
         ScheduledFuture skillCd = ThreadPoolManager.delayThread(() ->
                 monster.getCanUseSkill().put(randomKey, skill), skill.getSkillExcel().getCd(), monster.getExcelId());
-        monster.getTaskMap().put(SceneObjectTask.SKILL_CD.getKey(), skillCd);
+        monster.getTaskMap().put(SceneObjectTask.SKILL_CD, skillCd);
         notifyScene.notifyPlayer(player, MessageFormat.format("您受到了{0}点伤害", hurt));
         if (!playerService.playerDie(player)) {
             notifyScene.notifyPlayer(player, MessageFormat.format("剩余血量为{0}\n", player.getHp()));

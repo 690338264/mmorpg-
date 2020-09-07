@@ -25,7 +25,7 @@ public class TPlayer {
     @Column(name = "occupation")
     private int occupation;
 
-    @Column(name = "equip", length = 15000)
+    @Column(name = "equip", columnDefinition = "TEXT")
     private String equip;
 
     @Column(name = "money")

@@ -1,8 +1,6 @@
 package com.function.chat.service;
 
 import com.function.player.model.Player;
-import com.function.scene.manager.SceneManager;
-import com.function.scene.model.SceneType;
 import com.function.scene.service.NotifyScene;
 import com.function.user.map.PlayerMap;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,8 +17,6 @@ import java.text.MessageFormat;
 public class CommunicateService {
     @Autowired
     private PlayerMap playerMap;
-    @Autowired
-    private SceneManager sceneManager;
     @Autowired
     private NotifyScene notifyScene;
 
@@ -42,14 +38,8 @@ public class CommunicateService {
      * 全服喊话
      */
     public void speak(Player player, String text) {
-        String s = MessageFormat.format("{0}说：{1}\n", player.getTPlayer().getName(), text);
-        for (SceneType type : SceneType.values()) {
-            for (int key : sceneManager.get(type.getType()).keySet()) {
-                notifyScene.notifyScene(sceneManager.get(type.getType()).get(key), s);
-            }
-        }
-
+        playerMap.getPlayerCtxMap().forEach((ctx, players) ->
+                notifyScene.notifyPlayer(players, MessageFormat.format("{0}说：{1}\n",
+                        player.getTPlayer().getName(), text)));
     }
-
-
 }

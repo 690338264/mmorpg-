@@ -152,13 +152,13 @@ public class PlayerService {
                     //击杀
                     if (s.getHp() <= 0) {
                         //击杀怪物
-                        if (s.getType() == SceneObjectType.MONSTER.getType()) {
+                        if (s.getType() == SceneObjectType.MONSTER) {
                             Monster monster = (Monster) s;
                             killMonster(monster, scene, target, player);
                             return;
                         }
 
-                        if (s.getType() == SceneObjectType.PLAYER.getType()) {
+                        if (s.getType() == SceneObjectType.PLAYER) {
                             Player p = (Player) s;
                             playerDie(p);
                             notifyScene.notifyScene(scene, MessageFormat.format("玩家{0}击败玩家{1}\n",
@@ -167,7 +167,7 @@ public class PlayerService {
                         }
                     } else {
                         //攻击
-                        if (s.getType() == SceneObjectType.MONSTER.getType()) {
+                        if (s.getType() == SceneObjectType.MONSTER) {
                             Monster monster = (Monster) s;
                             int oriHurt;
                             int flag = 0;
@@ -181,24 +181,23 @@ public class PlayerService {
                                     player.getTPlayer().getName(), skill.getSkillExcel().getName(),
                                     monster.getMonsterExcel().getName(), hurt));
                             if (flag == 1) {
-                                int attack = SceneObjectTask.ATTACK.getKey();
                                 ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
                                     if (monster.getHurtList().isEmpty()) {
-                                        monster.getTaskMap().get(attack).cancel(true);
-                                        monster.getTaskMap().remove(attack);
+                                        monster.getTaskMap().get(SceneObjectTask.ATTACK).cancel(true);
+                                        monster.getTaskMap().remove(SceneObjectTask.ATTACK);
                                     }
                                     Long hate = monsterService.hurtSort(monster);
                                     monsterService.monsterAtk(monster, hate);
                                 }, 0, period, monster.getExcelId());
-                                monster.getTaskMap().put(attack, scheduledFuture);
+                                monster.getTaskMap().put(SceneObjectTask.ATTACK, scheduledFuture);
                             }
                             return;
                         }
-                        if (s.getType() == SceneObjectType.PLAYER.getType()) {
+                        if (s.getType() == SceneObjectType.PLAYER) {
                             Player beAttack = (Player) s;
                             buffService.buff(beAttack.getTPlayer().getRoleId().intValue(), skill, beAttack, player, scene);
-                            notifyScene.notifyPlayer(beAttack, MessageFormat.format("受到来自{0}的攻击 损失{1}点血\n",
-                                    player.getTPlayer().getName(), hurt));
+                            notifyScene.notifyScene(scene, MessageFormat.format("{0}受到来自{1}的攻击 损失{2}点血\n",
+                                    beAttack.getTPlayer().getName(), player.getTPlayer().getName(), hurt));
                         }
                     }
                 } finally {
@@ -219,10 +218,9 @@ public class PlayerService {
      * 击杀怪物
      */
     public void killMonster(Monster monster, Scene scene, Long target, Player player) {
-        int attack = SceneObjectTask.ATTACK.getKey();
         if (!monster.getHurtList().isEmpty()) {
-            monster.getTaskMap().get(attack).cancel(true);
-            monster.getTaskMap().remove(attack);
+            monster.getTaskMap().get(SceneObjectTask.ATTACK).cancel(true);
+            monster.getTaskMap().remove(SceneObjectTask.ATTACK);
         }
         monsterService.monsterDeath(target, scene);
         notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]成功击杀怪物{1}\n",

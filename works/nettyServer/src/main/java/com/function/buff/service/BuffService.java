@@ -82,7 +82,7 @@ public class BuffService {
 
                     buff.setRemainTimes(buff.getRemainTimes() - 1);
                     if (buffer.getHp() <= 0) {
-                        if (buffer.getType() == SceneObjectType.MONSTER.getType()) {
+                        if (buffer.getType() == SceneObjectType.MONSTER) {
                             Monster m = (Monster) buffer;
                             playerService.killMonster(m, scene, m.getId(), (Player) attacker);
                         } else {
@@ -109,7 +109,7 @@ public class BuffService {
                 buffer.getBuffs().put(buff.getId(), buffTask);
 
             }
-            String target = buffer.getType() == SceneObjectType.MONSTER.getType() ? "怪物:" : "玩家";
+            String target = buffer.getType() == SceneObjectType.MONSTER ? "怪物:" : "玩家";
             notifyScene.notifyScene(scene, MessageFormat.format("{0}{1}获得buff:{2}  [{3}]\n",
                     target, buffer.getName(), buff.getBuffExcel().getName(), buff.getBuffExcel().getDescribe()));
         });

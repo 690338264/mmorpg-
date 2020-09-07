@@ -8,12 +8,12 @@ import com.function.item.model.ItemType;
 import com.function.item.service.ItemService;
 import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
-import com.function.player.model.SceneObjectTask;
 import com.function.scene.service.NotifyScene;
 import com.function.user.map.UserMap;
 import com.jpa.dao.EmailDAO;
 import com.jpa.entity.TEmail;
 import com.jpa.entity.TPlayerInfo;
+import com.jpa.manager.JpaManager;
 import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,6 +40,8 @@ public class EmailService {
     private EmailDAO emailDAO;
     @Autowired
     private PlayerManager playerManager;
+    @Autowired
+    private JpaManager jpaManager;
 
     /**
      * 发送邮件仅文字
@@ -77,8 +79,7 @@ public class EmailService {
             Email email = player.getEmails().get(index);
             TPlayerInfo senderInfo = playerManager.getPlayerInfoMap().get(email.gettEmail().getSender()).gettPlayerInfo();
             notifyScene.notifyPlayer(player, MessageFormat.format("{0}{1}来自{2}的邮件\n",
-                    index, EmailState.values()[email.gettEmail().getState() - 1].getOut(), senderInfo.getName()));
-
+                    index, email.gettEmail().getState(), senderInfo.getName()));
         });
     }
 
@@ -87,13 +88,17 @@ public class EmailService {
      */
     public void showDetail(Player player, int index) {
         Email email = player.getEmails().get(index);
+        if (email == null) {
+            notifyScene.notifyPlayer(player, "邮件编号有误\n");
+            return;
+        }
         TPlayerInfo senderInfo = playerManager.getPlayerInfoMap().get(email.gettEmail().getSender()).gettPlayerInfo();
         notifyScene.notifyPlayer(player, MessageFormat.format("来自  {0}:\n{1}\n礼物:\n",
                 senderInfo.getName(), email.gettEmail().getText()));
         email.getGifts().forEach((gift) ->
                 notifyScene.notifyPlayer(player, MessageFormat.format("{0}{1}\n", gift.getItemById().getName(), gift.getNum())));
-        if (email.gettEmail().getState() == EmailState.UNREAD.getType()) {
-            email.gettEmail().setState(EmailState.READ.getType());
+        if (email.gettEmail().getState().equals(EmailState.UNREAD.getOut())) {
+            email.gettEmail().setState(EmailState.READ.getOut());
             updateEmail(email);
         }
     }
@@ -110,7 +115,7 @@ public class EmailService {
     public Email createEmail(Player player, Long playerId, String text) {
         Email email = new Email();
         TEmail tEmail = new TEmail();
-        tEmail.setState(EmailState.UNREAD.getType());
+        tEmail.setState(EmailState.UNREAD.getOut());
         tEmail.setPlayerId(playerId);
         tEmail.setSender(player.getTPlayer().getRoleId());
         tEmail.setText(text);
@@ -136,15 +141,11 @@ public class EmailService {
     }
 
     public void updateEmail(Email email) {
-        if (email.getUpdate() == null) {
-            ScheduledFuture update = ThreadPoolManager.delayThread(() -> {
-                String json = JSON.toJSONString(email.getGifts());
-                email.gettEmail().setGift(json);
-                emailDAO.save(email.gettEmail());
-                email.setUpdate(null);
-            }, SceneObjectTask.UPDATE_TIME.getKey(), email.gettEmail().getSender().intValue());
-            email.setUpdate(update);
-        }
-
+        ScheduledFuture update = jpaManager.update(email.getUpdate(), () -> {
+            email.toJson();
+            emailDAO.save(email.gettEmail());
+            email.setUpdate(null);
+        }, email.gettEmail().getSender().intValue());
+        email.setUpdate(update);
     }
 }

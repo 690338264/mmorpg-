@@ -11,7 +11,6 @@ public enum SceneObjectTask {
     SKILL_CD(3),
     UPDATE_BAG(4),
     UPDATE_PLAYER(5),
-    UPDATE_TIME(10000),
     ;
     Integer key;
 
@@ -19,7 +18,4 @@ public enum SceneObjectTask {
         this.key = key;
     }
 
-    public Integer getKey() {
-        return key;
-    }
 }

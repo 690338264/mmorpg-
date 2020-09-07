@@ -4,11 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.function.item.model.Item;
 import com.function.player.model.Player;
-import com.function.player.model.SceneObjectTask;
 import com.function.sect.model.Sect;
 import com.jpa.dao.SectDAO;
-import com.jpa.entity.TSect;
-import com.manager.ThreadPoolManager;
+import com.jpa.manager.JpaManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +25,8 @@ import java.util.concurrent.ScheduledFuture;
 public class SectManager {
     @Autowired
     private SectDAO sectDAO;
+    @Autowired
+    private JpaManager jpaManager;
     private final Map<Long, Sect> sectMap = new ConcurrentHashMap<>();
 
     public Map<Long, Sect> getSectMap() {
@@ -47,17 +47,12 @@ public class SectManager {
         });
     }
 
-    public void update(Sect sect) {
-        if (sect.getUpdate() == null) {
-            ScheduledFuture update = ThreadPoolManager.delayThread(() -> {
-                TSect tSect = sect.gettSect();
-                tSect.setMember(JSON.toJSONString(sect.getMembers()));
-                tSect.setJoinRequest(JSON.toJSONString(sect.getJoinRequest()));
-                tSect.setWarehouse(JSON.toJSONString(sect.getWareHouse()));
-                sectDAO.save(tSect);
-                sect.setUpdate(null);
-            }, SceneObjectTask.UPDATE_TIME.getKey(), sect.gettSect().getSectId().intValue());
-            sect.setUpdate(update);
-        }
+    public void updateSect(Sect sect) {
+        ScheduledFuture update = jpaManager.update(sect.getUpdate(), () -> {
+            sect.toJson();
+            sectDAO.save(sect.gettSect());
+            sect.setUpdate(null);
+        }, sect.gettSect().getSectId().intValue());
+        sect.setUpdate(update);
     }
 }

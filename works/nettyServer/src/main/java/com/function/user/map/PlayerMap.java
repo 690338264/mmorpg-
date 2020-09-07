@@ -13,19 +13,19 @@ import java.util.Map;
 @Component
 public class PlayerMap {
 
-    private Map<ChannelHandlerContext, Player> playerModelMap = new HashMap<>();
+    private final Map<ChannelHandlerContext, Player> playerCtxMap = new HashMap<>();
 
-    private Map<Long, ChannelHandlerContext> ctxPlayer = new HashMap<>();
+    private final Map<Long, ChannelHandlerContext> ctxPlayer = new HashMap<>();
 
-    private Map<Long, Long> offlinePlayer = new HashMap<>();
+    private final Map<Long, Long> offlinePlayer = new HashMap<>();
 
     public void putPlayerCtx(ChannelHandlerContext ctx, Player player) {
-        playerModelMap.put(ctx, player);
+        playerCtxMap.put(ctx, player);
         ctxPlayer.put(player.getTPlayer().getRoleId(), ctx);
     }
 
     public Player getPlayerCtx(ChannelHandlerContext ctx) {
-        return playerModelMap.get(ctx);
+        return playerCtxMap.get(ctx);
     }
 
     public ChannelHandlerContext getCtxPlayer(Long playerId) {
@@ -36,8 +36,12 @@ public class PlayerMap {
         return offlinePlayer;
     }
 
+    public Map<ChannelHandlerContext, Player> getPlayerCtxMap() {
+        return playerCtxMap;
+    }
+
     public void remove(ChannelHandlerContext ctx, Long playerId) {
-        playerModelMap.remove(ctx);
+        playerCtxMap.remove(ctx);
         ctxPlayer.remove(playerId);
     }
 }

@@ -144,7 +144,9 @@ public class TradeService {
         }
         tradeBoard.getStateMap().putIfAbsent(player.getTPlayer().getRoleId(), true);
         if (tradeBoard.getStateMap().size() == TRADE_PEOPLE) {
+            tradeBoard.getIsTrading().set(true);
             startTrading(tradeBoard);
+            tradeBoard.getIsTrading().set(false);
         }
     }
 
@@ -154,8 +156,10 @@ public class TradeService {
     public void cancelTrade(TradeBoard tradeBoard) {
         Player initiator = tradeBoard.getInitiator();
         Player recipient = tradeBoard.getRecipient();
-        cancelOne(initiator, tradeBoard);
-        cancelOne(recipient, tradeBoard);
+        ThreadPoolManager.immediateThread(() ->
+                cancelOne(initiator, tradeBoard), initiator.getTPlayer().getRoleId().intValue());
+        ThreadPoolManager.immediateThread(() ->
+                cancelOne(recipient, tradeBoard), recipient.getTPlayer().getRoleId().intValue());
         tradeManager.getTradeBoardMap().remove(recipient.getTPlayer().getRoleId());
     }
 

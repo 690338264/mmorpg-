@@ -15,7 +15,7 @@ public class TBag {
     @Column(name = "volume")
     private int volume;
 
-    @Column(name = "item", length = 16000)
+    @Column(name = "item", columnDefinition = "TEXT")
     private String item;
     @Id
     @Column(name = "playerId")

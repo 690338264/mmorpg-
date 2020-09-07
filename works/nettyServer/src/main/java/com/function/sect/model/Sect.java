@@ -1,5 +1,6 @@
 package com.function.sect.model;
 
+import com.alibaba.fastjson.JSON;
 import com.function.item.model.Item;
 import com.function.player.model.Player;
 import com.jpa.entity.TSect;
@@ -14,6 +15,7 @@ import java.util.concurrent.ScheduledFuture;
  * @author Catherine
  * @create 2020-09-05 02:10
  */
+@SuppressWarnings("rawtypes")
 public class Sect {
     private TSect tSect;
     private List<Long> members = new CopyOnWriteArrayList<>();
@@ -63,5 +65,12 @@ public class Sect {
 
     public void setUpdate(ScheduledFuture update) {
         this.update = update;
+    }
+
+    public void toJson() {
+        tSect.setMember(JSON.toJSONString(members));
+        tSect.setWarehouse(JSON.toJSONString(wareHouse));
+        tSect.setJoinRequest(JSON.toJSONString(joinRequest));
+
     }
 }

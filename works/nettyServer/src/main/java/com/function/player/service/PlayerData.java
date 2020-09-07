@@ -22,7 +22,7 @@ import com.jpa.dao.PlayerDAO;
 import com.jpa.dao.PlayerInfoDAO;
 import com.jpa.entity.TBag;
 import com.jpa.entity.TEmail;
-import com.manager.ThreadPoolManager;
+import com.jpa.manager.JpaManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +42,8 @@ public class PlayerData {
     private BagDAO bagDAO;
     @Autowired
     private PlayerDAO playerDAO;
+    @Autowired
+    private JpaManager jpaManager;
     @Autowired
     private EmailDAO emailDAO;
     @Autowired
@@ -119,7 +121,7 @@ public class PlayerData {
      * 初始化玩家
      */
     public void initPlayer(Player player) {
-        player.setType(SceneObjectType.PLAYER.getType());
+        player.setType(SceneObjectType.PLAYER);
         initSkill(player);
         initEquipment(player);
         initBag(player);
@@ -141,27 +143,25 @@ public class PlayerData {
         bag.setItemMap(m);
     }
 
+    /**
+     * 存储玩家数据
+     */
     public void updatePlayer(Player player) {
-        if (player.getTaskMap().get(SceneObjectTask.UPDATE_PLAYER.getKey()) == null) {
-            ScheduledFuture update = ThreadPoolManager.delayThread(() -> {
-                String json = JSON.toJSONString(player.getEquipMap());
-                player.getTPlayer().setEquip(json);
-                playerDAO.save(player.getTPlayer());
-                player.getTaskMap().remove(SceneObjectTask.UPDATE_PLAYER.getKey());
-            }, SceneObjectTask.UPDATE_TIME.getKey(), player.getTPlayer().getRoleId().intValue());
-            player.getTaskMap().put(SceneObjectTask.UPDATE_PLAYER.getKey(), update);
-        }
+        ScheduledFuture update = jpaManager.update(player.getTaskMap().get(SceneObjectTask.UPDATE_PLAYER), () -> {
+            player.toJson();
+            playerDAO.save(player.getTPlayer());
+            player.getTaskMap().remove(SceneObjectTask.UPDATE_PLAYER);
+
+        }, player.getTPlayer().getRoleId().intValue());
+        player.getTaskMap().putIfAbsent(SceneObjectTask.UPDATE_PLAYER, update);
     }
 
     public void updatePlayerInfo(PlayerInfo playerInfo) {
-        if (playerInfo.getUpdate() == null) {
-            ScheduledFuture update = ThreadPoolManager.delayThread(() ->
-            {
-                playerInfoDAO.save(playerInfo.gettPlayerInfo());
-                playerInfo.setUpdate(null);
-            }, SceneObjectTask.UPDATE_TIME.getKey(), playerInfo.gettPlayerInfo().getPlayerId().intValue());
-            playerInfo.setUpdate(update);
-        }
+        ScheduledFuture update = jpaManager.update(playerInfo.getUpdate(), () -> {
+            playerInfoDAO.save(playerInfo.gettPlayerInfo());
+            playerInfo.setUpdate(null);
+        }, playerInfo.gettPlayerInfo().getPlayerId().intValue());
+        playerInfo.setUpdate(update);
     }
 
 }

@@ -47,7 +47,7 @@ public class SectService {
     @Autowired
     private PlayerData playerData;
 
-    private static final int maxSize = 60;
+    private static final int MAX_SIZE = 60;
 
     public void listSect(Player player) {
         StringBuilder content = new StringBuilder();
@@ -76,7 +76,7 @@ public class SectService {
         Sect sect = new Sect(tSect);
         sect.getMembers().add(player.getTPlayer().getRoleId());
         sectManager.getSectMap().put(tSect.getSectId(), sect);
-        sectManager.update(sect);
+        sectManager.updateSect(sect);
         player.getTPlayer().setSectId(tSect.getSectId());
         player.getTPlayer().setSectPosition(SectPosition.PRESIDENT.getType());
         PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(player.getTPlayer().getRoleId());
@@ -100,7 +100,7 @@ public class SectService {
             return;
         }
         sect.getJoinRequest().put(player.getTPlayer().getRoleId(), player);
-        sectManager.update(sect);
+        sectManager.updateSect(sect);
         notifyScene.notifyPlayer(player, "申请成功\n");
     }
 
@@ -149,7 +149,7 @@ public class SectService {
         }
         sect.getJoinRequest().remove(playerId);
         sect.getMembers().add(playerId);
-        sectManager.update(sect);
+        sectManager.updateSect(sect);
         request.getTPlayer().setSectId(sect.gettSect().getSectId());
         request.getTPlayer().setSectPosition(SectPosition.NORMAL_MEMBER.getType());
         PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(playerId);
@@ -172,7 +172,7 @@ public class SectService {
             return;
         }
         sect.getJoinRequest().remove(playerId);
-        sectManager.update(sect);
+        sectManager.updateSect(sect);
     }
 
     /**
@@ -191,7 +191,7 @@ public class SectService {
             item = itemService.copyItem(item, num);
         }
         if (putItem(item, sect)) {
-            sectManager.update(sect);
+            sectManager.updateSect(sect);
             notifyScene.notifyPlayer(player, "捐献成功！\n");
         } else {
             notifyScene.notifyPlayer(player, "公会仓库已满\n");
@@ -213,7 +213,7 @@ public class SectService {
         }
         player.getTPlayer().setSectId(null);
         sect.getMembers().remove(player.getTPlayer().getRoleId());
-        sectManager.update(sect);
+        sectManager.updateSect(sect);
         playerData.updatePlayer(player);
         notifyScene.notifyPlayer(player, "退出成功\n");
     }
@@ -222,12 +222,16 @@ public class SectService {
      * 设置职位
      */
     public void setPosition(Player player, Long playerId, int position) {
-        if (player.getTPlayer().getSectPosition() < position) {
+        if (player.getTPlayer().getSectPosition() > position) {
             notifyScene.notifyPlayer(player, "没有该权利\n");
             return;
         }
         if (position == SectPosition.PRESIDENT.getType()) {
             player.getTPlayer().setSectPosition(SectPosition.VICE_PRESIDENT.getType());
+            playerData.updatePlayer(player);
+            PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(player.getTPlayer().getRoleId());
+            playerInfo.gettPlayerInfo().setSectPosition(SectPosition.VICE_PRESIDENT.getType());
+            playerData.updatePlayerInfo(playerInfo);
         }
         TPlayer member = userMap.getPlayers().containsKey(playerId) ? userMap.getPlayers(playerId).getTPlayer() : playerDAO.findByRoleId(playerId);
         PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(playerId);
@@ -265,15 +269,16 @@ public class SectService {
      */
     public boolean putItem(Item item, Sect sect) {
         Map<Integer, Item> itemMap = sect.getWareHouse();
-        for (int index = 0; index < maxSize; index++) {
+        for (int index = 0; index < MAX_SIZE; index++) {
             Item boxItem = itemMap.get(index);
             if (boxItem != null) {
                 //可堆叠
-                if (item.getItemById().getType() == ItemType.MEDICINAL.getType() && item.getId().equals(boxItem.getId())) {
+                if (item.getId().equals(boxItem.getId()) && boxItem.getNum() < boxItem.getItemById().getMaxNum()) {
                     int num = boxItem.getNum();
-                    boxItem.setNum(Math.max(item.getNum() + num, maxSize));
-                    if (boxItem.getNum() == maxSize) {
-                        item.setNum(item.getNum() - maxSize + num);
+                    int max = item.getItemById().getMaxNum();
+                    boxItem.setNum(Math.max(item.getNum() + num, max));
+                    if (boxItem.getNum() == max) {
+                        item.setNum(item.getNum() - max + num);
                         putItem(item, sect);
                     }
                     return true;
@@ -292,10 +297,10 @@ public class SectService {
     public boolean removeItem(int index, int num, Sect sect) {
         Map<Integer, Item> itemMap = sect.getWareHouse();
         Item item = itemMap.get(index);
-        if (item == null || item.getNum() < num) {
+        if (item == null || item.getNum() < num || num < 0) {
             return false;
         }
-        if (item.getItemById().getType() == ItemType.MEDICINAL.getType() && item.getNum() != num) {
+        if (item.getNum() != num) {
             item.setNum(item.getNum() - num);
         } else {
             itemMap.remove(index);
@@ -312,8 +317,7 @@ public class SectService {
             notifyScene.notifyPlayer(player, "您还没有加入公会!\n");
             return null;
         }
-        Sect sect = sectManager.getSectMap().get(sectId);
-        return sect;
+        return sectManager.getSectMap().get(sectId);
     }
 }
 

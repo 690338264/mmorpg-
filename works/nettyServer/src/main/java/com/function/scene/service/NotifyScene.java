@@ -24,7 +24,7 @@ public class NotifyScene {
         Map<Long, SceneObject> players = scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType());
         players.keySet().forEach(playerId -> {
             SceneObject sceneObject = players.get(playerId);
-            if (sceneObject.getType() == SceneObjectType.PLAYER.getType()) {
+            if (sceneObject.getType() == SceneObjectType.PLAYER) {
                 Player p = (Player) sceneObject;
                 ChannelHandlerContext ctx = playerMap.getCtxPlayer(p.getTPlayer().getRoleId());
                 ctx.writeAndFlush(notify);

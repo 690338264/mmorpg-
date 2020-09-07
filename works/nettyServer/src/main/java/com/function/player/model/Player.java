@@ -1,5 +1,6 @@
 package com.function.player.model;
 
+import com.alibaba.fastjson.JSON;
 import com.function.bag.model.Bag;
 import com.function.email.model.Email;
 import com.function.item.model.Item;
@@ -33,7 +34,7 @@ public class Player extends SceneObject {
     /**
      * 玩家所在副本
      */
-    private Instance Instance;
+    private Instance instance;
     /**
      * 玩家背包
      */
@@ -71,6 +72,11 @@ public class Player extends SceneObject {
     @Override
     public int getSceneId() {
         return nowScene.getSceneId();
+    }
+
+    public void toJson() {
+        String json = JSON.toJSONString(equipMap);
+        tPlayer.setEquip(json);
     }
 
 }

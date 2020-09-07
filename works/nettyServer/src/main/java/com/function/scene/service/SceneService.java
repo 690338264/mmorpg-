@@ -81,20 +81,20 @@ public class SceneService {
             Map<Long, SceneObject> map = scene.getSceneObjectMap().get(type.getType());
             map.forEach((k, v) -> {
                 SceneObject sceneObject = map.get(k);
-                if (sceneObject.getType() == SceneObjectType.NPC.getType()) {
+                if (sceneObject.getType() == SceneObjectType.NPC) {
                     NpcExcel npc = (NpcExcel) sceneObject;
                     notifyScene.notifyPlayer(player, MessageFormat.format("NPC:{0}  id为{1}\n",
                             npc.getName(), npc.getId()));
                     return;
                 }
-                if (sceneObject.getType() == SceneObjectType.PLAYER.getType()) {
+                if (sceneObject.getType() == SceneObjectType.PLAYER) {
                     Player p = (Player) sceneObject;
                     String die = p.getHp() <= 0 ? "[阵亡]" : "";
                     notifyScene.notifyPlayer(player, MessageFormat.format("玩家:[{0}]等级为{1}  {2}\n",
                             p.getTPlayer().getName(), p.getTPlayer().getLevel(), die));
                     return;
                 }
-                if (sceneObject.getType() == SceneObjectType.MONSTER.getType()) {
+                if (sceneObject.getType() == SceneObjectType.MONSTER) {
                     Monster monster = (Monster) sceneObject;
                     notifyScene.notifyPlayer(player, MessageFormat.format("怪物:id:[{0}]{1}  Hp:[{2}]\n",
                             monster.getId(), monster.getMonsterExcel().getName(), monster.getHp()));

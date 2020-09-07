@@ -17,16 +17,16 @@ public class TSect {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "member")
+    @Column(name = "member", columnDefinition = "TEXT")
     private String member;
 
     @Column(name = "level")
     private int level;
 
-    @Column(name = "warehouse")
+    @Column(name = "warehouse", columnDefinition = "TEXT")
     private String warehouse;
 
-    @Column(name = "joinRequest")
+    @Column(name = "joinRequest", columnDefinition = "TEXT")
     private String joinRequest;
 
     public TSect() {

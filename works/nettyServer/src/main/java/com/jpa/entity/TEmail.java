@@ -19,14 +19,14 @@ public class TEmail {
     @Column(name = "sender")
     private Long sender;
 
-    @Column(name = "text")
+    @Column(name = "text", columnDefinition = "TEXT")
     private String text;
 
-    @Column(name = "gift")
+    @Column(name = "gift", columnDefinition = "TEXT")
     private String gift;
 
     @Column(name = "state")
-    private int state;
+    private String state;
 
     public Long getEmailId() {
         return emailId;
@@ -68,11 +68,11 @@ public class TEmail {
         this.gift = gift;
     }
 
-    public int getState() {
+    public String getState() {
         return state;
     }
 
-    public void setState(int state) {
+    public void setState(String state) {
         this.state = state;
     }
 

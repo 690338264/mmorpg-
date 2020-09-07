@@ -138,20 +138,19 @@ public class UserService {
      * mp定时器开启
      */
     public void mpResume(Player player) {
-        int mpKey = SceneObjectTask.MP_ADD.getKey();
-        if (player.getTaskMap().get(mpKey) != null) {
+        if (player.getTaskMap().get(SceneObjectTask.MP_ADD) != null) {
             return;
         }
         ScheduledFuture s = ThreadPoolManager.loopThread(() -> {
             if (player.getChannelHandlerContext() == null) {
-                player.getTaskMap().get(mpKey).cancel(true);
-                player.getTaskMap().remove(mpKey);
+                player.getTaskMap().get(SceneObjectTask.MP_ADD).cancel(true);
+                player.getTaskMap().remove(SceneObjectTask.MP_ADD);
                 return;
             }
             int nowMp = player.getMp() + mpAdd < player.getOriMp() ? player.getMp() + mpAdd : player.getOriMp();
             player.setMp(nowMp);
         }, 0, 10000, player.getChannelHandlerContext().hashCode());
-        player.getTaskMap().put(mpKey, s);
+        player.getTaskMap().put(SceneObjectTask.MP_ADD, s);
     }
 
     /**
