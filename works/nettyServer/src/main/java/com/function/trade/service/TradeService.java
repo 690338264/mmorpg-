@@ -30,7 +30,7 @@ public class TradeService {
     @Autowired
     private ItemService itemService;
 
-    private static final int tradePeople = 2;
+    private static final int TRADE_PEOPLE = 2;
 
     /**
      * 发起交易
@@ -143,7 +143,7 @@ public class TradeService {
             return;
         }
         tradeBoard.getStateMap().putIfAbsent(player.getTPlayer().getRoleId(), true);
-        if (tradeBoard.getStateMap().size() == tradePeople) {
+        if (tradeBoard.getStateMap().size() == TRADE_PEOPLE) {
             startTrading(tradeBoard);
         }
     }

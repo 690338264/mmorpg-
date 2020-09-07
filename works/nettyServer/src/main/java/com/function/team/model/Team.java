@@ -10,6 +10,7 @@ import java.util.concurrent.ScheduledFuture;
  * @author Catherine
  * @create 2020-08-24 14:52
  */
+@SuppressWarnings("rawtypes")
 public class Team {
     /**
      * 队长id
@@ -18,15 +19,15 @@ public class Team {
     /**
      * 小队成员
      */
-    private Map<Long, Player> members = new ConcurrentHashMap<>();
+    private final Map<Long, Player> members = new ConcurrentHashMap<>();
     /**
      * 发送邀请
      */
-    private Map<Long, Long> invite = new ConcurrentHashMap<>();
+    private final Map<Long, Long> invite = new ConcurrentHashMap<>();
     /**
      * 申请加入
      */
-    private Map<Long, Long> apply = new ConcurrentHashMap<>();
+    private final Map<Long, Long> apply = new ConcurrentHashMap<>();
     /**
      * 处理入队邀请和请求
      */

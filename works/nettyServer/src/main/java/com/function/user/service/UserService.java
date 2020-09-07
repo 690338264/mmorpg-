@@ -1,10 +1,8 @@
 package com.function.user.service;
 
-import com.function.bag.service.BagService;
 import com.function.player.model.Player;
 import com.function.player.model.SceneObjectTask;
 import com.function.player.service.PlayerData;
-import com.function.player.service.PlayerService;
 import com.function.scene.manager.SceneManager;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObjectType;
@@ -34,11 +32,9 @@ import java.util.concurrent.ScheduledFuture;
  */
 @Slf4j
 @Component
-
+@SuppressWarnings("rawtypes")
 public class UserService {
 
-    @Autowired
-    private PlayerService playerService;
     @Autowired
     private PlayerData playerData;
     @Autowired
@@ -53,8 +49,6 @@ public class UserService {
     private NotifyScene notifyScene;
     @Autowired
     private SceneManager sceneManager;
-    @Autowired
-    private BagService bagService;
     @Autowired
     private TeamService teamService;
 

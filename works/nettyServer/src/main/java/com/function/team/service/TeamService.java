@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @create 2020-08-24 15:07
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class TeamService {
     @Autowired
     private TeamManager teamManager;
@@ -32,10 +33,9 @@ public class TeamService {
 
     public static Long inviteTime = 60000L;
     public static Long jump = 1000L;
-    public static String task = "check";
 
-    private static final int max = 10;
-    private static AtomicLong incTeamId = new AtomicLong();
+    private static final int MAX = 10;
+    private static final AtomicLong incTeamId = new AtomicLong();
 
     /**
      * 查看小队列表
@@ -209,7 +209,7 @@ public class TeamService {
             notifyScene.notifyPlayer(leader, "玩家已离线\n");
             return false;
         }
-        if (team.getMembers().size() == max) {
+        if (team.getMembers().size() == MAX) {
             notifyScene.notifyPlayer(leader, "小队人已满\n");
             return false;
         }

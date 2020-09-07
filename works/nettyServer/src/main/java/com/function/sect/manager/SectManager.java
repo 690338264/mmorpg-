@@ -23,10 +23,11 @@ import java.util.concurrent.ScheduledFuture;
  * @create 2020-09-05 03:08
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class SectManager {
     @Autowired
     private SectDAO sectDAO;
-    private Map<Long, Sect> sectMap = new ConcurrentHashMap<>();
+    private final Map<Long, Sect> sectMap = new ConcurrentHashMap<>();
 
     public Map<Long, Sect> getSectMap() {
         return sectMap;

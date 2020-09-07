@@ -3,7 +3,6 @@ package com.function.scene.controller;
 import com.Cmd;
 import com.function.player.model.Player;
 import com.function.scene.service.InstanceService;
-import com.function.user.service.UserService;
 import com.handler.ControllerManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,8 +15,6 @@ import util.ParamNumCheck;
  */
 @Component
 public class InstanceController {
-    @Autowired
-    private UserService userService;
     @Autowired
     private InstanceService instanceService;
 

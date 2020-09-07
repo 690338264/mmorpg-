@@ -19,7 +19,7 @@ public class NpcResource {
     @Autowired
     private ExcelManager excelManager;
 
-    private static Map<Integer, NpcExcel> npcMap = new HashMap<>();
+    private static final Map<Integer, NpcExcel> npcMap = new HashMap<>();
 
     @PostConstruct
     private void init() {

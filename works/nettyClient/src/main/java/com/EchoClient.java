@@ -36,7 +36,7 @@ public class EchoClient {
 
     private long restTime = 1000L;
 
-    private static int Port = 8000;
+    private static final int Port = 8000;
 
     public void run() {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -78,7 +78,6 @@ public class EchoClient {
         System.out.println("----连接服务器[" + host + "]Success!当前连接的是[" + channel.id() + "]-----\n");
         System.out.println(("请输入1001 id 密码登陆，如无账号请输入1000 用户名 密码来注册\n"));
         while (true) {
-            System.out.println("请输入您的操作：");
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String content = reader.readLine();
             System.out.println("客户端输入：" + content);
@@ -86,7 +85,7 @@ public class EchoClient {
                 if (StringUtils.equalsIgnoreCase(content, "q")) {
                     System.exit(1);
                 } else {
-                    channel.writeAndFlush(content+'\n');
+                    channel.writeAndFlush(content + '\n');
                 }
             }
         }

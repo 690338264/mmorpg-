@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledFuture;
  * @create 2020-08-13 15:56
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class SceneManager {
     @Autowired
     private MonsterService monsterService;
@@ -36,7 +37,7 @@ public class SceneManager {
 
     public static int jump = 1000;
 
-    private Map<Integer, Map<Integer, Scene>> sceneCache = new ConcurrentHashMap<>();
+    private final Map<Integer, Map<Integer, Scene>> sceneCache = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
@@ -67,7 +68,6 @@ public class SceneManager {
             if (System.currentTimeMillis() - instance.getCreateTime() > s.getSceneExcel().getDestroy()) {
                 notifyScene.notifyScene(s, "副本挑战失败,即将关闭!\n");
                 instanceService.destroy(instance);
-                return;
             }
         }, 0, jump, sceneId);
         s.setHeartBeat(scheduledFuture);

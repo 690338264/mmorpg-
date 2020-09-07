@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledFuture;
  * @create 2020-08-27 18:01
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class BuffService {
 
     @Autowired

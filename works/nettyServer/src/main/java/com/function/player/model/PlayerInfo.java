@@ -8,6 +8,8 @@ import java.util.concurrent.ScheduledFuture;
  * @author Catherine
  * @create 2020-09-06 02:33
  */
+
+@SuppressWarnings("rawtypes")
 public class PlayerInfo {
     private TPlayerInfo tPlayerInfo;
     private ScheduledFuture update;

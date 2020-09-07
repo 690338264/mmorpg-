@@ -4,6 +4,7 @@ import com.function.monster.excel.MonsterExcel;
 import com.function.monster.excel.MonsterResource;
 import com.function.scene.model.SceneObject;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Catherine
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class Monster extends SceneObject {
     /**
      * 怪物类型id

@@ -12,7 +12,6 @@ import com.function.player.model.SceneObjectTask;
 import com.function.scene.service.NotifyScene;
 import com.function.user.map.UserMap;
 import com.jpa.dao.EmailDAO;
-import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TEmail;
 import com.jpa.entity.TPlayerInfo;
 import com.manager.ThreadPoolManager;
@@ -29,6 +28,7 @@ import java.util.stream.IntStream;
  * @create 2020-09-02 15:45
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class EmailService {
     @Autowired
     private ItemService itemService;
@@ -36,8 +36,6 @@ public class EmailService {
     private NotifyScene notifyScene;
     @Autowired
     private UserMap userMap;
-    @Autowired
-    private PlayerDAO playerDAO;
     @Autowired
     private EmailDAO emailDAO;
     @Autowired
@@ -77,7 +75,7 @@ public class EmailService {
         notifyScene.notifyPlayer(player, "收件箱：\n");
         IntStream.range(0, player.getEmails().size()).forEach((index) -> {
             Email email = player.getEmails().get(index);
-            TPlayerInfo senderInfo = playerManager.getPlayerInfoMap().get(email.gettEmail().getSender());
+            TPlayerInfo senderInfo = playerManager.getPlayerInfoMap().get(email.gettEmail().getSender()).gettPlayerInfo();
             notifyScene.notifyPlayer(player, MessageFormat.format("{0}{1}来自{2}的邮件\n",
                     index, EmailState.values()[email.gettEmail().getState() - 1].getOut(), senderInfo.getName()));
 
@@ -89,7 +87,7 @@ public class EmailService {
      */
     public void showDetail(Player player, int index) {
         Email email = player.getEmails().get(index);
-        TPlayerInfo senderInfo = playerManager.getPlayerInfoMap().get(email.gettEmail().getSender());
+        TPlayerInfo senderInfo = playerManager.getPlayerInfoMap().get(email.gettEmail().getSender()).gettPlayerInfo();
         notifyScene.notifyPlayer(player, MessageFormat.format("来自  {0}:\n{1}\n礼物:\n",
                 senderInfo.getName(), email.gettEmail().getText()));
         email.getGifts().forEach((gift) ->

@@ -1,8 +1,10 @@
 package com.handler;
 
 import com.Cmd;
+import com.function.user.service.UserService;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Slf4j
 public class ControllerManager {
+    @Autowired
+    private UserService userService;
 
     private static ControllerManager self;
 
@@ -25,6 +29,7 @@ public class ControllerManager {
     @PostConstruct
     private void init() {
         self = this;
+        self.userService = this.userService;
     }
 
     public static void add(Cmd cmd, Controller contr) {
@@ -54,5 +59,9 @@ public class ControllerManager {
 
     public static ControllerManager getSelf() {
         return self;
+    }
+
+    public static UserService getUserService() {
+        return self.userService;
     }
 }

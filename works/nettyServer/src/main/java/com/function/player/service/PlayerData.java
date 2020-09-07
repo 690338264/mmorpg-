@@ -3,7 +3,6 @@ package com.function.player.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.function.bag.model.Bag;
-import com.function.bag.service.BagService;
 import com.function.email.model.Email;
 import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
@@ -37,9 +36,8 @@ import java.util.stream.IntStream;
  * @create 2020-08-06 19:45
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class PlayerData {
-    @Autowired
-    private BagService bagService;
     @Autowired
     private BagDAO bagDAO;
     @Autowired

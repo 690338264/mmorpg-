@@ -26,7 +26,7 @@ public class ItemEffect {
     @Autowired
     private PlayerData playerData;
 
-    private Map<Integer, IItemEffect> itemEffectMap = new HashMap<>();
+    private final Map<Integer, IItemEffect> itemEffectMap = new HashMap<>();
 
     {
         itemEffectMap.put(ItemType.MEDICINAL.getType(), this::drink);

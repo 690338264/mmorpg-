@@ -2,7 +2,6 @@ package com.server;
 
 import com.Cmd;
 import com.function.player.model.Player;
-import com.function.user.service.UserService;
 import com.handler.Controller;
 import com.handler.ControllerManager;
 import com.handler.LoggedInController;
@@ -10,11 +9,8 @@ import com.manager.ThreadPoolManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import util.Msg;
 
-import javax.annotation.PostConstruct;
 import java.net.InetAddress;
 
 /**
@@ -22,22 +18,10 @@ import java.net.InetAddress;
  */
 
 @Slf4j
-@Component
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
-    @Autowired
-    private UserService userService;
-
-    private static EchoServerHandler self;
-
-    @PostConstruct
-    private void init() {
-        self = this;
-        self.userService = this.userService;
-    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        ctx.writeAndFlush("server Received your message !\n");
         String cmd = msg.toString();
         String[] split = cmd.split(" ");
         String cmdIds = split[0];
@@ -50,12 +34,15 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         if (contr == null && controller == null) {
             ctx.writeAndFlush("指令错误！\n");
         } else {
-            Player player = self.userService.getPlayerByCtx(ctx);
-            if (self.userService.getUserByCtx(ctx) == null || player == null) {
+            Player player = ControllerManager.getUserService().getPlayerByCtx(ctx);
+            if (ControllerManager.getUserService().getPlayerByCtx(ctx) == null || player == null) {
                 if (cmdId > Cmd.PLAYER_LOG.getCmdId()) {
                     ctx.writeAndFlush("请先登录！\n");
                 } else {
-                    ThreadPoolManager.immediateThread(() -> contr.handle(ctx, message), ctx.hashCode());
+                    ThreadPoolManager.immediateThread(() -> {
+                        assert contr != null;
+                        contr.handle(ctx, message);
+                    }, ctx.hashCode());
                 }
             } else {
                 ThreadPoolManager.immediateThread(() -> controller.handle(player, message), player.getTPlayer().getRoleId().intValue());
@@ -71,10 +58,10 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) {
         //保存数据
-        Player player = self.userService.getPlayerByCtx(ctx);
-        self.userService.logout(player);
+        Player player = ControllerManager.getUserService().getPlayerByCtx(ctx);
+        ControllerManager.getUserService().logout(player);
         log.info("客户端已离线");
     }
 

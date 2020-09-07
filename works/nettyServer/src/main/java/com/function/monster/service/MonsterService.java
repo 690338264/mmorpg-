@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledFuture;
  * @author Catherine
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class MonsterService {
 
     @Autowired

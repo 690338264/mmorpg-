@@ -5,7 +5,6 @@ import com.function.item.model.Item;
 import com.function.item.service.ItemService;
 import com.function.player.model.Player;
 import com.function.scene.service.NotifyScene;
-import com.function.user.service.UserService;
 import com.handler.ControllerManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,8 +20,6 @@ import java.text.MessageFormat;
 @Component
 public class ItemController {
 
-    @Autowired
-    private UserService userService;
     @Autowired
     private ItemService itemService;
     @Autowired

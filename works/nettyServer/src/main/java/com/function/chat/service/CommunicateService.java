@@ -1,13 +1,10 @@
 package com.function.chat.service;
 
-import com.function.item.service.ItemService;
 import com.function.player.model.Player;
 import com.function.scene.manager.SceneManager;
 import com.function.scene.model.SceneType;
 import com.function.scene.service.NotifyScene;
 import com.function.user.map.PlayerMap;
-import com.function.user.map.UserMap;
-import com.jpa.dao.PlayerDAO;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,15 +20,9 @@ public class CommunicateService {
     @Autowired
     private PlayerMap playerMap;
     @Autowired
-    private UserMap userMap;
-    @Autowired
     private SceneManager sceneManager;
     @Autowired
-    private PlayerDAO playerDAO;
-    @Autowired
     private NotifyScene notifyScene;
-    @Autowired
-    private ItemService itemService;
 
     /**
      * 玩家私聊

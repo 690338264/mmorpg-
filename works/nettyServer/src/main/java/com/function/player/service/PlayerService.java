@@ -18,7 +18,6 @@ import com.function.scene.service.NotifyScene;
 import com.function.skill.model.Skill;
 import com.function.user.map.UserMap;
 import com.jpa.dao.BagDAO;
-import com.jpa.dao.EmailDAO;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.dao.PlayerInfoDAO;
 import com.jpa.entity.TBag;
@@ -38,6 +37,7 @@ import java.util.concurrent.ScheduledFuture;
  * @author Catherine
  */
 @Component
+@SuppressWarnings("rawtypes")
 public class PlayerService {
 
     @Autowired
@@ -58,8 +58,6 @@ public class PlayerService {
     private PlayerDAO playerDAO;
     @Autowired
     private BagDAO bagDAO;
-    @Autowired
-    private EmailDAO emailDAO;
     @Autowired
     private UserMap userMap;
     @Autowired

@@ -18,7 +18,7 @@ public class OccResource {
     @Autowired
     private ExcelManager excelManager;
 
-    private static Map<Integer, OccExcel> occupationMap = new HashMap<>();
+    private static final Map<Integer, OccExcel> occupationMap = new HashMap<>();
 
     @PostConstruct
     private void init() {
@@ -27,8 +27,8 @@ public class OccResource {
             OccExcel occExcel = (OccExcel) excelManager.getMap().get(ClassName.Occ.name()).get(i);
             occupationMap.put(occExcel.getId(), occExcel);
             String[] occSkill = occExcel.getSkill().split(",");
-            for (int j = 0; j < occSkill.length; j++) {
-                int skillId = Integer.parseInt(occSkill[j]);
+            for (String s : occSkill) {
+                int skillId = Integer.parseInt(s);
                 occExcel.getSkillId().add(skillId);
             }
         }

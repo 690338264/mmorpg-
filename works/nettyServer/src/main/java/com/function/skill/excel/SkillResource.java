@@ -1,6 +1,5 @@
 package com.function.skill.excel;
 
-import com.function.buff.excel.BuffResource;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,10 +18,7 @@ public class SkillResource {
     @Autowired
     private ExcelManager excelManager;
 
-    @Autowired
-    private BuffResource buffResource;
-
-    private static Map<Integer, SkillExcel> skillMap = new HashMap<>();
+    private static final Map<Integer, SkillExcel> skillMap = new HashMap<>();
 
     @PostConstruct
     private void init() {
@@ -32,7 +28,7 @@ public class SkillResource {
             skillMap.put(skillExcel.getId(), skillExcel);
             if (skillExcel.getBuff() != null) {
                 String[] buffs = skillExcel.getBuff().split(",");
-                Arrays.asList(buffs).stream().forEach(buff -> skillExcel.getBuffId().add(Integer.parseInt(buff)));
+                Arrays.asList(buffs).forEach(buff -> skillExcel.getBuffId().add(Integer.parseInt(buff)));
             }
         }
     }

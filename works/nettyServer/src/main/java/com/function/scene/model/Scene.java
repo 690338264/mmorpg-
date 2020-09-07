@@ -1,6 +1,5 @@
 package com.function.scene.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.function.monster.model.Monster;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
@@ -16,7 +15,7 @@ import java.util.concurrent.ScheduledFuture;
  */
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
+@SuppressWarnings("rawtypes")
 public class Scene {
 
     private int id;

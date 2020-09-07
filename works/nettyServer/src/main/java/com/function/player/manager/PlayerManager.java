@@ -26,7 +26,7 @@ public class PlayerManager {
     @Autowired
     private PlayerInfoDAO playerInfoDAO;
 
-    private Map<Long, PlayerInfo> playerInfoMap = new ConcurrentHashMap<>();
+    private final Map<Long, PlayerInfo> playerInfoMap = new ConcurrentHashMap<>();
 
     private static final long OUTLINE_TIME = 3600 * 60 * 24;
 
@@ -34,10 +34,6 @@ public class PlayerManager {
 
     public Map<Long, PlayerInfo> getPlayerInfoMap() {
         return playerInfoMap;
-    }
-
-    public void setPlayerInfoMap(Map<Long, PlayerInfo> playerInfoMap) {
-        this.playerInfoMap = playerInfoMap;
     }
 
     public TPlayer newPlayer(String roleName, Integer roleType, Long userId) {

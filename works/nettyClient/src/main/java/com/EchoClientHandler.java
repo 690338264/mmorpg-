@@ -14,7 +14,7 @@ public class EchoClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext cxt, Object msg) {
         //记录已接受消息的转储
-        System.out.println("Server say:" + msg.toString());
+        System.out.println(msg.toString());
     }
 
     /**

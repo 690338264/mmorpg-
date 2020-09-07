@@ -3,7 +3,6 @@ package com.function.scene.controller;
 import com.Cmd;
 import com.function.player.model.Player;
 import com.function.scene.service.SceneService;
-import com.function.user.service.UserService;
 import com.handler.ControllerManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +24,6 @@ public class SceneController {
 
     @Autowired
     private SceneService sceneService;
-    @Autowired
-    private UserService userService;
 
     private void getNeighbor(Player player, Msg msg) {
         sceneService.getNeighbor(player);

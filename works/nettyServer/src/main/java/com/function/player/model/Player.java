@@ -10,7 +10,7 @@ import com.function.trade.model.TradeBoard;
 import com.jpa.entity.TPlayer;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
-import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -19,9 +19,10 @@ import java.util.*;
 /**
  * @author Catherine
  */
+
 @Data
-@ToString(exclude = {"channelHandlerContext", ""})
 @Slf4j
+@EqualsAndHashCode(callSuper = true)
 public class Player extends SceneObject {
     private TPlayer tPlayer;
     private ChannelHandlerContext channelHandlerContext;
@@ -71,4 +72,5 @@ public class Player extends SceneObject {
     public int getSceneId() {
         return nowScene.getSceneId();
     }
+
 }

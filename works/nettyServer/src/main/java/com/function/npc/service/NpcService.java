@@ -22,6 +22,7 @@ public class NpcService {
             notifyScene.notifyPlayer(player, talk);
         } else {
             StringBuilder noNpc = new StringBuilder("目标指向错误！\n");
+            notifyScene.notifyPlayer(player, noNpc);
         }
     }
 }

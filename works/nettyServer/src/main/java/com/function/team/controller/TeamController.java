@@ -3,7 +3,6 @@ package com.function.team.controller;
 import com.Cmd;
 import com.function.player.model.Player;
 import com.function.team.service.TeamService;
-import com.function.user.service.UserService;
 import com.handler.ControllerManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,8 +17,6 @@ import util.ParamNumCheck;
 public class TeamController {
     @Autowired
     private TeamService teamService;
-    @Autowired
-    private UserService userService;
 
     {
         ControllerManager.add(Cmd.LIST_TEAM, this::listTeams);
