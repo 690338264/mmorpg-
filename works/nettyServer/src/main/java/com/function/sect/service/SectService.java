@@ -49,6 +49,9 @@ public class SectService {
 
     private static final int MAX_SIZE = 60;
 
+    /**
+     * 所有工会
+     */
     public void listSect(Player player) {
         StringBuilder content = new StringBuilder();
         sectManager.getSectMap().forEach((id, sect) ->
@@ -74,9 +77,11 @@ public class SectService {
         sectDAO.save(tSect);
         tSect = sectDAO.findByName(name);
         Sect sect = new Sect(tSect);
+        //公会数据持久化
         sect.getMembers().add(player.getTPlayer().getRoleId());
         sectManager.getSectMap().put(tSect.getSectId(), sect);
         sectManager.updateSect(sect);
+        //人物数据持久化
         player.getTPlayer().setSectId(tSect.getSectId());
         player.getTPlayer().setSectPosition(SectPosition.PRESIDENT.getType());
         PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(player.getTPlayer().getRoleId());
@@ -147,9 +152,11 @@ public class SectService {
             notifyScene.notifyPlayer(player, "玩家加入失败\n");
             return;
         }
+        //更新工会信息
         sect.getJoinRequest().remove(playerId);
         sect.getMembers().add(playerId);
         sectManager.updateSect(sect);
+        //更新人物信息  刚入会默认普通会员
         request.getTPlayer().setSectId(sect.gettSect().getSectId());
         request.getTPlayer().setSectPosition(SectPosition.NORMAL_MEMBER.getType());
         PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(playerId);
@@ -207,6 +214,7 @@ public class SectService {
         if (sect == null) {
             return;
         }
+        //会长要先转让公会
         if (player.getTPlayer().getSectPosition() == SectPosition.PRESIDENT.getType()) {
             notifyScene.notifyPlayer(player, "你是会长还不能退出\n");
             return;
@@ -226,6 +234,7 @@ public class SectService {
             notifyScene.notifyPlayer(player, "没有该权利\n");
             return;
         }
+        //只能有一个会长
         if (position == SectPosition.PRESIDENT.getType()) {
             player.getTPlayer().setSectPosition(SectPosition.VICE_PRESIDENT.getType());
             playerData.updatePlayer(player);
@@ -233,6 +242,7 @@ public class SectService {
             playerInfo.gettPlayerInfo().setSectPosition(SectPosition.VICE_PRESIDENT.getType());
             playerData.updatePlayerInfo(playerInfo);
         }
+        //对被更改的成员信息进行持久化
         TPlayer member = userMap.getPlayers().containsKey(playerId) ? userMap.getPlayers(playerId).getTPlayer() : playerDAO.findByRoleId(playerId);
         PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(playerId);
         playerInfo.gettPlayerInfo().setSectPosition(position);
@@ -268,18 +278,23 @@ public class SectService {
      * 向公会背包格子中放入物品
      */
     public boolean putItem(Item item, Sect sect) {
+        if (item.getNum() < 0) {
+            return false;
+        }
+        if (item.getNum() == 0) {
+            return true;
+        }
         Map<Integer, Item> itemMap = sect.getWareHouse();
         for (int index = 0; index < MAX_SIZE; index++) {
             Item boxItem = itemMap.get(index);
             if (boxItem != null) {
-                //可堆叠
                 if (item.getId().equals(boxItem.getId()) && boxItem.getNum() < boxItem.getItemById().getMaxNum()) {
                     int num = boxItem.getNum();
                     int max = item.getItemById().getMaxNum();
                     boxItem.setNum(Math.max(item.getNum() + num, max));
                     if (boxItem.getNum() == max) {
                         item.setNum(item.getNum() - max + num);
-                        putItem(item, sect);
+                        return putItem(item, sect);
                     }
                     return true;
                 }

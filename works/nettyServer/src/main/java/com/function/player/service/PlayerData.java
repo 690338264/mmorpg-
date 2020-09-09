@@ -151,9 +151,10 @@ public class PlayerData {
             player.toJson();
             playerDAO.save(player.getTPlayer());
             player.getTaskMap().remove(SceneObjectTask.UPDATE_PLAYER);
-
         }, player.getTPlayer().getRoleId().intValue());
-        player.getTaskMap().putIfAbsent(SceneObjectTask.UPDATE_PLAYER, update);
+        if (update != null) {
+            player.getTaskMap().put(SceneObjectTask.UPDATE_PLAYER, update);
+        }
     }
 
     public void updatePlayerInfo(PlayerInfo playerInfo) {
@@ -163,5 +164,4 @@ public class PlayerData {
         }, playerInfo.gettPlayerInfo().getPlayerId().intValue());
         playerInfo.setUpdate(update);
     }
-
 }

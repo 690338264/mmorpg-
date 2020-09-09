@@ -1,6 +1,7 @@
 package com.function.player.model;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.function.bag.model.Bag;
 import com.function.email.model.Email;
 import com.function.item.model.Item;
@@ -30,10 +31,12 @@ public class Player extends SceneObject {
     /**
      * 玩家当前场景
      */
+    @JSONField(serialize = false)
     private Scene nowScene;
     /**
      * 玩家所在副本
      */
+    @JSONField(serialize = false)
     private Instance instance;
     /**
      * 玩家背包
@@ -57,11 +60,11 @@ public class Player extends SceneObject {
      * 是否已加载好角色
      */
     private boolean init;
-
+    @JSONField(serialize = false)
     private TradeBoard tradeBoard;
-
+    @JSONField(serialize = false)
     private Map<Integer, Item> equipMap = new HashMap<>();
-
+    @JSONField(serialize = false)
     private List<Email> emails = Collections.synchronizedList(new ArrayList<>());
 
     @Override

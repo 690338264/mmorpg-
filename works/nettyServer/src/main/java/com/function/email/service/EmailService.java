@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.function.email.model.Email;
 import com.function.email.model.EmailState;
 import com.function.item.model.Item;
-import com.function.item.model.ItemType;
 import com.function.item.service.ItemService;
 import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
@@ -61,11 +60,7 @@ public class EmailService {
             if (!itemService.removeItem(item.getItemId(), indexs.get(i), num.get(i), player)) {
                 return;
             }
-            if (item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
-                email.getGifts().add(itemService.copyItem(item, num.get(i)));
-            } else {
-                email.getGifts().add(item);
-            }
+            email.getGifts().add(itemService.takeOutItem(item, num.get(i)));
         });
         toReceiver(playerId, email);
     }

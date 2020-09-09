@@ -119,6 +119,16 @@ public enum Cmd {
     QUIT_SECT("quit_sect", 10207),
     //列出所有工会
     LIST_SECT("list_sect", 10208),
+    //列出一口价拍卖
+    LIST_FIXED("list_fixed", 10210),
+    //列出竞价拍卖
+    LIST_COMPETITION("list_competition", 10211),
+    //创建拍卖
+    CREATE_AUCTION("create_auction", 10212),
+    //购买一口价
+    BUY_FIXED("buy_fixed", 10213),
+    //参与竞拍
+    JOIN_COMPETITION("buy_competition", 10214),
     //查看人物状态属性
     PLAYER_STATE("player_state", 8888),
 
@@ -129,8 +139,8 @@ public enum Cmd {
 
     UNKNOWN("unknown", 9999);
 
-    private String cmd;
-    private Integer cmdId;
+    private final String cmd;
+    private final Integer cmdId;
 
     private static final Map<Integer, Cmd> id_Map = new HashMap<>();
     private static final Map<String, Cmd> COMMAND_MAP = new HashMap<>();

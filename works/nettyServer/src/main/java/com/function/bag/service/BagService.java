@@ -37,7 +37,9 @@ public class BagService {
             bagDAO.save(player.getBag().getTBag());
             player.getTaskMap().remove(SceneObjectTask.UPDATE_BAG);
         }, player.getTPlayer().getRoleId().intValue());
-        player.getTaskMap().putIfAbsent(SceneObjectTask.UPDATE_BAG, update);
+        if (update != null) {
+            player.getTaskMap().putIfAbsent(SceneObjectTask.UPDATE_BAG, update);
+        }
     }
 
     /**

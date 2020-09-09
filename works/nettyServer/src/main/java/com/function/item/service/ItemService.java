@@ -35,7 +35,14 @@ public class ItemService {
      * 移除背包中的物品
      */
     public boolean removeItem(Long id, int index, int num, Player player) {
-
+        if (!player.getBag().getItemMap().containsKey(index)) {
+            notifyScene.notifyPlayer(player, "没有该物品\n");
+            return false;
+        }
+        if (num < 1) {
+            notifyScene.notifyPlayer(player, "数字非法！\n");
+            return false;
+        }
         if (!player.getBag().getItemMap().get(index).getItemId().equals(id)) {
             notifyScene.notifyPlayer(player, "失败！\n");
             return false;
@@ -176,6 +183,18 @@ public class ItemService {
             }
             iterator.remove();
         }
+    }
+
+    /**
+     * 从背包中取出
+     */
+    public Item takeOutItem(Item item, int num) {
+        if (item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
+            return copyItem(item, num);
+        } else {
+            return item;
+        }
+
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.function.scene.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.function.player.model.SceneObjectTask;
 import com.function.skill.model.Skill;
 
@@ -37,19 +38,22 @@ public class SceneObject {
      * 所在地
      */
     private int sceneId;
-
+    @JSONField(serialize = false)
     ReentrantLock lock = new ReentrantLock();
     /**
      * 线程任务列表
      */
+    @JSONField(serialize = false)
     private final Map<SceneObjectTask, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
     /**
      * buff
      */
+    @JSONField(serialize = false)
     private final Map<Integer, ScheduledFuture> buffs = new ConcurrentHashMap<>();
     /**
      * 可用技能
      */
+    @JSONField(serialize = false)
     private final Map<Integer, Skill> canUseSkill = new HashMap<>();
 
     public String getName() {
