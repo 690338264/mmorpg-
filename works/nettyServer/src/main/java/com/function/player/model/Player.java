@@ -10,12 +10,14 @@ import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
 import com.function.trade.model.TradeBoard;
 import com.jpa.entity.TPlayer;
+import com.jpa.entity.TPlayerInfo;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -66,6 +68,10 @@ public class Player extends SceneObject {
     private Map<Integer, Item> equipMap = new HashMap<>();
     @JSONField(serialize = false)
     private List<Email> emails = Collections.synchronizedList(new ArrayList<>());
+    @JSONField(serialize = false)
+    private Map<Long, TPlayerInfo> friend = new HashMap<>();
+    @JSONField(serialize = false)
+    private Map<Long, TPlayerInfo> friendRequest = new ConcurrentHashMap<>();
 
     @Override
     public String getName() {
@@ -80,6 +86,8 @@ public class Player extends SceneObject {
     public void toJson() {
         String json = JSON.toJSONString(equipMap);
         tPlayer.setEquip(json);
+        tPlayer.setFriend(JSON.toJSONString(friend));
+        tPlayer.setFriendRequest(JSON.toJSONString(friendRequest));
     }
 
 }

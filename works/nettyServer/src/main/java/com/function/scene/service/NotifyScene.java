@@ -42,12 +42,16 @@ public class NotifyScene {
     }
 
     public void notifyPlayer(Player player, String notify) {
-        player.getChannelHandlerContext().writeAndFlush(notify);
+        if (player.getChannelHandlerContext() != null) {
+            player.getChannelHandlerContext().writeAndFlush(notify);
+        }
 
     }
 
     public void notifyPlayer(Player player, StringBuilder notify) {
-        player.getChannelHandlerContext().writeAndFlush(notify);
+        if (player.getChannelHandlerContext() != null) {
+            player.getChannelHandlerContext().writeAndFlush(notify);
+        }
 
     }
 

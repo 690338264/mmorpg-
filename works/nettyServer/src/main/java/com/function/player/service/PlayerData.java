@@ -22,6 +22,7 @@ import com.jpa.dao.PlayerDAO;
 import com.jpa.dao.PlayerInfoDAO;
 import com.jpa.entity.TBag;
 import com.jpa.entity.TEmail;
+import com.jpa.entity.TPlayerInfo;
 import com.jpa.manager.JpaManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -118,6 +119,16 @@ public class PlayerData {
     }
 
     /**
+     * 初始化好友
+     */
+    public void initFriend(Player player) {
+        player.setFriend(JSON.parseObject(player.getTPlayer().getFriend(), new TypeReference<Map<Long, TPlayerInfo>>() {
+        }));
+        player.setFriendRequest(JSON.parseObject(player.getTPlayer().getFriendRequest(), new TypeReference<Map<Long, TPlayerInfo>>() {
+        }));
+    }
+
+    /**
      * 初始化玩家
      */
     public void initPlayer(Player player) {
@@ -127,6 +138,7 @@ public class PlayerData {
         initBag(player);
         initAttribute(player);
         initEmail(player);
+        initFriend(player);
     }
 
     /**

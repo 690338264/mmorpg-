@@ -129,6 +129,14 @@ public enum Cmd {
     BUY_FIXED("buy_fixed", 10213),
     //参与竞拍
     JOIN_COMPETITION("buy_competition", 10214),
+    //好友列表
+    LIST_FRIEND("list_friend", 10220),
+    //添加好友
+    ADD_FRIEND("add_friend", 10221),
+    //接受好友申请
+    ACCEPT_FRIEND("accept_friend", 10222),
+    //拒绝好友申请
+    REFUSE_FRIEND("refuse_friend", 10223),
     //查看人物状态属性
     PLAYER_STATE("player_state", 8888),
 

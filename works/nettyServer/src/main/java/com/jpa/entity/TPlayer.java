@@ -31,8 +31,8 @@ public class TPlayer {
     @Column(name = "money")
     private int money;
 
-    @Column(name = "friend")
-    private String friend;
+    @Column(name = "friend", columnDefinition = "TEXT")
+    private String friend = "{}";
 
     @Id
     @GeneratedValue
@@ -47,6 +47,9 @@ public class TPlayer {
 
     @Column(name = "sectPosition")
     private Integer sectPosition;
+
+    @Column(name = "friendRequest")
+    private String friendRequest = "{}";
 
     public Long getUserId() {
         return userId;
@@ -144,6 +147,14 @@ public class TPlayer {
         this.sectPosition = sectPosition;
     }
 
+    public String getFriendRequest() {
+        return friendRequest;
+    }
+
+    public void setFriendRequest(String friendRequest) {
+        this.friendRequest = friendRequest;
+    }
+
     @Override
     public String toString() {
         return "TPlayer{" +
@@ -159,6 +170,7 @@ public class TPlayer {
                 ", level=" + level +
                 ", sectId=" + sectId +
                 ", sectPosition=" + sectPosition +
+                ", friendRequest='" + friendRequest + '\'' +
                 '}';
     }
 }
