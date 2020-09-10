@@ -5,6 +5,7 @@ import com.function.player.model.Player;
 import com.function.user.model.User;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
+import com.jpa.entity.TPlayer;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,13 +49,13 @@ public class UserController {
 
     private void playerList(ChannelHandlerContext ctx, Msg msg) {
         User user = userservice.getUserByCtx(ctx);
-        Map<Long, Player> playerMap = userservice.listPlayer(user.getId());
+        Map<Long, TPlayer> playerMap = userservice.listPlayer(user.getId());
         if (playerMap.size() == 0) {
             ctx.writeAndFlush("请先创建角色\n");
         } else {
             for (Long playerId : playerMap.keySet()) {
                 ctx.writeAndFlush("角色id：" + playerId + '\n');
-                ctx.writeAndFlush("角色名称：" + playerMap.get(playerId).getTPlayer().getName() + '\n');
+                ctx.writeAndFlush("角色名称：" + playerMap.get(playerId).getName() + '\n');
             }
             ctx.writeAndFlush("---请选择您要登陆的角色---" + '\n');
         }

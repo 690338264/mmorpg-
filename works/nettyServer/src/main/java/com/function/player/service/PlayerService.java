@@ -81,10 +81,7 @@ public class PlayerService {
         if (player != null) {
             TBag bag = bagManager.newBag(player);
             bagDAO.save(bag);
-            Player p = new Player();
-            p.setTPlayer(player);
-            p.setInit(false);
-            userMap.getPlayerMap(userId).put(player.getRoleId(), p);
+            userMap.getUserPlayerMap(userId).put(player.getRoleId(), player);
             TPlayerInfo tplayerInfo = new TPlayerInfo(player.getRoleId(), player.getName(), player.getOccupation());
             PlayerInfo playerInfo = new PlayerInfo(tplayerInfo);
             playerManager.getPlayerInfoMap().put(player.getRoleId(), playerInfo);

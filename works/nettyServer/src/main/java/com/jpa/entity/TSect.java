@@ -7,13 +7,12 @@ import javax.persistence.*;
  * @create 2020-09-05 00:48
  */
 @Entity
-@Table(name = "sect")
+@Table(name = "sect", uniqueConstraints = {@UniqueConstraint(columnNames = "name")})
 public class TSect {
     @Id
     @GeneratedValue
     @Column(name = "sectId")
     private Long sectId;
-
     @Column(name = "name")
     private String name;
 

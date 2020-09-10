@@ -58,18 +58,19 @@ public class Player extends SceneObject {
     private Integer def;
     private Integer speed;
     private int levelUp = 2000;
-    /**
-     * 是否已加载好角色
-     */
-    private boolean init;
+
     @JSONField(serialize = false)
     private TradeBoard tradeBoard;
+
     @JSONField(serialize = false)
     private Map<Integer, Item> equipMap = new HashMap<>();
+
     @JSONField(serialize = false)
     private List<Email> emails = Collections.synchronizedList(new ArrayList<>());
+
     @JSONField(serialize = false)
     private Map<Long, TPlayerInfo> friend = new HashMap<>();
+
     @JSONField(serialize = false)
     private Map<Long, TPlayerInfo> friendRequest = new ConcurrentHashMap<>();
 

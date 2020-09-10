@@ -49,6 +49,7 @@ public class SectService {
 
     private static final int MAX_SIZE = 60;
 
+
     /**
      * 所有工会
      */
@@ -69,13 +70,17 @@ public class SectService {
             notifyScene.notifyPlayer(player, "您已加入公会\n");
             return;
         }
-        if (sectDAO.findByName(name) != null) {
-            notifyScene.notifyPlayer(player, "创建失败！公会名重复\n");
+//        if (sectDAO.findByName(name) != null) {
+//            notifyScene.notifyPlayer(player, "创建失败！公会名重复\n");
+//            return;
+//        }
+        TSect tSect = new TSect(name);
+        try {
+            sectDAO.saveAndFlush(tSect);
+        } catch (Exception e) {
+            notifyScene.notifyPlayer(player, "会名重复\n");
             return;
         }
-        TSect tSect = new TSect(name);
-        sectDAO.save(tSect);
-        tSect = sectDAO.findByName(name);
         Sect sect = new Sect(tSect);
         //公会数据持久化
         sect.getMembers().add(player.getTPlayer().getRoleId());

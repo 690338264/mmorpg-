@@ -2,6 +2,7 @@ package com.function.user.map;
 
 import com.function.player.model.Player;
 import com.function.user.model.User;
+import com.jpa.entity.TPlayer;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Component;
 
@@ -13,13 +14,13 @@ import java.util.Map;
  */
 @Component
 public class UserMap {
-    private Map<ChannelHandlerContext, User> userCtxMap = new HashMap<>();
+    private final Map<ChannelHandlerContext, User> userCtxMap = new HashMap<>();
 
-    private Map<Long, User> userMap = new HashMap<>();
+    private final Map<Long, User> userMap = new HashMap<>();
 
-    private Map<Long, Player> players = new HashMap<>();
+    private final Map<Long, Player> players = new HashMap<>();
 
-    private Map<Long, Map<Long, Player>> playerMap = new HashMap<>();
+    private final Map<Long, Map<Long, TPlayer>> userPlayerMap = new HashMap<>();
 
     public void putUserMap(Long userId, User user) {
         userMap.put(userId, user);
@@ -29,17 +30,16 @@ public class UserMap {
         return userMap.get(userId);
     }
 
-    public void putPlayerMap(Long userId, Map<Long, Player> map) {
-        playerMap.put(userId, map);
-        players.putAll(map);
+    public void putUserPlayerMap(Long userId, Map<Long, TPlayer> map) {
+        userPlayerMap.put(userId, map);
     }
 
     public Player getPlayers(Long playerId) {
         return players.get(playerId);
     }
 
-    public Map<Long, Player> getPlayerMap(Long userId) {
-        return playerMap.get(userId);
+    public Map<Long, TPlayer> getUserPlayerMap(Long userId) {
+        return userPlayerMap.get(userId);
     }
 
     public void putUserctx(ChannelHandlerContext ctx, User user) {

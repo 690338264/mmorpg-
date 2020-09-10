@@ -14,6 +14,7 @@ import com.function.user.map.UserMap;
 import com.function.user.model.User;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.dao.UserDAO;
+import com.jpa.entity.TPlayer;
 import com.jpa.entity.TUser;
 import com.manager.ThreadPoolManager;
 import io.netty.channel.ChannelHandlerContext;
@@ -78,6 +79,15 @@ public class UserService {
      * 用户登录
      */
     public boolean login(long userId, String psw, ChannelHandlerContext ctx) {
+        if (userMap.getUserById(userId) != null) {
+            User user = userMap.getUserById(userId);
+            if (user.getPsw().equals(psw)) {
+                userMap.putUserctx(ctx, user);
+                return true;
+            } else {
+                return false;
+            }
+        }
         User user = new User();
         TUser logUser = usersDAO.findByIdAndPsw(userId, psw);
         if (logUser == null) {
@@ -86,14 +96,10 @@ public class UserService {
         BeanUtils.copyProperties(logUser, user);
 
         //查询用户角色
-        Map<Long, Player> playerMap = new HashMap<>();
-        playerDAO.findByUserId(userId).forEach(player -> {
-            Player p = new Player();
-            p.setTPlayer(player);
-            p.setInit(false);
-            playerMap.put(player.getRoleId(), p);
-        });
-        userMap.putPlayerMap(userId, playerMap);
+        Map<Long, TPlayer> playerMap = new HashMap<>();
+        playerDAO.findByUserId(userId).forEach(player ->
+                playerMap.put(player.getRoleId(), player));
+        userMap.putUserPlayerMap(userId, playerMap);
 
         userMap.putUserctx(ctx, user);
         userMap.putUserMap(userId, user);
@@ -103,8 +109,8 @@ public class UserService {
     /**
      * 查看角色列表
      */
-    public Map<Long, Player> listPlayer(Long id) {
-        return userMap.getPlayerMap(id);
+    public Map<Long, TPlayer> listPlayer(Long id) {
+        return userMap.getUserPlayerMap(id);
     }
 
     /**
@@ -112,19 +118,16 @@ public class UserService {
      */
     public void logPlayer(Long playerId, ChannelHandlerContext ctx) {
         User user = getUserByCtx(ctx);
-        Player player = userMap.getPlayerMap(user.getId()).get(playerId);
-        if (player == null) {
+
+        TPlayer tplayer = userMap.getUserPlayerMap(user.getId()).get(playerId);
+        if (tplayer == null) {
             ctx.writeAndFlush("该角色不存在！\n");
             return;
         }
-        Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(player.getTPlayer().getLoc());
+        Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(tplayer.getLoc());
+        Player player = getPlayer(tplayer, playerId, scene);
         scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).put(playerId, player);
-        //加载角色信息
-        if (!player.isInit()) {
-            player.setNowScene(scene);
-            playerData.initPlayer(player);
-            player.setInit(true);
-        }
+
         player.setChannelHandlerContext(ctx);
         playerMap.putPlayerCtx(ctx, player);
         playerMap.getOfflinePlayer().remove(playerId);
@@ -166,6 +169,19 @@ public class UserService {
         scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).remove(player.getTPlayer().getRoleId());
         player.setChannelHandlerContext(null);
         playerMap.getOfflinePlayer().put(player.getTPlayer().getRoleId(), System.currentTimeMillis());
+    }
+
+    public Player getPlayer(TPlayer tPlayer, long playerId, Scene scene) {
+        if (userMap.getPlayers(playerId) == null) {
+            Player player = new Player();
+            player.setTPlayer(tPlayer);
+            player.setNowScene(scene);
+            playerData.initPlayer(player);
+            userMap.getPlayers().put(playerId, player);
+            return player;
+        } else {
+            return userMap.getPlayers(playerId);
+        }
     }
 
     public User getUserByCtx(ChannelHandlerContext ctx) {
