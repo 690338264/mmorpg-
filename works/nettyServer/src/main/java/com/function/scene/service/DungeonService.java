@@ -4,7 +4,7 @@ import com.function.player.model.Player;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
 import com.function.scene.manager.SceneManager;
-import com.function.scene.model.Instance;
+import com.function.scene.model.Dungeon;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneType;
 import com.function.team.manager.TeamManager;
@@ -20,7 +20,7 @@ import java.util.Map;
  * @create 2020-08-28 18:23
  */
 @Component
-public class InstanceService {
+public class DungeonService {
     @Autowired
     private NotifyScene notifyScene;
     @Autowired
@@ -52,14 +52,14 @@ public class InstanceService {
      * 个人副本创建
      */
     public void personalCreate(Player player, int id) {
-        if (player.getTeamId() != null || player.getInstance() != null) {
+        if (player.getTeamId() != null || player.getDungeon() != null) {
             notifyScene.notifyPlayer(player, "副本创建失败!\n");
             return;
         }
         int type = SceneType.PRIVATE.getType();
-        Instance instance = createInstance(type, id);
-        instance.getPlayers().add(player);
-        player.setInstance(instance);
+        Dungeon dungeon = createInstance(type, id);
+        dungeon.getPlayers().add(player);
+        player.setDungeon(dungeon);
         notifyScene.notifyPlayer(player, "副本创建成功，请尽快进入副本!\n");
     }
 
@@ -68,16 +68,16 @@ public class InstanceService {
      */
     public void teamCreate(Player player, int id) {
         Team team = teamManager.getTeamCache().get(player.getTeamId());
-        if (player.getTeamId() == null || !team.getLeaderId().equals(player.getTPlayer().getRoleId()) || player.getInstance() != null) {
+        if (player.getTeamId() == null || !team.getLeaderId().equals(player.getTPlayer().getRoleId()) || player.getDungeon() != null) {
             notifyScene.notifyPlayer(player, "创建失败!\n");
             return;
         }
         int type = SceneType.TEAM.getType();
-        Instance instance = createInstance(type, id);
+        Dungeon dungeon = createInstance(type, id);
         team.getMembers().forEach((k, v) -> {
             Player teammate = team.getMembers().get(k);
-            instance.getPlayers().add(teammate);
-            teammate.setInstance(instance);
+            dungeon.getPlayers().add(teammate);
+            teammate.setDungeon(dungeon);
             notifyScene.notifyPlayer(teammate, "副本创建成功,请尽快进入副本\n");
         });
     }
@@ -85,23 +85,23 @@ public class InstanceService {
     /**
      * 副本场景创建
      */
-    public Instance createInstance(int type, int id) {
+    public Dungeon createInstance(int type, int id) {
         Scene scene = sceneManager.createScene(type, id);
-        Instance instance = new Instance(scene);
-        nextBoss(instance);
-        instance.setCreateTime(System.currentTimeMillis());
-        sceneManager.instanceStart(scene.getId(), instance);
-        return instance;
+        Dungeon dungeon = new Dungeon(scene);
+        nextBoss(dungeon);
+        dungeon.setCreateTime(System.currentTimeMillis());
+        sceneManager.instanceStart(scene.getId(), dungeon);
+        return dungeon;
     }
 
     /**
      * 按顺序初始化怪物
      */
-    public boolean nextBoss(Instance instance) {
-        if (!sceneManager.createMonster(instance.getScene(), instance.getNextBoss())) {
+    public boolean nextBoss(Dungeon dungeon) {
+        if (!sceneManager.createMonster(dungeon.getScene(), dungeon.getNextBoss())) {
             return false;
         } else {
-            instance.setNextBoss(instance.getNextBoss() + 1);
+            dungeon.setNextBoss(dungeon.getNextBoss() + 1);
             return true;
         }
 
@@ -111,7 +111,7 @@ public class InstanceService {
      * 进入副本
      */
     public void intoInstance(Player player) {
-        Scene scene = player.getInstance().getScene();
+        Scene scene = player.getDungeon().getScene();
         sceneService.addPlayer(scene.getType(), scene.getId(), player);
         notifyScene.notifyScene(scene, MessageFormat.format("[{0}]进入副本\n", player.getTPlayer().getName()));
     }
@@ -119,13 +119,14 @@ public class InstanceService {
     /**
      * 副本销毁
      */
-    public void destroy(Instance instance) {
-        instance.getPlayers().forEach(player -> {
-            player.setInstance(null);
+    public void destroy(Dungeon dungeon) {
+        dungeon.getPlayers().forEach(player -> {
+            player.setDungeon(null);
             sceneService.addPlayer(SceneType.PUBLIC.getType(), player.getTPlayer().getLoc(), player);
             notifyScene.notifyPlayer(player, "您已退出副本!\n");
         });
-        instance.getPlayers().clear();
-        instance.getScene().getHeartBeat().cancel(true);
+        dungeon.getPlayers().clear();
+        dungeon.getScene().getHeartBeat().cancel(true);
+        sceneManager.get(dungeon.getScene().getType()).remove(dungeon.getScene().getId());
     }
 }

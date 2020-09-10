@@ -5,7 +5,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.function.bag.model.Bag;
 import com.function.email.model.Email;
 import com.function.item.model.Item;
-import com.function.scene.model.Instance;
+import com.function.scene.model.Dungeon;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
 import com.function.trade.model.TradeBoard;
@@ -39,7 +39,7 @@ public class Player extends SceneObject {
      * 玩家所在副本
      */
     @JSONField(serialize = false)
-    private Instance instance;
+    private Dungeon dungeon;
     /**
      * 玩家背包
      */

@@ -9,8 +9,8 @@ import java.util.List;
  * @author Catherine
  * @create 2020-08-31 10:19
  */
-public class Instance {
-    private Scene scene;
+public class Dungeon {
+    private final Scene scene;
     /**
      * 可以进入的玩家
      */
@@ -18,9 +18,9 @@ public class Instance {
 
     private int nextBoss;
 
-    private Long createTime;
+    private long createTime;
 
-    public Instance(Scene scene) {
+    public Dungeon(Scene scene) {
         this.scene = scene;
     }
 

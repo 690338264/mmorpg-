@@ -5,11 +5,11 @@ import com.function.monster.service.MonsterService;
 import com.function.npc.excel.NpcResource;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
-import com.function.scene.model.Instance;
+import com.function.scene.model.Dungeon;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObjectType;
 import com.function.scene.model.SceneType;
-import com.function.scene.service.InstanceService;
+import com.function.scene.service.DungeonService;
 import com.function.scene.service.NotifyScene;
 import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class SceneManager {
     @Autowired
     private MonsterService monsterService;
     @Autowired
-    private InstanceService instanceService;
+    private DungeonService dungeonService;
     @Autowired
     private NotifyScene notifyScene;
 
@@ -55,19 +55,19 @@ public class SceneManager {
         s.setHeartBeat(scheduledFuture);
     }
 
-    public void instanceStart(int sceneId, Instance instance) {
-        Scene s = instance.getScene();
+    public void instanceStart(int sceneId, Dungeon dungeon) {
+        Scene s = dungeon.getScene();
         ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
-            if (instance.getScene().getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).isEmpty()) {
-                if (!instanceService.nextBoss(instance)) {
+            if (dungeon.getScene().getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).isEmpty()) {
+                if (!dungeonService.nextBoss(dungeon)) {
                     notifyScene.notifyScene(s, "副本挑战成功,即将关闭!\n");
-                    instanceService.destroy(instance);
+                    dungeonService.destroy(dungeon);
                     return;
                 }
             }
-            if (System.currentTimeMillis() - instance.getCreateTime() > s.getSceneExcel().getDestroy()) {
+            if (System.currentTimeMillis() - dungeon.getCreateTime() > s.getSceneExcel().getDestroy()) {
                 notifyScene.notifyScene(s, "副本挑战失败,即将关闭!\n");
-                instanceService.destroy(instance);
+                dungeonService.destroy(dungeon);
             }
         }, 0, jump, sceneId);
         s.setHeartBeat(scheduledFuture);

@@ -2,7 +2,7 @@ package com.function.scene.controller;
 
 import com.Cmd;
 import com.function.player.model.Player;
-import com.function.scene.service.InstanceService;
+import com.function.scene.service.DungeonService;
 import com.handler.ControllerManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import util.ParamNumCheck;
 @Component
 public class InstanceController {
     @Autowired
-    private InstanceService instanceService;
+    private DungeonService dungeonService;
 
     {
         ControllerManager.add(Cmd.LIST_INSTANCE, this::listInstance);
@@ -26,22 +26,22 @@ public class InstanceController {
     }
 
     private void listInstance(Player player, Msg msg) {
-        instanceService.listInstance(player);
+        dungeonService.listInstance(player);
     }
 
     private void personalInstance(Player player, Msg msg) {
         String[] params = ParamNumCheck.numCheck(player, msg, 2);
         int instanceId = Integer.parseInt(params[1]);
-        instanceService.personalCreate(player, instanceId);
+        dungeonService.personalCreate(player, instanceId);
     }
 
     private void teamInstance(Player player, Msg msg) {
         String[] params = ParamNumCheck.numCheck(player, msg, 2);
         int instanceId = Integer.parseInt(params[1]);
-        instanceService.teamCreate(player, instanceId);
+        dungeonService.teamCreate(player, instanceId);
     }
 
     private void intoInstance(Player player, Msg msg) {
-        instanceService.intoInstance(player);
+        dungeonService.intoInstance(player);
     }
 }

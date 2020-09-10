@@ -19,10 +19,10 @@ public class TBag {
     private String item;
     @Id
     @Column(name = "playerId")
-    private Long playerId;
+    private long playerId;
 
     @Column(name = "maxId")
-    private Long maxId;
+    private long maxId;
 
     public int getVolume() {
         return volume;

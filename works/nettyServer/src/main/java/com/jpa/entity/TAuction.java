@@ -21,7 +21,7 @@ public class TAuction {
     private String item;
 
     @Column(name = "auctioneer")
-    private Long auctioneer;
+    private long auctioneer;
 
     @Column(name = "bidder")
     private Long bidder;
@@ -56,11 +56,11 @@ public class TAuction {
         this.item = item;
     }
 
-    public Long getAuctioneer() {
+    public long getAuctioneer() {
         return auctioneer;
     }
 
-    public void setAuctioneer(Long auctioneer) {
+    public void setAuctioneer(long auctioneer) {
         this.auctioneer = auctioneer;
     }
 
