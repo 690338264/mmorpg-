@@ -3,7 +3,6 @@ package com.function.sect.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.function.item.model.Item;
-import com.function.player.model.Player;
 import com.function.sect.model.Sect;
 import com.jpa.dao.SectDAO;
 import com.jpa.manager.JpaManager;
@@ -39,7 +38,7 @@ public class SectManager {
             Sect sect = new Sect(tSect);
             sect.setMembers(JSON.parseObject(tSect.getMember(), new TypeReference<List<Long>>() {
             }));
-            sect.setJoinRequest(JSON.parseObject(tSect.getJoinRequest(), new TypeReference<Map<Long, Player>>() {
+            sect.setJoinRequest(JSON.parseObject(tSect.getJoinRequest(), new TypeReference<List<Long>>() {
             }));
             sect.setWareHouse(JSON.parseObject(tSect.getWarehouse(), new TypeReference<Map<Integer, Item>>() {
             }));

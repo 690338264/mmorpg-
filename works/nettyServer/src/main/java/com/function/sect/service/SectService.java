@@ -70,10 +70,6 @@ public class SectService {
             notifyScene.notifyPlayer(player, "您已加入公会\n");
             return;
         }
-//        if (sectDAO.findByName(name) != null) {
-//            notifyScene.notifyPlayer(player, "创建失败！公会名重复\n");
-//            return;
-//        }
         TSect tSect = new TSect(name);
         try {
             sectDAO.saveAndFlush(tSect);
@@ -109,7 +105,8 @@ public class SectService {
             notifyScene.notifyPlayer(player, "输入公会号有误\n");
             return;
         }
-        sect.getJoinRequest().put(player.getTPlayer().getRoleId(), player);
+
+        sect.getJoinRequest().add(player.getTPlayer().getRoleId());
         sectManager.updateSect(sect);
         notifyScene.notifyPlayer(player, "申请成功\n");
     }
@@ -131,9 +128,11 @@ public class SectService {
                     memberInfo.getName(), OccResource.getOccById(memberInfo.getOccupation()).getName()));
         });
         notifyScene.notifyPlayer(player, "申请列表:\n");
-        sect.getJoinRequest().forEach((playerId, request) ->
-                notifyScene.notifyPlayer(player, MessageFormat.format("[{0}]{1}\n",
-                        request.getTPlayer().getRoleId(), request.getTPlayer().getName())));
+        sect.getJoinRequest().forEach((playerId) -> {
+            TPlayerInfo memberInfo = playerManager.getPlayerInfoMap().get(playerId).gettPlayerInfo();
+            notifyScene.notifyPlayer(player, MessageFormat.format("{0}姓名:{1},门派:{2}\n",
+                    playerId, memberInfo.getName(), OccResource.getOccById(memberInfo.getOccupation()).getName()));
+        });
         notifyScene.notifyPlayer(player, "公会仓库:\n");
         sect.getWareHouse().forEach((index, item) -> notifyScene.notifyPlayer(player,
                 MessageFormat.format("{0}:{1}[{2}]\n",
@@ -152,23 +151,35 @@ public class SectService {
             notifyScene.notifyPlayer(player, "您无该权限\n");
             return;
         }
-        Player request = sect.getJoinRequest().get(playerId);
-        if (request == null || request.getTPlayer().getSectId() != null) {
-            notifyScene.notifyPlayer(player, "玩家加入失败\n");
+        if (!sect.getJoinRequest().contains(playerId)) {
+            notifyScene.notifyPlayer(player, "无该玩家申请\n");
             return;
+        }
+        if (userMap.getPlayers(playerId) != null) {
+            Player request = userMap.getPlayers(playerId);
+            if (request.getTPlayer().getSectId() != null) {
+                notifyScene.notifyPlayer(player, "玩家已加入其他公会\n");
+                return;
+            }
+            request.getTPlayer().setSectId(sect.gettSect().getSectId());
+            request.getTPlayer().setSectPosition(SectPosition.NORMAL_MEMBER.getType());
+            playerData.updatePlayer(request);
+            notifyScene.notifyPlayer(request, "加入公会\n");
+        } else {
+            TPlayer request = playerDAO.findByRoleId(playerId);
+            request.setSectId(sect.gettSect().getSectId());
+            request.setSectPosition(SectPosition.NORMAL_MEMBER.getType());
+            playerDAO.save(request);
         }
         //更新工会信息
         sect.getJoinRequest().remove(playerId);
         sect.getMembers().add(playerId);
         sectManager.updateSect(sect);
         //更新人物信息  刚入会默认普通会员
-        request.getTPlayer().setSectId(sect.gettSect().getSectId());
-        request.getTPlayer().setSectPosition(SectPosition.NORMAL_MEMBER.getType());
         PlayerInfo playerInfo = playerManager.getPlayerInfoMap().get(playerId);
         playerInfo.gettPlayerInfo().setSectPosition(SectPosition.NORMAL_MEMBER.getType());
-        playerData.updatePlayer(request);
         playerData.updatePlayerInfo(playerInfo);
-        notifyScene.notifyPlayer(request, "加入公会\n");
+        notifyScene.notifyPlayer(player, "同意成功\n");
     }
 
     /**
@@ -179,7 +190,7 @@ public class SectService {
         if (sect == null) {
             return;
         }
-        if (player.getTPlayer().getSectPosition() < SectPosition.ELITE.getType()) {
+        if (player.getTPlayer().getSectPosition() > SectPosition.VICE_PRESIDENT.getType()) {
             notifyScene.notifyPlayer(player, "您无该权限\n");
             return;
         }

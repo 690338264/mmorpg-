@@ -39,6 +39,7 @@ public class Auction {
     }
 
     public void fromJson() {
+        //FIXME:不存player
         item = JSON.parseObject(tAuction.getItem(), new TypeReference<Item>() {
         });
         auctioneer = JSON.parseObject(tAuction.getAuctioneer(), new TypeReference<Player>() {

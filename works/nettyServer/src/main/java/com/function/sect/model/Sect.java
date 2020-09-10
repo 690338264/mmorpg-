@@ -2,7 +2,6 @@ package com.function.sect.model;
 
 import com.alibaba.fastjson.JSON;
 import com.function.item.model.Item;
-import com.function.player.model.Player;
 import com.jpa.entity.TSect;
 
 import java.util.List;
@@ -17,9 +16,12 @@ import java.util.concurrent.ScheduledFuture;
  */
 @SuppressWarnings("rawtypes")
 public class Sect {
+
     private TSect tSect;
+
     private List<Long> members = new CopyOnWriteArrayList<>();
-    private Map<Long, Player> joinRequest = new ConcurrentHashMap<>();
+
+    private List<Long> joinRequest = new CopyOnWriteArrayList<>();
     private Map<Integer, Item> wareHouse = new ConcurrentHashMap<>();
     private ScheduledFuture update;
 
@@ -43,11 +45,11 @@ public class Sect {
         this.members = members;
     }
 
-    public Map<Long, Player> getJoinRequest() {
+    public List<Long> getJoinRequest() {
         return joinRequest;
     }
 
-    public void setJoinRequest(Map<Long, Player> joinRequest) {
+    public void setJoinRequest(List<Long> joinRequest) {
         this.joinRequest = joinRequest;
     }
 
