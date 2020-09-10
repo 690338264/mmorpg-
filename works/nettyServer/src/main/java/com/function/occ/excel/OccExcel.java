@@ -11,25 +11,25 @@ import java.util.List;
 @Data
 public class OccExcel {
 
-    private Integer id;
+    private int id;
 
     private String name;
 
-    private Integer hp;
+    private int hp;
 
-    private Integer mp;
+    private int mp;
     /**
      * 门派攻击力
      */
-    private Integer atk;
+    private int atk;
     /**
      * 门派防御力
      */
-    private Integer def;
+    private int def;
     /**
      * 门派速度
      */
-    private Integer speed;
+    private int speed;
     /**
      * 门派技能
      */
@@ -37,7 +37,7 @@ public class OccExcel {
     /**
      * 升级倍数
      */
-    private Integer multiple;
+    private int multiple;
 
     private List<Integer> skillId = new ArrayList<>();
 

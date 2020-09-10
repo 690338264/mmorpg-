@@ -25,7 +25,7 @@ public class TradeBoard {
     /**
      * 交易开始时间
      */
-    private final Long startTime;
+    private final long startTime;
     /**
      * 物品交易栏
      */

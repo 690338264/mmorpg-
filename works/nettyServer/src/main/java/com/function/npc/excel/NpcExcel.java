@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class NpcExcel extends SceneObject {
-    private Integer id;
+    private int id;
 
     private String name;
     /**

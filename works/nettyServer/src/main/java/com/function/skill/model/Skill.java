@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 public class Skill {
 
-    private Integer skillId;
+    private int skillId;
 
     private long lastTime;
 

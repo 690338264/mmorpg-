@@ -102,7 +102,7 @@ public class SceneManager {
         int monsterId = Integer.parseInt(s.getSceneExcel().getMonsters()[num]);
         Monster monster = new Monster();
         monster.setExcelId(monsterId);
-        monster.setId((long) num);
+        monster.setId(num);
         monster.setHp(monster.getMonsterExcel().getHp());
         monster.setAtk(monster.getMonsterExcel().getAggr());
         monster.setSceneId(s.getSceneId());

@@ -11,17 +11,17 @@ import java.util.List;
 @Data
 public class SkillExcel {
 
-    private Integer id;
+    private int id;
 
     private String name;
     /**
      * 技能消耗mp
      */
-    private Integer mp;
+    private int mp;
 
-    private Integer atk;
+    private int atk;
 
-    private Long cd;
+    private long cd;
 
     private String buff;
 

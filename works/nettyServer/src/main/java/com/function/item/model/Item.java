@@ -17,7 +17,7 @@ public class Item {
     /**
      * 物品种类的id
      */
-    private Integer id;
+    private int id;
     /**
      * 格子里的数量
      */
@@ -27,7 +27,7 @@ public class Item {
      */
     private int nowWear;
 
-    public Item(Integer id) {
+    public Item(int id) {
         this.id = id;
         this.setNowWear(getItemById().getWear());
     }

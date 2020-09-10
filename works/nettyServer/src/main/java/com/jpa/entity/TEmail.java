@@ -14,10 +14,10 @@ public class TEmail {
     @Column(name = "emailId")
     private Long emailId;
     @Column(name = "playerId")
-    private Long playerId;
+    private long playerId;
 
     @Column(name = "sender")
-    private Long sender;
+    private long sender;
 
     @Column(name = "text", columnDefinition = "TEXT")
     private String text;
@@ -36,19 +36,19 @@ public class TEmail {
         this.emailId = emailId;
     }
 
-    public Long getPlayerId() {
+    public long getPlayerId() {
         return playerId;
     }
 
-    public void setPlayerId(Long playerId) {
+    public void setPlayerId(long playerId) {
         this.playerId = playerId;
     }
 
-    public Long getSender() {
+    public long getSender() {
         return sender;
     }
 
-    public void setSender(Long sender) {
+    public void setSender(long sender) {
         this.sender = sender;
     }
 

@@ -49,14 +49,14 @@ public class Player extends SceneObject {
     /**
      * 玩家当前mp
      */
-    private Integer mp;
+    private int mp;
     /**
      * 玩家初始mp
      */
-    private Integer oriMp;
+    private int oriMp;
 
-    private Integer def;
-    private Integer speed;
+    private int def;
+    private int speed;
     private int levelUp = 2000;
 
     @JSONField(serialize = false)
