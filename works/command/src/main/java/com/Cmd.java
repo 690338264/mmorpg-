@@ -150,7 +150,7 @@ public enum Cmd {
     private final String cmd;
     private final Integer cmdId;
 
-    private static final Map<Integer, Cmd> id_Map = new HashMap<>();
+    private static final Map<Integer, Cmd> ID_MAP = new HashMap<>();
     private static final Map<String, Cmd> COMMAND_MAP = new HashMap<>();
 
     Cmd(String cmd, Integer cmdId) {
@@ -162,14 +162,14 @@ public enum Cmd {
     static {
         for (Cmd e : EnumSet.allOf(Cmd.class)) {
             COMMAND_MAP.put(e.cmd, e);
-            id_Map.put(e.cmdId, e);
+            ID_MAP.put(e.cmdId, e);
         }
     }
 
-    public static Cmd find(int cmdId, Cmd defaultvalue) {
-        Cmd value = id_Map.get(cmdId);
+    public static Cmd find(int cmdId, Cmd defaultValue) {
+        Cmd value = ID_MAP.get(cmdId);
         if (value == null) {
-            return defaultvalue;
+            return defaultValue;
         }
         return value;
     }

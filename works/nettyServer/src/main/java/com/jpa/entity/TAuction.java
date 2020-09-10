@@ -20,11 +20,11 @@ public class TAuction {
     @Column(name = "item", columnDefinition = "TEXT")
     private String item;
 
-    @Column(name = "auctioneer", columnDefinition = "TEXT")
-    private String auctioneer;
+    @Column(name = "auctioneer")
+    private Long auctioneer;
 
-    @Column(name = "bidder", columnDefinition = "TEXT")
-    private String bidder;
+    @Column(name = "bidder")
+    private Long bidder;
 
     @Column(name = "highestMoney")
     private int highestMoney;
@@ -56,19 +56,19 @@ public class TAuction {
         this.item = item;
     }
 
-    public String getAuctioneer() {
+    public Long getAuctioneer() {
         return auctioneer;
     }
 
-    public void setAuctioneer(String auctioneer) {
+    public void setAuctioneer(Long auctioneer) {
         this.auctioneer = auctioneer;
     }
 
-    public String getBidder() {
+    public Long getBidder() {
         return bidder;
     }
 
-    public void setBidder(String bidder) {
+    public void setBidder(Long bidder) {
         this.bidder = bidder;
     }
 

@@ -20,7 +20,6 @@ import java.util.concurrent.ScheduledFuture;
  * @create 2020-09-08 12:29
  */
 @Component
-@SuppressWarnings("rawtypes")
 public class AuctionManager {
     @Autowired
     private AuctionService auctionService;
@@ -47,7 +46,7 @@ public class AuctionManager {
             });
             auctionMode.forEach((id, auction) -> {
                 if (System.currentTimeMillis() > auction.gettAuction().getFinishTime()) {
-                    if (auction.getBidder() == null) {
+                    if (auction.gettAuction().getBidder() == null) {
                         auctionService.cancelAuction(auction);
                     } else {
                         auctionService.finishCompetition(auction);
@@ -70,7 +69,7 @@ public class AuctionManager {
     }
 
     public void updateAuction(Auction auction) {
-        ScheduledFuture update = jpaManager.update(auction.getUpdate(), () -> {
+        ScheduledFuture<?> update = jpaManager.update(auction.getUpdate(), () -> {
             auction.toJson();
             auctionDAO.save(auction.gettAuction());
             auction.setUpdate(null);

@@ -3,7 +3,6 @@ package com.function.auction.model;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.function.item.model.Item;
-import com.function.player.model.Player;
 import com.jpa.entity.TAuction;
 
 import java.util.concurrent.ScheduledFuture;
@@ -20,16 +19,8 @@ public class Auction {
      * 拍卖物
      */
     private Item item;
-    /**
-     * 拍卖人
-     */
-    private Player auctioneer;
-    /**
-     * 出价人
-     */
-    private Player bidder;
 
-    private ScheduledFuture update;
+    private ScheduledFuture<?> update;
 
     private AtomicBoolean isSelling = new AtomicBoolean();
 
@@ -39,19 +30,12 @@ public class Auction {
     }
 
     public void fromJson() {
-        //FIXME:不存player
         item = JSON.parseObject(tAuction.getItem(), new TypeReference<Item>() {
-        });
-        auctioneer = JSON.parseObject(tAuction.getAuctioneer(), new TypeReference<Player>() {
-        });
-        bidder = JSON.parseObject(tAuction.getBidder(), new TypeReference<Player>() {
         });
     }
 
     public void toJson() {
         tAuction.setItem(JSON.toJSONString(item));
-        tAuction.setAuctioneer(JSON.toJSONString(auctioneer));
-        tAuction.setBidder(JSON.toJSONString(bidder));
     }
 
     public TAuction gettAuction() {
@@ -70,27 +54,11 @@ public class Auction {
         this.item = item;
     }
 
-    public Player getAuctioneer() {
-        return auctioneer;
-    }
-
-    public void setAuctioneer(Player auctioneer) {
-        this.auctioneer = auctioneer;
-    }
-
-    public Player getBidder() {
-        return bidder;
-    }
-
-    public void setBidder(Player bidder) {
-        this.bidder = bidder;
-    }
-
-    public ScheduledFuture getUpdate() {
+    public ScheduledFuture<?> getUpdate() {
         return update;
     }
 
-    public void setUpdate(ScheduledFuture update) {
+    public void setUpdate(ScheduledFuture<?> update) {
         this.update = update;
     }
 

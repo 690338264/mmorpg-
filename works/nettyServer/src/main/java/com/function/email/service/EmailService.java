@@ -46,7 +46,7 @@ public class EmailService {
      * 发送邮件仅文字
      */
     public void sendOnlyText(Player player, Long playerId, String text) {
-        Email email = createEmail(player, playerId, text);
+        Email email = createEmail(player.getTPlayer().getRoleId(), playerId, text);
         toReceiver(playerId, email);
     }
 
@@ -54,7 +54,7 @@ public class EmailService {
      * 发送礼物
      */
     public void sendHasGift(Player player, Long playerId, String text, List<Integer> indexs, List<Integer> num) {
-        Email email = createEmail(player, playerId, text);
+        Email email = createEmail(player.getTPlayer().getRoleId(), playerId, text);
         IntStream.range(0, indexs.size()).forEach((i) -> {
             Item item = player.getBag().getItemMap().get(indexs.get(i));
             if (!itemService.removeItem(item.getItemId(), indexs.get(i), num.get(i), player)) {
@@ -107,12 +107,12 @@ public class EmailService {
         updateEmail(email);
     }
 
-    public Email createEmail(Player player, Long playerId, String text) {
+    public Email createEmail(long senderId, Long playerId, String text) {
         Email email = new Email();
         TEmail tEmail = new TEmail();
         tEmail.setState(EmailState.UNREAD.getOut());
         tEmail.setPlayerId(playerId);
-        tEmail.setSender(player.getTPlayer().getRoleId());
+        tEmail.setSender(senderId);
         tEmail.setText(text);
         email.settEmail(tEmail);
         return email;

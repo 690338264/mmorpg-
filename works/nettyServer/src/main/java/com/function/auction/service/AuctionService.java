@@ -3,13 +3,18 @@ package com.function.auction.service;
 import com.function.auction.manager.AuctionManager;
 import com.function.auction.model.Auction;
 import com.function.auction.model.AuctionType;
+import com.function.email.model.Email;
+import com.function.email.service.EmailService;
 import com.function.item.model.Item;
 import com.function.item.service.ItemService;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
 import com.function.scene.service.NotifyScene;
+import com.function.user.map.UserMap;
 import com.jpa.dao.AuctionDAO;
+import com.jpa.dao.PlayerDAO;
 import com.jpa.entity.TAuction;
+import com.jpa.entity.TPlayer;
 import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,7 +37,12 @@ public class AuctionService {
     private AuctionManager auctionManager;
     @Autowired
     private PlayerData playerData;
-
+    @Autowired
+    private UserMap userMap;
+    @Autowired
+    private PlayerDAO playerDAO;
+    @Autowired
+    private EmailService emailService;
     private final static float FEE = 0.80f;
 
     /**
@@ -71,15 +81,14 @@ public class AuctionService {
         TAuction tAuction = new TAuction();
         tAuction.setType(type);
         tAuction.setHighestMoney(money);
+        tAuction.setAuctioneer(player.getTPlayer().getRoleId());
         tAuction.setFinishTime(System.currentTimeMillis() + time);
         auctionDAO.saveAndFlush(tAuction);
 
         Auction auction = new Auction(tAuction);
-        auction.setAuctioneer(player);
         auction.setItem(itemService.takeOutItem(item, num));
-
-        auctionManager.putAuction(auction);
         auctionManager.updateAuction(auction);
+        auctionManager.putAuction(auction);
         notifyScene.notifyPlayer(player, "物品上架\n");
     }
 
@@ -100,11 +109,10 @@ public class AuctionService {
                 return;
             }
             auctionManager.getFixedPriceMode().remove(auctionId);
+            auction.gettAuction().setBidder(player.getTPlayer().getRoleId());
+            beginChange(auction);
 
-            beginChange(auction, player);
-            playerData.updatePlayer(auction.getAuctioneer());
             auctionDAO.delete(auction.gettAuction());
-
             notifyScene.notifyPlayer(player, "购得拍卖品!\n");
         } catch (Exception e) {
             notifyScene.notifyPlayer(player, "拍卖品不存在!\n");
@@ -129,31 +137,24 @@ public class AuctionService {
                 auction.getIsSelling().set(false);
                 return;
             }
-            if (auction.getBidder() != null) {
-                Player bidder = auction.getBidder();
-                ThreadPoolManager.immediateThread(() ->
-                                bidder.getTPlayer().setMoney(bidder.getTPlayer().getMoney() + highestMoney),
-                        bidder.getTPlayer().getRoleId().intValue());
-                playerData.updatePlayer(bidder);
+            if (auction.gettAuction().getBidder() != null) {
+                sendMoney(auction.gettAuction().getBidder(), highestMoney);
             }
-            auction.setBidder(player);
+            auction.gettAuction().setBidder(player.getTPlayer().getRoleId());
             auction.gettAuction().setHighestMoney(money);
             auction.getIsSelling().set(false);
             auctionManager.updateAuction(auction);
-            playerData.updatePlayer(player);
             notifyScene.notifyPlayer(player, "出价成功!\n");
         } catch (Exception e) {
             notifyScene.notifyPlayer(player, "拍卖品不存在！\n");
         }
     }
 
+    /**
+     * 拍卖成功
+     */
     public void finishCompetition(Auction auction) {
-        Player bidder = auction.getBidder();
-        ThreadPoolManager.immediateThread(() ->
-                        beginChange(auction, bidder),
-                bidder.getTPlayer().getRoleId().intValue()
-        );
-        playerData.updatePlayer(auction.getAuctioneer());
+        beginChange(auction);
         auctionManager.getAuctionMode().remove(auction.gettAuction().getAuctionId());
         auctionDAO.delete(auction.gettAuction());
 
@@ -162,14 +163,12 @@ public class AuctionService {
     /**
      * 开始物品交换
      */
-    public void beginChange(Auction auction, Player bidder) {
-        itemService.getItem(auction.getItem(), bidder);
-        int money = auction.getAuctioneer().getTPlayer().getMoney();
-        Player auctioneer = auction.getAuctioneer();
-        ThreadPoolManager.immediateThread(() ->
-                        auctioneer.getTPlayer().setMoney((int) (money + auction.gettAuction().getHighestMoney() * FEE)),
-                auctioneer.getTPlayer().getRoleId().intValue()
-        );
+    public void beginChange(Auction auction) {
+        TAuction tAuction = auction.gettAuction();
+        sendItem(tAuction.getAuctioneer(), tAuction.getBidder(), auction.getItem());
+
+        int money = (int) (auction.gettAuction().getHighestMoney() * FEE);
+        sendMoney(tAuction.getAuctioneer(), money);
     }
 
     /**
@@ -181,11 +180,9 @@ public class AuctionService {
         }
         auction.getIsSelling().set(true);
         Item item = auction.getItem();
-        Player auctioneer = auction.getAuctioneer();
 
-        ThreadPoolManager.immediateThread(() ->
-                itemService.getItem(item, auctioneer), auctioneer.getTPlayer().getRoleId().intValue()
-        );
+        long auctioneer = auction.gettAuction().getAuctioneer();
+        sendItem(auctioneer, auctioneer, item);
 
         if (auction.gettAuction().getType() == AuctionType.FIXED_PRICE.getType()) {
             auctionManager.getFixedPriceMode().remove(auction.gettAuction().getAuctionId());
@@ -193,7 +190,35 @@ public class AuctionService {
             auctionManager.getAuctionMode().remove(auction.gettAuction().getAuctionId());
         }
         auctionDAO.delete(auction.gettAuction());
-        notifyScene.notifyPlayer(auctioneer, "物品未售出\n");
     }
 
+    public void sendMoney(Long playerId, int money) {
+        Player player = userMap.getPlayers(playerId);
+        if (player != null) {
+            int formerMoney = player.getTPlayer().getMoney();
+            ThreadPoolManager.immediateThread(() -> {
+                player.getTPlayer().setMoney(formerMoney + money);
+                playerData.updatePlayer(player);
+            }, playerId.intValue());
+            return;
+        }
+
+        TPlayer tPlayer = playerDAO.findByRoleId(playerId);
+        ThreadPoolManager.immediateThread(() -> {
+                    tPlayer.setMoney(tPlayer.getMoney() + money);
+                    playerDAO.save(tPlayer);
+                }, playerId.intValue()
+        );
+    }
+
+    public void sendItem(Long fromId, Long playerId, Item item) {
+        Player player = userMap.getPlayers(playerId);
+        if (player != null) {
+            ThreadPoolManager.immediateThread(() -> itemService.getItem(item, player), playerId.intValue());
+        } else {
+            Email email = emailService.createEmail(fromId, playerId, "拍卖物品：");
+            email.getGifts().add(item);
+            emailService.toReceiver(playerId, email);
+        }
+    }
 }
