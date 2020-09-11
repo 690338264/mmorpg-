@@ -53,12 +53,11 @@ public class MonsterService {
      * 怪物复活
      */
     public void monsterRevive(Scene scene) {
-        scene.getWaitForRevive().forEach((k, v) -> {
-            Monster monster = scene.getWaitForRevive().get(k);
+        scene.getWaitForRevive().forEach((monsterId, monster) -> {
             if (System.currentTimeMillis() - monster.getDeathTime() > monster.getMonsterExcel().getReviveTime()) {
-                scene.getWaitForRevive().remove(k);
+                scene.getWaitForRevive().remove(monsterId);
                 monster.setHp(monster.getOriHp());
-                scene.getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).put(monster.getId(), monster);
+                scene.getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).put(monsterId, monster);
             }
         });
 
@@ -107,10 +106,10 @@ public class MonsterService {
      * 移除仇恨列表中移出场景的玩家
      */
     public void inScene(Monster monster) {
-        monster.getHurtList().forEach((k, v) -> {
-            Player player = userMap.getPlayers(k);
+        monster.getHurtList().forEach((playerId, hurt) -> {
+            Player player = userMap.getPlayers(playerId);
             if (player.getNowScene().getSceneId() != monster.getSceneId()) {
-                monster.getHurtList().remove(k);
+                monster.getHurtList().remove(playerId);
             }
         });
     }

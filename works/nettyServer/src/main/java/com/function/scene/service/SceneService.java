@@ -79,8 +79,7 @@ public class SceneService {
         Scene scene = player.getNowScene();
         for (SceneObjectType type : SceneObjectType.values()) {
             Map<Long, SceneObject> map = scene.getSceneObjectMap().get(type.getType());
-            map.forEach((k, v) -> {
-                SceneObject sceneObject = map.get(k);
+            map.forEach((k, sceneObject) -> {
                 if (sceneObject.getType() == SceneObjectType.NPC) {
                     NpcExcel npc = (NpcExcel) sceneObject;
                     notifyScene.notifyPlayer(player, MessageFormat.format("NPC:{0}  id为{1}\n",

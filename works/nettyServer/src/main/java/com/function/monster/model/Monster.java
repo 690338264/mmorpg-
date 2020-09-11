@@ -22,7 +22,7 @@ public class Monster extends SceneObject {
     /**
      * 怪物场景自己的id
      */
-    private long id;
+    private Long id;
     /**
      * 仇恨列表
      */

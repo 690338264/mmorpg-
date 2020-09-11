@@ -12,13 +12,13 @@ public enum SceneType {
     //小队地图
     TEAM(3),
     ;
-    Integer type;
+    int type;
 
-    SceneType(Integer type) {
+    SceneType(int type) {
         this.type = type;
     }
 
-    public Integer getType() {
+    public int getType() {
         return type;
     }
 }

@@ -35,7 +35,7 @@ public class BuffService {
      */
     public void removeBuff(SceneObject sceneObject) {
         sceneObject.getBuffs().forEach((k, v) -> {
-            sceneObject.getBuffs().get(k).cancel(true);
+            v.cancel(true);
             sceneObject.getBuffs().remove(k);
         });
     }

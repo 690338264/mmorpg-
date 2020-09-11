@@ -10,13 +10,13 @@ public enum AuctionType {
 
     COMPETITION_PRICE(2),
     ;
-    Integer type;
+    int type;
 
-    AuctionType(Integer type) {
+    AuctionType(int type) {
         this.type = type;
     }
 
-    public Integer getType() {
+    public int getType() {
         return type;
     }
 }

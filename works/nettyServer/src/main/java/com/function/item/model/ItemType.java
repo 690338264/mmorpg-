@@ -10,13 +10,13 @@ public enum ItemType {
     //装备
     EQUIPMENT(2),
     ;
-    Integer type;
+    int type;
 
-    ItemType(Integer type) {
+    ItemType(int type) {
         this.type = type;
     }
 
-    public Integer getType() {
+    public int getType() {
         return type;
     }
 }

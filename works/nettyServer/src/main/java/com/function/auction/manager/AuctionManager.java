@@ -33,7 +33,7 @@ public class AuctionManager {
 
     @PostConstruct
     private void init() {
-        auctionDAO.findAll().forEach((tAuction) -> {
+        auctionDAO.findAll().forEach(tAuction -> {
             Auction auction = new Auction(tAuction);
             auction.fromJson();
             putAuction(auction);

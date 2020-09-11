@@ -17,7 +17,7 @@ public class TEmail {
     private long playerId;
 
     @Column(name = "sender")
-    private long sender;
+    private Long sender;
 
     @Column(name = "text", columnDefinition = "TEXT")
     private String text;
@@ -44,11 +44,11 @@ public class TEmail {
         this.playerId = playerId;
     }
 
-    public long getSender() {
+    public Long getSender() {
         return sender;
     }
 
-    public void setSender(long sender) {
+    public void setSender(Long sender) {
         this.sender = sender;
     }
 

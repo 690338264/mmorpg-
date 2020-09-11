@@ -15,13 +15,13 @@ public enum SceneObjectType {
     //玩家
     PLAYER(3),
     ;
-    Integer type;
+    int type;
 
-    SceneObjectType(Integer type) {
+    SceneObjectType(int type) {
         this.type = type;
     }
 
-    public Integer getType() {
+    public int getType() {
         return type;
     }
 

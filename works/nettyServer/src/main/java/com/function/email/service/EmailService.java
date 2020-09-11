@@ -55,7 +55,7 @@ public class EmailService {
      */
     public void sendHasGift(Player player, Long playerId, String text, List<Integer> indexs, List<Integer> num) {
         Email email = createEmail(player.getTPlayer().getRoleId(), playerId, text);
-        IntStream.range(0, indexs.size()).forEach((i) -> {
+        IntStream.range(0, indexs.size()).forEach(i -> {
             Item item = player.getBag().getItemMap().get(indexs.get(i));
             if (!itemService.removeItem(item.getItemId(), indexs.get(i), num.get(i), player)) {
                 return;
@@ -70,7 +70,7 @@ public class EmailService {
      */
     public void showEmail(Player player) {
         notifyScene.notifyPlayer(player, "收件箱：\n");
-        IntStream.range(0, player.getEmails().size()).forEach((index) -> {
+        IntStream.range(0, player.getEmails().size()).forEach(index -> {
             Email email = player.getEmails().get(index);
             TPlayerInfo senderInfo = playerManager.getPlayerInfoMap().get(email.gettEmail().getSender()).gettPlayerInfo();
             notifyScene.notifyPlayer(player, MessageFormat.format("{0}{1}来自{2}的邮件\n",
@@ -90,7 +90,7 @@ public class EmailService {
         TPlayerInfo senderInfo = playerManager.getPlayerInfoMap().get(email.gettEmail().getSender()).gettPlayerInfo();
         notifyScene.notifyPlayer(player, MessageFormat.format("来自  {0}:\n{1}\n礼物:\n",
                 senderInfo.getName(), email.gettEmail().getText()));
-        email.getGifts().forEach((gift) ->
+        email.getGifts().forEach(gift ->
                 notifyScene.notifyPlayer(player, MessageFormat.format("{0}{1}\n", gift.getItemById().getName(), gift.getNum())));
         if (email.gettEmail().getState().equals(EmailState.UNREAD.getOut())) {
             email.gettEmail().setState(EmailState.READ.getOut());

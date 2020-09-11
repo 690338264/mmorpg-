@@ -57,7 +57,7 @@ public class SectService {
         StringBuilder content = new StringBuilder();
         sectManager.getSectMap().forEach((id, sect) ->
                 content.append(MessageFormat.format("公会id：{0}名称:{1}人数:{2}\n",
-                        sect.gettSect().getSectId(), sect.gettSect().getName(), sect.getMembers().size()))
+                        id, sect.gettSect().getName(), sect.getMembers().size()))
         );
         notifyScene.notifyPlayer(player, content);
     }
@@ -304,7 +304,7 @@ public class SectService {
         for (int index = 0; index < MAX_SIZE; index++) {
             Item boxItem = itemMap.get(index);
             if (boxItem != null) {
-                if (item.getId().equals(boxItem.getId()) && boxItem.getNum() < boxItem.getItemById().getMaxNum()) {
+                if ((item.getId() == boxItem.getId()) && boxItem.getNum() < boxItem.getItemById().getMaxNum()) {
                     int num = boxItem.getNum();
                     int max = item.getItemById().getMaxNum();
                     boxItem.setNum(Math.max(item.getNum() + num, max));

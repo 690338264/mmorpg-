@@ -93,7 +93,7 @@ public class ItemService {
         if (item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
             Map<Integer, Item> p = player.getBag().getItemMap();
             for (Item value : p.values()) {
-                if (item.getId().equals(value.getId()) && value.getNum() + num <= item.getItemById().getMaxNum()) {
+                if ((item.getId() == value.getId()) && value.getNum() + num <= item.getItemById().getMaxNum()) {
                     value.setNum(value.getNum() + num);
                     bagService.updateBag(player);
                     StringBuilder put = new StringBuilder("[")

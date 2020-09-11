@@ -36,15 +36,13 @@ public class DungeonService {
     public void listInstance(Player player) {
         Map<Integer, SceneExcel> map = SceneResource.getSceneMap(SceneType.PRIVATE.getType());
         notifyScene.notifyPlayer(player, "个人副本:\n");
-        map.forEach((k, v) -> {
-            SceneExcel sceneExcel = map.get(k);
-            notifyScene.notifyPlayer(player, MessageFormat.format("{0}:{1}\n", sceneExcel.getId(), sceneExcel.getName()));
-        });
+        map.forEach((sceneId, sceneExcel) ->
+                notifyScene.notifyPlayer(player, MessageFormat.format("{0}:{1}\n", sceneId, sceneExcel.getName()))
+        );
         Map<Integer, SceneExcel> map1 = SceneResource.getSceneMap(SceneType.TEAM.getType());
         notifyScene.notifyPlayer(player, "组队副本:\n");
-        map1.forEach((k, v) -> {
-            SceneExcel sceneExcel = map1.get(k);
-            notifyScene.notifyPlayer(player, MessageFormat.format("{0},{1}\n", sceneExcel.getId(), sceneExcel.getName()));
+        map1.forEach((sceneId, sceneExcel) -> {
+            notifyScene.notifyPlayer(player, MessageFormat.format("{0},{1}\n", sceneId, sceneExcel.getName()));
         });
     }
 
@@ -74,8 +72,7 @@ public class DungeonService {
         }
         int type = SceneType.TEAM.getType();
         Dungeon dungeon = createInstance(type, id);
-        team.getMembers().forEach((k, v) -> {
-            Player teammate = team.getMembers().get(k);
+        team.getMembers().forEach((k, teammate) -> {
             dungeon.getPlayers().add(teammate);
             teammate.setDungeon(dungeon);
             notifyScene.notifyPlayer(teammate, "副本创建成功,请尽快进入副本\n");

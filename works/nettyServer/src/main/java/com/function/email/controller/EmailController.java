@@ -45,7 +45,7 @@ public class EmailController {
             String[] num = params[4].split(",");
             List<Integer> indexs = new ArrayList<>();
             List<Integer> itemNum = new ArrayList<>();
-            IntStream.range(0, items.length).forEach((i) -> {
+            IntStream.range(0, items.length).forEach(i -> {
                 if (Integer.parseInt(num[i]) > 0) {
                     indexs.add(Integer.parseInt(items[i]));
                     itemNum.add(Integer.parseInt(num[i]));

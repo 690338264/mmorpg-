@@ -22,8 +22,7 @@ public class NotifyScene {
 
     public void notifyScene(Scene scene, String notify) {
         Map<Long, SceneObject> players = scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType());
-        players.keySet().forEach(playerId -> {
-            SceneObject sceneObject = players.get(playerId);
+        players.forEach((playerId, sceneObject) -> {
             if (sceneObject.getType() == SceneObjectType.PLAYER) {
                 Player p = (Player) sceneObject;
                 ChannelHandlerContext ctx = playerMap.getCtxPlayer(p.getTPlayer().getRoleId());
@@ -35,9 +34,8 @@ public class NotifyScene {
     }
 
     public void notifyTeam(Team team, String notify) {
-        team.getMembers().keySet().forEach(playerId -> {
-            ChannelHandlerContext ctx = playerMap.getCtxPlayer(playerId);
-            ctx.writeAndFlush(notify);
+        team.getMembers().forEach((playerId, teammate) -> {
+            notifyPlayer(teammate, notify);
         });
     }
 
