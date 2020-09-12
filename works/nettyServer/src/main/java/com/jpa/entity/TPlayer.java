@@ -51,6 +51,9 @@ public class TPlayer {
     @Column(name = "friendRequest")
     private String friendRequest = "{}";
 
+    @Column(name = "quest", columnDefinition = "TEXT")
+    private String quest = "{}";
+
     public Long getUserId() {
         return userId;
     }
@@ -155,6 +158,14 @@ public class TPlayer {
         this.friendRequest = friendRequest;
     }
 
+    public String getQuest() {
+        return quest;
+    }
+
+    public void setQuest(String quest) {
+        this.quest = quest;
+    }
+
     @Override
     public String toString() {
         return "TPlayer{" +
@@ -171,6 +182,7 @@ public class TPlayer {
                 ", sectId=" + sectId +
                 ", sectPosition=" + sectPosition +
                 ", friendRequest='" + friendRequest + '\'' +
+                ", quest='" + quest + '\'' +
                 '}';
     }
 }

@@ -18,6 +18,7 @@ import com.jpa.dao.SectDAO;
 import com.jpa.entity.TPlayer;
 import com.jpa.entity.TPlayerInfo;
 import com.jpa.entity.TSect;
+import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -166,10 +167,12 @@ public class SectService {
             playerData.updatePlayer(request);
             notifyScene.notifyPlayer(request, "加入公会\n");
         } else {
-            TPlayer request = playerDAO.findByRoleId(playerId);
-            request.setSectId(sect.gettSect().getSectId());
-            request.setSectPosition(SectPosition.NORMAL_MEMBER.getType());
-            playerDAO.save(request);
+            ThreadPoolManager.immediateThread(() -> {
+                TPlayer request = playerDAO.findByRoleId(playerId);
+                request.setSectId(sect.gettSect().getSectId());
+                request.setSectPosition(SectPosition.NORMAL_MEMBER.getType());
+                playerDAO.save(request);
+            }, playerId.intValue());
         }
         //更新工会信息
         sect.getJoinRequest().remove(playerId);

@@ -11,6 +11,11 @@ import com.function.occ.excel.OccResource;
 import com.function.player.model.Player;
 import com.function.player.model.PlayerInfo;
 import com.function.player.model.SceneObjectTask;
+import com.function.quest.excel.QuestResource;
+import com.function.quest.model.Quest;
+import com.function.quest.model.QuestState;
+import com.function.quest.model.QuestTimes;
+import com.function.quest.model.QuestType;
 import com.function.scene.model.SceneObjectType;
 import com.function.skill.excel.SkillExcel;
 import com.function.skill.excel.SkillResource;
@@ -22,6 +27,7 @@ import com.jpa.dao.PlayerDAO;
 import com.jpa.dao.PlayerInfoDAO;
 import com.jpa.entity.TBag;
 import com.jpa.entity.TEmail;
+import com.jpa.entity.TPlayer;
 import com.jpa.entity.TPlayerInfo;
 import com.jpa.manager.JpaManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +35,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.IntStream;
 
@@ -133,6 +140,7 @@ public class PlayerData {
      */
     public void initPlayer(Player player) {
         player.setType(SceneObjectType.PLAYER);
+        initQuest(player);
         initSkill(player);
         initEquipment(player);
         initBag(player);
@@ -153,6 +161,39 @@ public class PlayerData {
         Map<Integer, Item> m = JSON.parseObject(json, new TypeReference<Map<Integer, Item>>() {
         });
         bag.setItemMap(m);
+    }
+
+    public void initQuest(Player player) {
+        TPlayer tPlayer = player.getTPlayer();
+        if (tPlayer.getQuest() == null) {
+            createQuest(player);
+            updatePlayer(player);
+        } else {
+            Map<QuestState, Map<QuestType, Map<Integer, Quest>>> questMap =
+                    JSON.parseObject(tPlayer.getQuest(), new TypeReference<Map<QuestState, Map<QuestType, Map<Integer, Quest>>>>() {
+                    });
+            player.setQuestMap(questMap);
+        }
+    }
+
+    public void createQuest(Player player) {
+        player.getQuestMap().computeIfAbsent(QuestState.ONGOING, key -> new ConcurrentHashMap<>());
+        Map<QuestType, Map<Integer, Quest>> onGoingMap = player.getQuestMap().get(QuestState.ONGOING);
+        player.getQuestMap().computeIfAbsent(QuestState.CAN_BUT_NOT, key -> new ConcurrentHashMap<>());
+        Map<QuestType, Map<Integer, Quest>> willDoMap = player.getQuestMap().get(QuestState.CAN_BUT_NOT);
+        QuestResource.getQuestExcelMap().forEach((questId, questExcel) -> {
+            if (questExcel.getTimes() == QuestTimes.ACHIEVEMENT.getType()) {
+                Quest quest = new Quest(questId);
+                QuestType questType = QuestType.values()[questExcel.getType() - 1];
+                onGoingMap.computeIfAbsent(questType, key -> new ConcurrentHashMap<>());
+                onGoingMap.get(questType).put(questId, quest);
+            } else if (questExcel.getLevel() == null) {
+                Quest quest = new Quest(questId);
+                QuestType questType = QuestType.values()[questExcel.getType() - 1];
+                willDoMap.computeIfAbsent(questType, key -> new ConcurrentHashMap<>());
+                willDoMap.get(questType).put(questId, quest);
+            }
+        });
     }
 
     /**

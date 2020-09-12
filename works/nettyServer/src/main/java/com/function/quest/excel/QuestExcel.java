@@ -16,6 +16,10 @@ public class QuestExcel {
 
     private int type;
     /**
+     * 要求等级
+     */
+    private Integer level;
+    /**
      * 目标
      */
     private String target;
@@ -23,6 +27,10 @@ public class QuestExcel {
      * 前置任务
      */
     private Integer preQuest;
+    /**
+     * 后置任务
+     */
+    private Integer posQuest;
 
     private int item;
 
@@ -98,5 +106,21 @@ public class QuestExcel {
 
     public void setMoney(int money) {
         this.money = money;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    public Integer getPosQuest() {
+        return posQuest;
+    }
+
+    public void setPosQuest(Integer posQuest) {
+        this.posQuest = posQuest;
     }
 }

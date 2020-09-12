@@ -2,15 +2,22 @@ package com.function.player.model;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.event.EventHandler;
+import com.event.EventManager;
+import com.event.QuestEvent;
 import com.function.bag.model.Bag;
 import com.function.email.model.Email;
 import com.function.item.model.Item;
+import com.function.quest.model.Quest;
+import com.function.quest.model.QuestState;
+import com.function.quest.model.QuestType;
 import com.function.scene.model.Dungeon;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
 import com.function.trade.model.TradeBoard;
 import com.jpa.entity.TPlayer;
 import com.jpa.entity.TPlayerInfo;
+import com.manager.ThreadPoolManager;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,8 +33,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Data
 @Slf4j
+//@Component
 @EqualsAndHashCode(callSuper = true)
 public class Player extends SceneObject {
+    //        @Autowired
+//    private EventManager eventManager;
     private TPlayer tPlayer;
     private ChannelHandlerContext channelHandlerContext;
     /**
@@ -38,7 +48,6 @@ public class Player extends SceneObject {
     /**
      * 玩家所在副本
      */
-    @JSONField(serialize = false)
     private Dungeon dungeon;
     /**
      * 玩家背包
@@ -59,20 +68,19 @@ public class Player extends SceneObject {
     private int speed;
     private int levelUp = 2000;
 
-    @JSONField(serialize = false)
     private TradeBoard tradeBoard;
 
-    @JSONField(serialize = false)
     private Map<Integer, Item> equipMap = new HashMap<>();
 
-    @JSONField(serialize = false)
     private List<Email> emails = Collections.synchronizedList(new ArrayList<>());
 
-    @JSONField(serialize = false)
     private Map<Long, TPlayerInfo> friend = new HashMap<>();
 
-    @JSONField(serialize = false)
     private Map<Long, TPlayerInfo> friendRequest = new ConcurrentHashMap<>();
+
+    private Map<QuestType, Map<Integer, Quest>> onDoingQuest = new ConcurrentHashMap<>();
+
+    private Map<QuestState, Map<QuestType, Map<Integer, Quest>>> questMap = new ConcurrentHashMap<>();
 
     @Override
     public String getName() {
@@ -89,6 +97,14 @@ public class Player extends SceneObject {
         tPlayer.setEquip(json);
         tPlayer.setFriend(JSON.toJSONString(friend));
         tPlayer.setFriendRequest(JSON.toJSONString(friendRequest));
+        tPlayer.setQuest(JSON.toJSONString(questMap));
     }
 
+    public <E extends QuestEvent> void submitEvent(E event) {
+        Player player = this;
+        List<EventHandler> handlerList = EventManager.getEventList(event);
+        handlerList.forEach((eventHandler
+                -> ThreadPoolManager.immediateThread(()
+                -> eventHandler.handle(event, player), tPlayer.getRoleId().intValue())));
+    }
 }

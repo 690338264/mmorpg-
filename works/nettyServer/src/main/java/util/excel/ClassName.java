@@ -12,6 +12,7 @@ public enum ClassName {
     Occ(4),
     Scene(5),
     Skill(6),
+    Quest(7),
     ;
     Integer type;
 

@@ -117,23 +117,26 @@ public class UserService {
      * 选择角色进行登录
      */
     public void logPlayer(Long playerId, ChannelHandlerContext ctx) {
-        User user = getUserByCtx(ctx);
+        ThreadPoolManager.immediateThread(() -> {
 
-        TPlayer tplayer = userMap.getUserPlayerMap(user.getId()).get(playerId);
-        if (tplayer == null) {
-            ctx.writeAndFlush("该角色不存在！\n");
-            return;
-        }
-        Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(tplayer.getLoc());
-        Player player = getPlayer(tplayer, playerId, scene);
-        scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).put(playerId, player);
+            User user = getUserByCtx(ctx);
 
-        player.setChannelHandlerContext(ctx);
-        playerMap.putPlayerCtx(ctx, player);
-        playerMap.getOfflinePlayer().remove(playerId);
-        mpResume(player);
-        //通知场景
-        notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]进入场景\n", player.getTPlayer().getName()));
+            TPlayer tplayer = userMap.getUserPlayerMap(user.getId()).get(playerId);
+            if (tplayer == null) {
+                ctx.writeAndFlush("该角色不存在！\n");
+                return;
+            }
+            Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(tplayer.getLoc());
+            Player player = getPlayer(tplayer, playerId, scene);
+            scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).put(playerId, player);
+
+            player.setChannelHandlerContext(ctx);
+            playerMap.putPlayerCtx(ctx, player);
+            playerMap.getOfflinePlayer().remove(playerId);
+            mpResume(player);
+            //通知场景
+            notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]进入场景\n", player.getTPlayer().getName()));
+        }, playerId.intValue());
 
     }
 
@@ -150,7 +153,7 @@ public class UserService {
                 player.getTaskMap().remove(SceneObjectTask.MP_ADD);
                 return;
             }
-            int nowMp = player.getMp() + mpAdd < player.getOriMp() ? player.getMp() + mpAdd : player.getOriMp();
+            int nowMp = Math.min(player.getMp() + mpAdd, player.getOriMp());
             player.setMp(nowMp);
         }, 0, 10000, player.getChannelHandlerContext().hashCode());
         player.getTaskMap().put(SceneObjectTask.MP_ADD, s);
@@ -170,6 +173,7 @@ public class UserService {
         player.setChannelHandlerContext(null);
         playerMap.getOfflinePlayer().put(player.getTPlayer().getRoleId(), System.currentTimeMillis());
     }
+
 
     public Player getPlayer(TPlayer tPlayer, long playerId, Scene scene) {
         if (userMap.getPlayers(playerId) == null) {

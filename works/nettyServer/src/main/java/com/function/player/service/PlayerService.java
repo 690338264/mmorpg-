@@ -1,5 +1,6 @@
 package com.function.player.service;
 
+import com.event.model.LevelUpEvent;
 import com.function.buff.service.BuffService;
 import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
@@ -225,7 +226,10 @@ public class PlayerService {
         //物品掉落
         dropItem(monster, player);
         //金钱经验奖励
-        getMoneyExc(monster, player);
+        getMoney(player, monster.getMonsterExcel().getMoney());
+        getExc(player, monster.getMonsterExcel().getExc());
+        notifyScene.notifyPlayer(player, MessageFormat.format("获得{0}经验\n",
+                monster.getMonsterExcel().getExc()));
     }
 
     /**
@@ -240,25 +244,39 @@ public class PlayerService {
         itemService.getItem(item, player);
     }
 
-    /**
-     * 获得金币经验
-     */
-    public void getMoneyExc(Monster monster, Player player) {
+//    /**
+//     * 获得金币经验
+//     */
+//    public void getMoneyExc(Monster monster, Player player) {
+//        TPlayer tPlayer = player.getTPlayer();
+//        int addMoney = monster.getMonsterExcel().getMoney();
+//        tPlayer.setMoney(tPlayer.getMoney() + addMoney);
+//        int addExc = monster.getMonsterExcel().getExc();
+//        tPlayer.setExp(tPlayer.getExp() + addExc);
+//        StringBuilder get = new StringBuilder("获得").append(addMoney).append("金钱\n")
+//                .append(addExc).append("经验\n");
+//        notifyScene.notifyPlayer(player, get);
+//        if (tPlayer.getExp() > tPlayer.getLevel() * player.getLevelUp()) {
+//            levelUp(player);
+//            playerData.initAttribute(player);
+//            StringBuilder levelUp = new StringBuilder("恭喜您到达")
+//                    .append(tPlayer.getLevel()).append("级\n");
+//            notifyScene.notifyPlayer(player, levelUp);
+//        }
+//    }
+
+    public void getMoney(Player player, int money) {
         TPlayer tPlayer = player.getTPlayer();
-        int addMoney = monster.getMonsterExcel().getMoney();
-        tPlayer.setMoney(tPlayer.getMoney() + addMoney);
-        int addExc = monster.getMonsterExcel().getExc();
-        tPlayer.setExp(tPlayer.getExp() + addExc);
-        StringBuilder get = new StringBuilder("获得").append(addMoney).append("金钱\n")
-                .append(addExc).append("经验\n");
-        notifyScene.notifyPlayer(player, get);
-        if (tPlayer.getExp() > tPlayer.getLevel() * player.getLevelUp()) {
-            levelUp(player);
-            playerData.initAttribute(player);
-            StringBuilder levelUp = new StringBuilder("恭喜您到达")
-                    .append(tPlayer.getLevel()).append("级\n");
-            notifyScene.notifyPlayer(player, levelUp);
+        tPlayer.setMoney(tPlayer.getMoney() + money);
+        notifyScene.notifyPlayer(player, MessageFormat.format("获得{0}金币\n", money));
+    }
+
+    public void getExc(Player player, int exc) {
+        TPlayer tPlayer = player.getTPlayer();
+        if (tPlayer.getExp() + exc > tPlayer.getLevel() * player.getLevelUp()) {
+            levelUp(player, exc);
         }
+        tPlayer.setExp(tPlayer.getExp() + exc);
     }
 
     /**
@@ -277,10 +295,14 @@ public class PlayerService {
     /**
      * 升级
      */
-    public void levelUp(Player player) {
-        TPlayer tplayer = player.getTPlayer();
-        tplayer.setExp(tplayer.getExp() - tplayer.getLevel() * player.getLevelUp());
-        tplayer.setLevel(tplayer.getLevel() + 1);
+    public void levelUp(Player player, int exc) {
+        TPlayer tPlayer = player.getTPlayer();
+        exc = exc - (tPlayer.getLevel() * player.getLevelUp() - tPlayer.getExp());
+        tPlayer.setLevel(tPlayer.getLevel() + 1);
+        player.submitEvent(new LevelUpEvent());
+        notifyScene.notifyPlayer(player, MessageFormat.format("恭喜你升级！您现在的等级为{0}\n", tPlayer.getLevel()));
+        tPlayer.setExp(0);
+        getExc(player, exc);
     }
 
 }

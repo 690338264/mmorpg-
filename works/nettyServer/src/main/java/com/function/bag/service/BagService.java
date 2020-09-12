@@ -79,7 +79,7 @@ public class BagService {
             Item item = result.get(i);
             if (i < result.size() - 1) {
                 Item nextItem = result.get(i + 1);
-                if (nextItem.getId().equals(item.getId()) && item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
+                if (nextItem.getId() == item.getId() && item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
                     int max = item.getItemById().getMaxNum();
                     if (nextItem.getNum() + item.getNum() > max) {
                         int num = nextItem.getNum() - max + item.getNum();
