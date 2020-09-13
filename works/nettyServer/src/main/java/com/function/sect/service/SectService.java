@@ -1,5 +1,8 @@
 package com.function.sect.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.event.model.SectEvent;
 import com.function.item.model.Item;
 import com.function.item.model.ItemType;
 import com.function.item.service.ItemService;
@@ -8,6 +11,9 @@ import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
 import com.function.player.model.PlayerInfo;
 import com.function.player.service.PlayerData;
+import com.function.quest.model.Quest;
+import com.function.quest.model.QuestState;
+import com.function.quest.model.QuestType;
 import com.function.scene.service.NotifyScene;
 import com.function.sect.manager.SectManager;
 import com.function.sect.model.Sect;
@@ -23,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -91,6 +98,7 @@ public class SectService {
         playerData.updatePlayer(player);
         playerData.updatePlayerInfo(playerInfo);
         notifyScene.notifyPlayer(player, MessageFormat.format("创建公会成功,公会id:{0}\n", tSect.getSectId()));
+        player.submitEvent(new SectEvent());
     }
 
     /**
@@ -166,13 +174,9 @@ public class SectService {
             request.getTPlayer().setSectPosition(SectPosition.NORMAL_MEMBER.getType());
             playerData.updatePlayer(request);
             notifyScene.notifyPlayer(request, "加入公会\n");
+            request.submitEvent(new SectEvent());
         } else {
-            ThreadPoolManager.immediateThread(() -> {
-                TPlayer request = playerDAO.findByRoleId(playerId);
-                request.setSectId(sect.gettSect().getSectId());
-                request.setSectPosition(SectPosition.NORMAL_MEMBER.getType());
-                playerDAO.save(request);
-            }, playerId.intValue());
+            playerUnLine(sect, playerId);
         }
         //更新工会信息
         sect.getJoinRequest().remove(playerId);
@@ -352,6 +356,22 @@ public class SectService {
             return null;
         }
         return sectManager.getSectMap().get(sectId);
+    }
+
+    public void playerUnLine(Sect sect, Long playerId) {
+        ThreadPoolManager.immediateThread(() -> {
+            TPlayer tPlayer = playerDAO.findByRoleId(playerId);
+            Player player = new Player();
+            player.setTPlayer(tPlayer);
+            player.setQuestMap(JSON.parseObject(tPlayer.getQuest(), new TypeReference<Map<QuestState, List<Integer>>>() {
+            }));
+            player.setOnDoingQuest(JSON.parseObject(tPlayer.getOnDoingQuest(), new TypeReference<Map<QuestType, Map<Integer, Quest>>>() {
+            }));
+            player.submitEvent(new SectEvent());
+            tPlayer.setSectId(sect.gettSect().getSectId());
+            tPlayer.setSectPosition(SectPosition.NORMAL_MEMBER.getType());
+            playerData.updatePlayer(player);
+        }, playerId.intValue());
     }
 }
 

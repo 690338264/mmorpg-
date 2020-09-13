@@ -90,15 +90,19 @@ public class Player extends SceneObject {
     }
 
     public void toJson() {
-        try {
-            String json = JSON.toJSONString(equipMap);
-            tPlayer.setEquip(json);
+        String json = JSON.toJSONString(equipMap);
+        tPlayer.setEquip(json);
+        if (friend != null) {
             tPlayer.setFriend(JSON.toJSONString(friend));
+        }
+        if (friendRequest != null) {
             tPlayer.setFriendRequest(JSON.toJSONString(friendRequest));
+        }
+        if (questMap != null) {
             tPlayer.setQuest(JSON.toJSONString(questMap));
+        }
+        if (onDoingQuest != null) {
             tPlayer.setOnDoingQuest(JSON.toJSONString(onDoingQuest));
-        } catch (Exception e) {
-            System.out.println(e);
         }
     }
 

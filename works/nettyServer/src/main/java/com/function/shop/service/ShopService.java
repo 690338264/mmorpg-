@@ -7,6 +7,7 @@ import com.function.item.model.ItemType;
 import com.function.item.service.ItemService;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
+import com.function.player.service.PlayerService;
 import com.function.scene.service.NotifyScene;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,8 @@ public class ShopService {
     private NotifyScene notifyScene;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private PlayerService playerService;
     @Autowired
     private PlayerData playerData;
 
@@ -81,8 +84,7 @@ public class ShopService {
         }
         itemService.removeItem(sellItem.getItemId(), index, num, player);
         int getMoney = sellItem.getItemById().getMoney() * num;
-        int orgMoney = player.getTPlayer().getMoney();
-        player.getTPlayer().setMoney(orgMoney + getMoney);
+        playerService.getMoney(player, getMoney);
         playerData.updatePlayer(player);
         StringBuilder success = new StringBuilder("出售成功！   获得金币：").append(getMoney).append('\n');
         notifyScene.notifyPlayer(player, success);

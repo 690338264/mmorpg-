@@ -34,9 +34,8 @@ public class NotifyScene {
     }
 
     public void notifyTeam(Team team, String notify) {
-        team.getMembers().forEach((playerId, teammate) -> {
-            notifyPlayer(teammate, notify);
-        });
+        team.getMembers().forEach((playerId, teammate) ->
+                notifyPlayer(teammate, notify));
     }
 
     public void notifyPlayer(Player player, String notify) {

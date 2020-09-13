@@ -20,16 +20,6 @@ public class Quest {
 
     public Quest(int id) {
         this.id = id;
-//        if (getQuestById().getType() == QuestType.ITEM_GET.type ||
-//                getQuestById().getType() == QuestType.MONSTER_KILL.type ||
-//                getQuestById().getType() == QuestType.NPC_TALK.type) {
-//            cfgList = JSON.parseObject(getQuestById().getTarget(), new TypeReference<List<QuestCfg>>() {
-//            });
-//            IntStream.range(0, cfgList.size()).forEach((index) ->
-//                    progress.set(index, 0));
-//        } else {
-//            progress.add(0, 0);
-//        }
         cfgList = JSON.parseObject(getQuestById().getTarget(), new TypeReference<List<QuestCfg>>() {
         });
         IntStream.range(0, cfgList.size()).forEach((index) -> progress.add(0));

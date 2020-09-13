@@ -189,7 +189,7 @@ public class PlayerData {
                 QuestType questType = QuestType.values()[questExcel.getType() - 1];
                 player.getOnDoingQuest().computeIfAbsent(questType, key -> new ConcurrentHashMap<>());
                 player.getOnDoingQuest().get(questType).put(questId, quest);
-            } else if (questExcel.getLevel() == null) {
+            } else if (questExcel.getLevel() == 0) {
                 player.getQuestMap().get(QuestState.CAN_BUT_NOT).add(questId);
             }
         });

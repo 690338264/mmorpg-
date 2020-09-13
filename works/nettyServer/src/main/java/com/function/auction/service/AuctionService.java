@@ -1,5 +1,7 @@
 package com.function.auction.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.function.auction.manager.AuctionManager;
 import com.function.auction.model.Auction;
 import com.function.auction.model.AuctionType;
@@ -9,6 +11,10 @@ import com.function.item.model.Item;
 import com.function.item.service.ItemService;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
+import com.function.player.service.PlayerService;
+import com.function.quest.model.Quest;
+import com.function.quest.model.QuestState;
+import com.function.quest.model.QuestType;
 import com.function.scene.service.NotifyScene;
 import com.function.user.map.UserMap;
 import com.jpa.dao.AuctionDAO;
@@ -20,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Catherine
@@ -43,6 +51,8 @@ public class AuctionService {
     private PlayerDAO playerDAO;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private PlayerService playerService;
     private final static float FEE = 0.80f;
 
     /**
@@ -202,13 +212,17 @@ public class AuctionService {
             }, playerId.intValue());
             return;
         }
-
-        TPlayer tPlayer = playerDAO.findByRoleId(playerId);
         ThreadPoolManager.immediateThread(() -> {
-                    tPlayer.setMoney(tPlayer.getMoney() + money);
-                    playerDAO.save(tPlayer);
-                }, playerId.intValue()
-        );
+            Player playerUnLine = new Player();
+            TPlayer tPlayer = playerDAO.findByRoleId(playerId);
+            playerUnLine.setTPlayer(tPlayer);
+            playerUnLine.setQuestMap(JSON.parseObject(tPlayer.getQuest(), new TypeReference<Map<QuestState, List<Integer>>>() {
+            }));
+            playerUnLine.setOnDoingQuest(JSON.parseObject(tPlayer.getOnDoingQuest(), new TypeReference<Map<QuestType, Map<Integer, Quest>>>() {
+            }));
+            playerService.getMoney(playerUnLine, money);
+            playerData.updatePlayer(playerUnLine);
+        }, playerId.intValue());
     }
 
     public void sendItem(Long fromId, Long playerId, Item item) {

@@ -137,6 +137,14 @@ public enum Cmd {
     ACCEPT_FRIEND("accept_friend", 10222),
     //拒绝好友申请
     REFUSE_FRIEND("refuse_friend", 10223),
+    //查看任务列表
+    LIST_QUEST("list_quest", 10230),
+    //接受任务
+    ACCEPT_QUEST("accept_quest", 10231),
+    //放弃任务
+    GIVE_UP_QUEST("give_up_quest", 10232),
+    //提交任务
+    COMMIT_QUEST("commit_quest", 10233),
     //查看人物状态属性
     PLAYER_STATE("player_state", 8888),
 

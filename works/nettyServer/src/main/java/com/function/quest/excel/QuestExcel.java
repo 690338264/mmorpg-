@@ -18,7 +18,7 @@ public class QuestExcel {
     /**
      * 要求等级
      */
-    private Integer level;
+    private int level;
     /**
      * 目标
      */
@@ -108,11 +108,11 @@ public class QuestExcel {
         this.money = money;
     }
 
-    public Integer getLevel() {
+    public int getLevel() {
         return level;
     }
 
-    public void setLevel(Integer level) {
+    public void setLevel(int level) {
         this.level = level;
     }
 

@@ -2,9 +2,13 @@ package com.function.friend.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.event.model.FriendEvent;
 import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
+import com.function.quest.model.Quest;
+import com.function.quest.model.QuestState;
+import com.function.quest.model.QuestType;
 import com.function.scene.service.NotifyScene;
 import com.function.user.map.PlayerMap;
 import com.function.user.map.UserMap;
@@ -15,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -95,6 +100,8 @@ public class FriendService {
             return;
         }
         player.getFriend().put(friendId, player.getFriendRequest().get(friendId));
+        player.submitEvent(new FriendEvent());
+
         player.getFriendRequest().remove(friendId);
         playerData.updatePlayer(player);
 
@@ -102,14 +109,21 @@ public class FriendService {
         if (userMap.getPlayers().containsKey(friendId)) {
             Player friend = userMap.getPlayers(friendId);
             friend.getFriend().put(playerId, otherAdd);
+            friend.submitEvent(new FriendEvent());
             playerData.updatePlayer(friend);
         } else {
             TPlayer tPlayer = playerDAO.findByRoleId(playerId);
-            Map<Long, TPlayerInfo> map = JSON.parseObject(tPlayer.getFriendRequest(), new TypeReference<Map<Long, TPlayerInfo>>() {
-            });
-            map.put(playerId, otherAdd);
-            tPlayer.setFriendRequest(JSON.toJSONString(map));
-            playerDAO.save(tPlayer);
+            Player friend = new Player();
+            player.setTPlayer(tPlayer);
+            friend.setFriend(JSON.parseObject(tPlayer.getFriend(), new TypeReference<Map<Long, TPlayerInfo>>() {
+            }));
+            friend.setQuestMap(JSON.parseObject(tPlayer.getQuest(), new TypeReference<Map<QuestState, List<Integer>>>() {
+            }));
+            friend.setOnDoingQuest(JSON.parseObject(tPlayer.getOnDoingQuest(), new TypeReference<Map<QuestType, Map<Integer, Quest>>>() {
+            }));
+            friend.getFriend().put(playerId, otherAdd);
+            friend.submitEvent(new FriendEvent());
+            playerData.updatePlayer(friend);
         }
         notifyScene.notifyPlayer(player, "添加成功\n");
     }

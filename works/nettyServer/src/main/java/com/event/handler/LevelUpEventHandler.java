@@ -22,5 +22,6 @@ public class LevelUpEventHandler {
 
     private void levelUp(LevelUpEvent levelUpEvent, Player player) {
         questService.checkQuestNoId(player, levelUpEvent.getType(), levelUpEvent.getParam());
+        questService.checkCanAcceptByLevel(player);
     }
 }

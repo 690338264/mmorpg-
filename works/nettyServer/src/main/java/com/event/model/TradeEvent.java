@@ -5,12 +5,12 @@ import com.function.quest.model.QuestType;
 
 /**
  * @author Catherine
- * @create 2020-09-12 21:13
+ * @create 2020-09-13 19:31
  */
-public class LevelUpEvent extends QuestEvent {
+public class TradeEvent extends QuestEvent {
     @Override
     public QuestType getType() {
-        return QuestType.LEVEL_UP;
+        return QuestType.TRADE;
     }
 
     public int getParam() {

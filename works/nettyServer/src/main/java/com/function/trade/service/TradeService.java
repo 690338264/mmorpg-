@@ -1,9 +1,11 @@
 package com.function.trade.service;
 
+import com.event.model.TradeEvent;
 import com.function.item.model.Item;
 import com.function.item.model.ItemType;
 import com.function.item.service.ItemService;
 import com.function.player.model.Player;
+import com.function.player.service.PlayerService;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObjectType;
 import com.function.scene.service.NotifyScene;
@@ -29,6 +31,8 @@ public class TradeService {
     private TradeManager tradeManager;
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private PlayerService playerService;
 
     private static final int TRADE_PEOPLE = 2;
 
@@ -69,6 +73,8 @@ public class TradeService {
         player.setTradeBoard(trade);
         notifyScene.notifyPlayer(player, "开始交易\n");
         notifyScene.notifyPlayer(trade.getInitiator(), "玩家接受交易 请开始交易\n");
+        player.submitEvent(new TradeEvent());
+        trade.getInitiator().submitEvent(new TradeEvent());
     }
 
     /**
@@ -192,11 +198,10 @@ public class TradeService {
      * 得到交易物品
      */
     public void getChange(List<Item> items, int money, Player player) {
-        TPlayer tPlayer = player.getTPlayer();
         ThreadPoolManager.immediateThread(() -> {
             itemService.getItem(player, items);
-            tPlayer.setMoney(tPlayer.getMoney() + money);
-        }, tPlayer.getRoleId().intValue());
+            playerService.getMoney(player, money);
+        }, player.getTPlayer().getRoleId().intValue());
 
     }
 

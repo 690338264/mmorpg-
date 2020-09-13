@@ -1,6 +1,8 @@
 package com.function.player.service;
 
 import com.event.model.LevelUpEvent;
+import com.event.model.MonsterEvent;
+import com.event.model.PvpEvent;
 import com.function.buff.service.BuffService;
 import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
@@ -169,6 +171,7 @@ public class PlayerService {
                     playerDie(p);
                     notifyScene.notifyScene(scene, MessageFormat.format("玩家{0}击败玩家{1}\n",
                             player.getTPlayer().getName(), p.getTPlayer().getName()));
+                    player.submitEvent(new PvpEvent());
                 }
             } else {
                 //攻击
@@ -230,6 +233,7 @@ public class PlayerService {
         notifyScene.notifyPlayer(player, MessageFormat.format("获得{0}经验\n",
                 monster.getMonsterExcel().getExc()));
         getExc(player, monster.getMonsterExcel().getExc());
+        player.submitEvent(new MonsterEvent(monster.getExcelId()));
         playerData.updatePlayer(player);
     }
 
@@ -245,33 +249,19 @@ public class PlayerService {
         itemService.getItem(item, player);
     }
 
-//    /**
-//     * 获得金币经验
-//     */
-//    public void getMoneyExc(Monster monster, Player player) {
-//        TPlayer tPlayer = player.getTPlayer();
-//        int addMoney = monster.getMonsterExcel().getMoney();
-//        tPlayer.setMoney(tPlayer.getMoney() + addMoney);
-//        int addExc = monster.getMonsterExcel().getExc();
-//        tPlayer.setExp(tPlayer.getExp() + addExc);
-//        StringBuilder get = new StringBuilder("获得").append(addMoney).append("金钱\n")
-//                .append(addExc).append("经验\n");
-//        notifyScene.notifyPlayer(player, get);
-//        if (tPlayer.getExp() > tPlayer.getLevel() * player.getLevelUp()) {
-//            levelUp(player);
-//            playerData.initAttribute(player);
-//            StringBuilder levelUp = new StringBuilder("恭喜您到达")
-//                    .append(tPlayer.getLevel()).append("级\n");
-//            notifyScene.notifyPlayer(player, levelUp);
-//        }
-//    }
-
+    /**
+     * 获得金币
+     */
     public void getMoney(Player player, int money) {
         TPlayer tPlayer = player.getTPlayer();
         tPlayer.setMoney(tPlayer.getMoney() + money);
         notifyScene.notifyPlayer(player, MessageFormat.format("获得{0}金币\n", money));
+        player.submitEvent(new MonsterEvent(money));
     }
 
+    /**
+     * 获得经验
+     */
     public void getExc(Player player, int exc) {
         TPlayer tPlayer = player.getTPlayer();
         if (tPlayer.getExp() + exc > tPlayer.getLevel() * player.getLevelUp()) {

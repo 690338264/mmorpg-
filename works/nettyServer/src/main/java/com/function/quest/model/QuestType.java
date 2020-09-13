@@ -7,10 +7,16 @@ package com.function.quest.model;
 public enum QuestType {
     //
     LEVEL_UP(1),
-    MONEY_GET(2),
-    NPC_TALK(3),
-    ITEM_GET(4),
-    MONSTER_KILL(5),
+    FRIEND_ADD(2),
+    MONEY_GET(3),
+    NPC_TALK(4),
+    ITEM_GET(5),
+    MONSTER_KILL(6),
+    DUNGEON_PASS(7),
+    TEAM_MAKE(8),
+    SECT_ADD(9),
+    PK_WIN(10),
+    TRADE(11),
     ;
     int type;
 

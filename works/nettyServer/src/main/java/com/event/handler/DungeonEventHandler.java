@@ -1,7 +1,7 @@
 package com.event.handler;
 
 import com.event.EventManager;
-import com.event.model.MoneyEvent;
+import com.event.model.DungeonEvent;
 import com.function.player.model.Player;
 import com.function.quest.service.QuestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,19 +9,18 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Catherine
- * @create 2020-09-10 19:35
+ * @create 2020-09-13 19:15
  */
 @Component
-public class MoneyEventHandler {
+public class DungeonEventHandler {
     @Autowired
     private QuestService questService;
 
     {
-        EventManager.putEvent(MoneyEvent.class, this::achieveMoney);
+        EventManager.putEvent(DungeonEvent.class, this::dungeonPass);
     }
 
-    private void achieveMoney(MoneyEvent moneyEvent, Player player) {
-        questService.checkQuestNoId(player, moneyEvent.getType(), moneyEvent.getMoney());
+    private void dungeonPass(DungeonEvent dungeonEvent, Player player) {
+        questService.checkQuestWithId(player, dungeonEvent.getType(), dungeonEvent.getDungeonId(), dungeonEvent.getParam());
     }
-
 }

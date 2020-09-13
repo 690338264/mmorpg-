@@ -13,13 +13,14 @@ public class MoneyEvent extends QuestEvent {
         return QuestType.MONEY_GET;
     }
 
-    private int money;
+    public MoneyEvent(int money) {
+        this.money = money;
+    }
+
+    private final int money;
 
     public int getMoney() {
         return money;
     }
 
-    public void setMoney(int money) {
-        this.money = money;
-    }
 }

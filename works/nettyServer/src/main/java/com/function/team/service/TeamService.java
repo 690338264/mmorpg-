@@ -1,5 +1,6 @@
 package com.function.team.service;
 
+import com.event.model.TeamEvent;
 import com.function.occ.excel.OccExcel;
 import com.function.occ.excel.OccResource;
 import com.function.player.model.Player;
@@ -152,6 +153,8 @@ public class TeamService {
         if (addMember(apply, team)) {
             team.getApply().remove(playerId);
             notifyScene.notifyTeam(team, MessageFormat.format("[{0}]加入小队\n", apply.getTPlayer().getName()));
+            team.getMembers().forEach((id, teamMate) ->
+                    teamMate.submitEvent(new TeamEvent()));
         }
     }
 
@@ -170,6 +173,8 @@ public class TeamService {
         }
         if (addMember(player, team)) {
             team.getInvite().remove(player.getTPlayer().getRoleId());
+            team.getMembers().forEach((id, teamMate) ->
+                    teamMate.submitEvent(new TeamEvent()));
             notifyScene.notifyTeam(team, MessageFormat.format("[{0}]加入小队\n", player.getTPlayer().getName()));
         }
     }
