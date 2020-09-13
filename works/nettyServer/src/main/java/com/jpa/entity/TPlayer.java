@@ -51,6 +51,9 @@ public class TPlayer {
     @Column(name = "friendRequest")
     private String friendRequest = "{}";
 
+    @Column(name = "onDoingQuest", columnDefinition = "TEXT")
+    private String onDoingQuest;
+
     @Column(name = "quest", columnDefinition = "TEXT")
     private String quest = "{}";
 
@@ -158,6 +161,14 @@ public class TPlayer {
         this.friendRequest = friendRequest;
     }
 
+    public String getOnDoingQuest() {
+        return onDoingQuest;
+    }
+
+    public void setOnDoingQuest(String onDoingQuest) {
+        this.onDoingQuest = onDoingQuest;
+    }
+
     public String getQuest() {
         return quest;
     }
@@ -182,6 +193,7 @@ public class TPlayer {
                 ", sectId=" + sectId +
                 ", sectPosition=" + sectPosition +
                 ", friendRequest='" + friendRequest + '\'' +
+                ", onDoingQuest='" + onDoingQuest + '\'' +
                 ", quest='" + quest + '\'' +
                 '}';
     }

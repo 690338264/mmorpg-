@@ -227,9 +227,10 @@ public class PlayerService {
         dropItem(monster, player);
         //金钱经验奖励
         getMoney(player, monster.getMonsterExcel().getMoney());
-        getExc(player, monster.getMonsterExcel().getExc());
         notifyScene.notifyPlayer(player, MessageFormat.format("获得{0}经验\n",
                 monster.getMonsterExcel().getExc()));
+        getExc(player, monster.getMonsterExcel().getExc());
+        playerData.updatePlayer(player);
     }
 
     /**
@@ -275,8 +276,9 @@ public class PlayerService {
         TPlayer tPlayer = player.getTPlayer();
         if (tPlayer.getExp() + exc > tPlayer.getLevel() * player.getLevelUp()) {
             levelUp(player, exc);
+        } else {
+            tPlayer.setExp(tPlayer.getExp() + exc);
         }
-        tPlayer.setExp(tPlayer.getExp() + exc);
     }
 
     /**

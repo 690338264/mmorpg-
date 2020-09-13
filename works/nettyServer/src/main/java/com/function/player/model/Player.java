@@ -33,11 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Data
 @Slf4j
-//@Component
 @EqualsAndHashCode(callSuper = true)
 public class Player extends SceneObject {
-    //        @Autowired
-//    private EventManager eventManager;
     private TPlayer tPlayer;
     private ChannelHandlerContext channelHandlerContext;
     /**
@@ -80,7 +77,7 @@ public class Player extends SceneObject {
 
     private Map<QuestType, Map<Integer, Quest>> onDoingQuest = new ConcurrentHashMap<>();
 
-    private Map<QuestState, Map<QuestType, Map<Integer, Quest>>> questMap = new ConcurrentHashMap<>();
+    private Map<QuestState, List<Integer>> questMap = new ConcurrentHashMap<>();
 
     @Override
     public String getName() {
@@ -93,11 +90,16 @@ public class Player extends SceneObject {
     }
 
     public void toJson() {
-        String json = JSON.toJSONString(equipMap);
-        tPlayer.setEquip(json);
-        tPlayer.setFriend(JSON.toJSONString(friend));
-        tPlayer.setFriendRequest(JSON.toJSONString(friendRequest));
-        tPlayer.setQuest(JSON.toJSONString(questMap));
+        try {
+            String json = JSON.toJSONString(equipMap);
+            tPlayer.setEquip(json);
+            tPlayer.setFriend(JSON.toJSONString(friend));
+            tPlayer.setFriendRequest(JSON.toJSONString(friendRequest));
+            tPlayer.setQuest(JSON.toJSONString(questMap));
+            tPlayer.setOnDoingQuest(JSON.toJSONString(onDoingQuest));
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     public <E extends QuestEvent> void submitEvent(E event) {

@@ -1,5 +1,6 @@
 package com.event.handler;
 
+import com.event.EventManager;
 import com.event.model.MoneyEvent;
 import com.function.player.model.Player;
 import com.function.quest.service.QuestService;
@@ -16,7 +17,7 @@ public class MoneyEventHandler {
     private QuestService questService;
 
     {
-//        eventManager.putEvent(MoneyEvent.class, this::achieveMoney);
+        EventManager.putEvent(MoneyEvent.class, this::achieveMoney);
     }
 
     private void achieveMoney(MoneyEvent moneyEvent, Player player) {

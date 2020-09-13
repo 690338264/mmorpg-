@@ -2,6 +2,7 @@ package com.function.quest.model;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.function.quest.excel.QuestExcel;
 import com.function.quest.excel.QuestResource;
 
@@ -14,18 +15,24 @@ import java.util.stream.IntStream;
  * @create 2020-09-11 15:25
  */
 public class Quest {
+    public Quest() {
+    }
+
     public Quest(int id) {
         this.id = id;
-        if (getQuestById().getType() == QuestType.ITEM_GET.type ||
-                getQuestById().getType() == QuestType.MONSTER_KILL.type ||
-                getQuestById().getType() == QuestType.NPC_TALK.type) {
-            cfgList = JSON.parseObject(getQuestById().getTarget(), new TypeReference<List<QuestCfg>>() {
-            });
-            IntStream.range(0, cfgList.size()).forEach((index) ->
-                    progress.set(index, 0));
-        } else {
-            progress.add(0, 0);
-        }
+//        if (getQuestById().getType() == QuestType.ITEM_GET.type ||
+//                getQuestById().getType() == QuestType.MONSTER_KILL.type ||
+//                getQuestById().getType() == QuestType.NPC_TALK.type) {
+//            cfgList = JSON.parseObject(getQuestById().getTarget(), new TypeReference<List<QuestCfg>>() {
+//            });
+//            IntStream.range(0, cfgList.size()).forEach((index) ->
+//                    progress.set(index, 0));
+//        } else {
+//            progress.add(0, 0);
+//        }
+        cfgList = JSON.parseObject(getQuestById().getTarget(), new TypeReference<List<QuestCfg>>() {
+        });
+        IntStream.range(0, cfgList.size()).forEach((index) -> progress.add(0));
     }
 
     private int id;
@@ -58,6 +65,7 @@ public class Quest {
         this.progress = progress;
     }
 
+    @JSONField(serialize = false)
     public QuestExcel getQuestById() {
         return QuestResource.getQuestById(id);
     }
