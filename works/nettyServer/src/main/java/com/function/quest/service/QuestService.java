@@ -160,7 +160,7 @@ public class QuestService {
 
     public void checkCanAcceptByLevel(Player player) {
         QuestResource.getQuestExcelMap().forEach((questId, questExcel) -> {
-            if (questExcel.getLevel() == player.getTPlayer().getLevel()) {
+            if (questExcel.getLevel() <= player.getTPlayer().getLevel()) {
                 if (questExcel.getPreQuest() == null || !checkIfHasComplete(player, questExcel.getPreQuest())) {
                     return;
                 }
@@ -171,7 +171,7 @@ public class QuestService {
 
     public void checkCanAcceptByQuest(Player player, int questId) {
         QuestExcel questExcel = QuestResource.getQuestById(questId);
-        if (player.getTPlayer().getLevel() == questExcel.getLevel()) {
+        if (player.getTPlayer().getLevel() >= questExcel.getLevel()) {
             player.getQuestMap().get(QuestState.CAN_BUT_NOT).add(questId);
         }
     }

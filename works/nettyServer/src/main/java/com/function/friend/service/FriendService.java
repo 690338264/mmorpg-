@@ -101,7 +101,6 @@ public class FriendService {
         }
         player.getFriend().put(friendId, player.getFriendRequest().get(friendId));
         player.submitEvent(new FriendEvent());
-
         player.getFriendRequest().remove(friendId);
         playerData.updatePlayer(player);
 
@@ -127,6 +126,7 @@ public class FriendService {
         }
         notifyScene.notifyPlayer(player, "添加成功\n");
     }
+
 
     public void refuseFriend(Player player, long friendId) {
         player.getFriendRequest().remove(friendId);

@@ -43,6 +43,7 @@ public class PlayerManager {
         player.setUserId(userId);
         player.setLoc(1000000);
         player.setExp(1);
+        player.setLevel(1);
         player.setMoney(0);
         player.setEquip("{}");
         return player;

@@ -1,6 +1,7 @@
 package com.function.player.service;
 
 import com.event.model.LevelUpEvent;
+import com.event.model.MoneyEvent;
 import com.event.model.MonsterEvent;
 import com.event.model.PvpEvent;
 import com.function.buff.service.BuffService;
@@ -256,7 +257,7 @@ public class PlayerService {
         TPlayer tPlayer = player.getTPlayer();
         tPlayer.setMoney(tPlayer.getMoney() + money);
         notifyScene.notifyPlayer(player, MessageFormat.format("获得{0}金币\n", money));
-        player.submitEvent(new MonsterEvent(money));
+        player.submitEvent(new MoneyEvent(money));
     }
 
     /**

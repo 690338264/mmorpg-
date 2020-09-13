@@ -90,8 +90,9 @@ public class Player extends SceneObject {
     }
 
     public void toJson() {
-        String json = JSON.toJSONString(equipMap);
-        tPlayer.setEquip(json);
+        if (equipMap != null) {
+            tPlayer.setEquip(JSON.toJSONString(equipMap));
+        }
         if (friend != null) {
             tPlayer.setFriend(JSON.toJSONString(friend));
         }
@@ -104,6 +105,7 @@ public class Player extends SceneObject {
         if (onDoingQuest != null) {
             tPlayer.setOnDoingQuest(JSON.toJSONString(onDoingQuest));
         }
+
     }
 
     public <E extends QuestEvent> void submitEvent(E event) {

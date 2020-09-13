@@ -89,8 +89,8 @@ public class SceneService {
                 if (sceneObject.getType() == SceneObjectType.PLAYER) {
                     Player p = (Player) sceneObject;
                     String die = p.getHp() <= 0 ? "[阵亡]" : "";
-                    notifyScene.notifyPlayer(player, MessageFormat.format("玩家:[{0}]等级为{1}  {2}\n",
-                            p.getTPlayer().getName(), p.getTPlayer().getLevel(), die));
+                    notifyScene.notifyPlayer(player, MessageFormat.format("玩家:{0}:[{1}]等级为{2}  {3}\n",
+                            p.getTPlayer().getRoleId(), p.getTPlayer().getName(), p.getTPlayer().getLevel(), die));
                     return;
                 }
                 if (sceneObject.getType() == SceneObjectType.MONSTER) {

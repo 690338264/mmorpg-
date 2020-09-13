@@ -58,11 +58,11 @@ public class TPlayerInfo {
         this.occupation = occupation;
     }
 
-    public int getSectPosition() {
+    public Integer getSectPosition() {
         return sectPosition;
     }
 
-    public void setSectPosition(int sectPosition) {
+    public void setSectPosition(Integer sectPosition) {
         this.sectPosition = sectPosition;
     }
 
