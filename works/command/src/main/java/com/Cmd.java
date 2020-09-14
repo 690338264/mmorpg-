@@ -76,13 +76,13 @@ public enum Cmd {
     //退出小队
     LEAVE_TEAM("leave_team", 10166),
     //查看副本列表
-    LIST_INSTANCE("list_instance", 1017),
+    LIST_DUNGEON("list_dungeon", 1017),
     //申请个人副本
-    PERSONAL_INSTANCE("apply_personal", 10170),
+    PERSONAL_DUNGEON("apply_personal", 10170),
     //申请小队副本
-    TEAM_INSTANCE("team_instance", 10171),
+    TEAM_DUNGEON("team_dungeon", 10171),
     //进入副本
-    INTO_INSTANCE("into_instance", 10172),
+    INTO_DUNGEON("into_dungeon", 10172),
     //创建交易
     CREATE_TRADE("create_trade", 10180),
     //同意交易

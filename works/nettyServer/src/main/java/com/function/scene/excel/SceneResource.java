@@ -27,8 +27,6 @@ public class SceneResource {
     @Autowired
     private SceneManager sceneManagerCache;
 
-    public static int idTimes = 1000000;
-
     private static final Map<Integer, Map<Integer, SceneExcel>> sceneMap = new HashMap<>();
 
     @PostConstruct
@@ -41,25 +39,25 @@ public class SceneResource {
         for (int i = 0; i < num; i++) {
             SceneExcel sceneExcel = (SceneExcel) excelManager.getMap().get(ClassName.Scene.name()).get(i);
             sceneMap.get(sceneExcel.getType()).put(sceneExcel.getId(), sceneExcel);
-            String str = sceneExcel.getMonster();
 
-            String[] strs = str.split(",");
-            int[] monsters = Arrays.stream(strs).mapToInt(Integer::parseInt).toArray();
-            List<Integer> monster = Arrays.stream(monsters).boxed().collect(Collectors.toList());
-            sceneExcel.setMonsters(monster);
+            sceneExcel.setMonsters(stringToList(sceneExcel.getMonster()));
 
-            String[] split = sceneExcel.getNpc().split(",");
-            int[] npcs = Arrays.stream(split).mapToInt(Integer::parseInt).toArray();
-            List<Integer> npc = Arrays.stream(npcs).boxed().collect(Collectors.toList());
-            sceneExcel.setNpcs(npc);
+            sceneExcel.setNpcs(stringToList(sceneExcel.getNpc()));
         }
-        sceneMap.get(SceneType.PUBLIC.getType()).forEach((k, v) -> {
-            Scene scene = sceneManagerCache.createScene(SceneType.PUBLIC.getType(), k);
-            IntStream.range(0, v.getMonsters().size()).forEach(i -> sceneManagerCache.createMonster(scene, i));
+        sceneMap.get(SceneType.PUBLIC.getType()).forEach((sceneId, sceneExcel) -> {
+            Scene scene = sceneManagerCache.createScene(SceneType.PUBLIC.getType(), sceneId, sceneId);
+            sceneExcel.setNeighbors(stringToList(sceneExcel.getNeighbor()));
+            IntStream.range(0, sceneExcel.getMonsters().size()).forEach(i -> sceneManagerCache.createMonster(scene, i));
             sceneManagerCache.createNpc(scene);
             sceneManagerCache.publicStart(scene);
         });
 
+    }
+
+    public List<Integer> stringToList(String string) {
+        String[] strs = string.split(",");
+        int[] str = Arrays.stream(strs).mapToInt(Integer::parseInt).toArray();
+        return Arrays.stream(str).boxed().collect(Collectors.toList());
     }
 
     public static Map<Integer, SceneExcel> getSceneMap(int type) {

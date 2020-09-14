@@ -38,5 +38,7 @@ public class SceneExcel {
 
     private List<Integer> npcs;
 
+    private List<Integer> neighbors;
+
 
 }

@@ -37,16 +37,13 @@ public class SceneService {
     public void getNeighbor(Player player) {
         int locId = player.getTPlayer().getLoc();
         int type = SceneType.PUBLIC.getType();
-        String neighbors = SceneResource.getSceneById(type, locId / SceneResource.idTimes).getNeighbor();
-        String[] strs = neighbors.split(",");
+        SceneExcel sceneExcel = sceneManager.get(type).get(locId).getSceneExcel();
         notifyScene.notifyPlayer(player, MessageFormat.format("您现在所在场景为：{0}\n您可到达的地点有：\n",
-                sceneManager.get(type).get(locId).getSceneExcel().getName()));
-        for (String str : strs) {
-            int canTo = Integer.parseInt(str);
-            SceneExcel sceneExcel = SceneResource.getSceneById(type, canTo);
-            notifyScene.notifyPlayer(player, MessageFormat.format("{0}代号为:{1}\n",
-                    sceneExcel.getName(), sceneExcel.getId()));
-        }
+                sceneExcel.getName()));
+        sceneExcel.getNeighbors().forEach((sceneId) -> {
+            SceneExcel neighbor = SceneResource.getSceneById(type, sceneId);
+            notifyScene.notifyPlayer(player, MessageFormat.format("{0}:{1}\n", neighbor.getId(), neighbor.getName()));
+        });
     }
 
     /**
@@ -60,11 +57,6 @@ public class SceneService {
             return;
         }
         oldScene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).remove(player.getTPlayer().getRoleId());
-        for (int key : sceneManager.get(type).keySet()) {
-            if (key / SceneResource.idTimes == sceneId) {
-                sceneId = key;
-            }
-        }
         player.getTPlayer().setLoc(sceneId);
         Scene scene = addPlayer(type, sceneId, player);
         playerData.updatePlayer(player);

@@ -33,7 +33,7 @@ public class DungeonService {
     /**
      * 列出可以创建的副本
      */
-    public void listInstance(Player player) {
+    public void listDungeon(Player player) {
         Map<Integer, SceneExcel> map = SceneResource.getSceneMap(SceneType.PRIVATE.getType());
         notifyScene.notifyPlayer(player, "个人副本:\n");
         map.forEach((sceneId, sceneExcel) ->
@@ -41,9 +41,8 @@ public class DungeonService {
         );
         Map<Integer, SceneExcel> map1 = SceneResource.getSceneMap(SceneType.TEAM.getType());
         notifyScene.notifyPlayer(player, "组队副本:\n");
-        map1.forEach((sceneId, sceneExcel) -> {
-            notifyScene.notifyPlayer(player, MessageFormat.format("{0},{1}\n", sceneId, sceneExcel.getName()));
-        });
+        map1.forEach((sceneId, sceneExcel) ->
+                notifyScene.notifyPlayer(player, MessageFormat.format("{0},{1}\n", sceneId, sceneExcel.getName())));
     }
 
     /**
@@ -55,7 +54,7 @@ public class DungeonService {
             return;
         }
         int type = SceneType.PRIVATE.getType();
-        Dungeon dungeon = createInstance(type, id);
+        Dungeon dungeon = createDungeon(type, id, player.getTPlayer().getRoleId().intValue());
         dungeon.getPlayers().add(player);
         player.setDungeon(dungeon);
         notifyScene.notifyPlayer(player, "副本创建成功，请尽快进入副本!\n");
@@ -64,14 +63,14 @@ public class DungeonService {
     /**
      * 小队副本创建
      */
-    public void teamCreate(Player player, int id) {
+    public void teamCreate(Player player, int dungeonId) {
         Team team = teamManager.getTeamCache().get(player.getTeamId());
         if (player.getTeamId() == null || !team.getLeaderId().equals(player.getTPlayer().getRoleId()) || player.getDungeon() != null) {
             notifyScene.notifyPlayer(player, "创建失败!\n");
             return;
         }
         int type = SceneType.TEAM.getType();
-        Dungeon dungeon = createInstance(type, id);
+        Dungeon dungeon = createDungeon(type, dungeonId, player.getTeamId().intValue());
         team.getMembers().forEach((k, teammate) -> {
             dungeon.getPlayers().add(teammate);
             teammate.setDungeon(dungeon);
@@ -82,12 +81,12 @@ public class DungeonService {
     /**
      * 副本场景创建
      */
-    public Dungeon createInstance(int type, int id) {
-        Scene scene = sceneManager.createScene(type, id);
+    public Dungeon createDungeon(int type, int sceneId, int id) {
+        Scene scene = sceneManager.createScene(type, sceneId, id);
         Dungeon dungeon = new Dungeon(scene);
         nextBoss(dungeon);
         dungeon.setCreateTime(System.currentTimeMillis());
-        sceneManager.instanceStart(scene.getId(), dungeon);
+        sceneManager.dungeonStart(scene.getId(), dungeon);
         return dungeon;
     }
 
@@ -107,7 +106,7 @@ public class DungeonService {
     /**
      * 进入副本
      */
-    public void intoInstance(Player player) {
+    public void intoDungeon(Player player) {
         Scene scene = player.getDungeon().getScene();
         sceneService.addPlayer(scene.getType(), scene.getId(), player);
         notifyScene.notifyScene(scene, MessageFormat.format("[{0}]进入副本\n", player.getTPlayer().getName()));

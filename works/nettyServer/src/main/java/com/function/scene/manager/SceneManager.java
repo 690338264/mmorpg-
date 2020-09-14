@@ -6,7 +6,6 @@ import com.function.monster.service.MonsterService;
 import com.function.npc.excel.NpcResource;
 import com.function.player.model.Player;
 import com.function.scene.excel.SceneExcel;
-import com.function.scene.excel.SceneResource;
 import com.function.scene.model.Dungeon;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObjectType;
@@ -57,7 +56,7 @@ public class SceneManager {
         s.setHeartBeat(scheduledFuture);
     }
 
-    public void instanceStart(int sceneId, Dungeon dungeon) {
+    public void dungeonStart(int sceneId, Dungeon dungeon) {
         Scene s = dungeon.getScene();
         ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
             if (dungeon.getScene().getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).isEmpty()) {
@@ -86,9 +85,9 @@ public class SceneManager {
     /**
      * 创建场景
      */
-    public Scene createScene(int type, int sceneId) {
+    public Scene createScene(int type, int sceneId, int id) {
         Scene s = new Scene();
-        s.setId(sceneId * SceneResource.idTimes + sceneCache.get(type).size());
+        s.setId(id);
         s.setSceneId(sceneId);
         s.setType(type);
         for (SceneObjectType object : SceneObjectType.values()) {
