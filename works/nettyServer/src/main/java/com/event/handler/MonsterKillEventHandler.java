@@ -21,6 +21,6 @@ public class MonsterKillEventHandler {
     }
 
     private void killMonster(MonsterEvent monsterEvent, Player player) {
-        questService.checkQuestWithId(player, monsterEvent.getType(), monsterEvent.getMonsterId(), monsterEvent.getParam());
+        questService.checkQuestWithId(player, monsterEvent.getType(), monsterEvent.getMonsterId(), 1);
     }
 }

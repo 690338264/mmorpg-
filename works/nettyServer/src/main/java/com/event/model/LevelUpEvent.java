@@ -12,8 +12,4 @@ public class LevelUpEvent extends QuestEvent {
     public QuestType getType() {
         return QuestType.LEVEL_UP;
     }
-
-    public int getParam() {
-        return 1;
-    }
 }

@@ -12,8 +12,4 @@ public class FriendEvent extends QuestEvent {
     public QuestType getType() {
         return QuestType.FRIEND_ADD;
     }
-
-    public int getParam() {
-        return 1;
-    }
 }

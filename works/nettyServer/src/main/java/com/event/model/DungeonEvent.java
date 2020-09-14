@@ -22,8 +22,4 @@ public class DungeonEvent extends QuestEvent {
     public int getDungeonId() {
         return dungeonId;
     }
-
-    public int getParam() {
-        return 1;
-    }
 }

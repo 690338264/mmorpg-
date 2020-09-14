@@ -2,6 +2,8 @@ package com.function.scene.excel;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author Catherine
  */
@@ -32,9 +34,9 @@ public class SceneExcel {
      */
     private Long destroy;
 
-    private String[] monsters;
+    private List<Integer> monsters;
 
-    private String[] npcs;
+    private List<Integer> npcs;
 
 
 }

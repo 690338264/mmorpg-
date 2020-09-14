@@ -7,5 +7,10 @@ import com.function.quest.model.QuestType;
  * @create 2020-09-10 19:33
  */
 public abstract class QuestEvent {
+    /**
+     * 获取任务类
+     *
+     * @return 任务类
+     */
     public abstract QuestType getType();
 }

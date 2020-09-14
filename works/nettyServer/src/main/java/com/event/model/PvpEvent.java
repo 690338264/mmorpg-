@@ -12,8 +12,4 @@ public class PvpEvent extends QuestEvent {
     public QuestType getType() {
         return QuestType.PK_WIN;
     }
-
-    public int getParam() {
-        return 1;
-    }
 }

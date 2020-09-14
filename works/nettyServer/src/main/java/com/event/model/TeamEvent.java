@@ -12,8 +12,4 @@ public class TeamEvent extends QuestEvent {
     public QuestType getType() {
         return QuestType.TEAM_MAKE;
     }
-
-    public int getParam() {
-        return 1;
-    }
 }

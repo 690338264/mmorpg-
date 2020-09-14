@@ -21,6 +21,6 @@ public class DungeonEventHandler {
     }
 
     private void dungeonPass(DungeonEvent dungeonEvent, Player player) {
-        questService.checkQuestWithId(player, dungeonEvent.getType(), dungeonEvent.getDungeonId(), dungeonEvent.getParam());
+        questService.checkQuestWithId(player, dungeonEvent.getType(), dungeonEvent.getDungeonId(), 1);
     }
 }

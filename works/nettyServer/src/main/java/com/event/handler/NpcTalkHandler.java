@@ -21,6 +21,6 @@ public class NpcTalkHandler {
     }
 
     private void npcTalk(NpcTalkEvent npcTalkEvent, Player player) {
-        questService.checkQuestWithId(player, npcTalkEvent.getType(), npcTalkEvent.getNpcId(), npcTalkEvent.getParam());
+        questService.checkQuestWithId(player, npcTalkEvent.getType(), npcTalkEvent.getNpcId(), 1);
     }
 }

@@ -101,14 +101,14 @@ public class SceneManager {
     /**
      * 创建怪物
      */
-    public boolean createMonster(Scene s, int num) {
-        if (num > s.getSceneExcel().getMonsters().length - 1) {
+    public boolean createMonster(Scene s, Integer index) {
+        if (index > s.getSceneExcel().getMonsters().size() - 1) {
             return false;
         }
-        int monsterId = Integer.parseInt(s.getSceneExcel().getMonsters()[num]);
+        int monsterId = s.getSceneExcel().getMonsters().get(index);
         Monster monster = new Monster();
         monster.setExcelId(monsterId);
-        monster.setId((long) num);
+        monster.setId((long) index);
         monster.setHp(monster.getMonsterExcel().getHp());
         monster.setAtk(monster.getMonsterExcel().getAggr());
         monster.setSceneId(s.getSceneId());
@@ -123,9 +123,7 @@ public class SceneManager {
      */
     public void createNpc(Scene scene) {
         SceneExcel sceneExcel = scene.getSceneExcel();
-        for (int j = 0; j < sceneExcel.getNpcs().length; j++) {
-            int npcId = Integer.parseInt(sceneExcel.getNpcs()[j]);
-            scene.getSceneObjectMap().get(SceneObjectType.NPC.getType()).put((long) npcId, NpcResource.getNpcById(npcId));
-        }
+        sceneExcel.getNpcs().forEach((npcId)
+                -> scene.getSceneObjectMap().get(SceneObjectType.NPC.getType()).put((long) npcId, NpcResource.getNpcById(npcId)));
     }
 }

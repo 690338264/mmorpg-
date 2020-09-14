@@ -12,8 +12,4 @@ public class TradeEvent extends QuestEvent {
     public QuestType getType() {
         return QuestType.TRADE;
     }
-
-    public int getParam() {
-        return 1;
-    }
 }

@@ -9,8 +9,11 @@ import org.springframework.stereotype.Component;
 import util.excel.ClassName;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -26,7 +29,7 @@ public class SceneResource {
 
     public static int idTimes = 1000000;
 
-    private static Map<Integer, Map<Integer, SceneExcel>> sceneMap = new HashMap<>();
+    private static final Map<Integer, Map<Integer, SceneExcel>> sceneMap = new HashMap<>();
 
     @PostConstruct
     private void init() {
@@ -39,14 +42,20 @@ public class SceneResource {
             SceneExcel sceneExcel = (SceneExcel) excelManager.getMap().get(ClassName.Scene.name()).get(i);
             sceneMap.get(sceneExcel.getType()).put(sceneExcel.getId(), sceneExcel);
             String str = sceneExcel.getMonster();
+
             String[] strs = str.split(",");
-            sceneExcel.setMonsters(strs);
-            String[] npcs = sceneExcel.getNpc().split(",");
-            sceneExcel.setNpcs(npcs);
+            int[] monsters = Arrays.stream(strs).mapToInt(Integer::parseInt).toArray();
+            List<Integer> monster = Arrays.stream(monsters).boxed().collect(Collectors.toList());
+            sceneExcel.setMonsters(monster);
+
+            String[] split = sceneExcel.getNpc().split(",");
+            int[] npcs = Arrays.stream(split).mapToInt(Integer::parseInt).toArray();
+            List<Integer> npc = Arrays.stream(npcs).boxed().collect(Collectors.toList());
+            sceneExcel.setNpcs(npc);
         }
         sceneMap.get(SceneType.PUBLIC.getType()).forEach((k, v) -> {
             Scene scene = sceneManagerCache.createScene(SceneType.PUBLIC.getType(), k);
-            IntStream.range(0, v.getMonsters().length).forEach(i -> sceneManagerCache.createMonster(scene, i));
+            IntStream.range(0, v.getMonsters().size()).forEach(i -> sceneManagerCache.createMonster(scene, i));
             sceneManagerCache.createNpc(scene);
             sceneManagerCache.publicStart(scene);
         });

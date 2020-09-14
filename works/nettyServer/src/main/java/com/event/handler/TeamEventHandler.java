@@ -25,7 +25,7 @@ public class TeamEventHandler {
 
     private void teamMake(TeamEvent teamEvent, Player player) {
 
-        questService.checkQuestNoId(player, teamEvent.getType(), teamEvent.getParam());
+        questService.checkQuestNoId(player, teamEvent.getType(), 1);
 
     }
 }

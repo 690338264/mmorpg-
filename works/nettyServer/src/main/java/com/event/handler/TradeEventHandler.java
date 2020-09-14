@@ -21,6 +21,6 @@ public class TradeEventHandler {
     }
 
     private void trade(TradeEvent tradeEvent, Player player) {
-        questService.checkQuestNoId(player, tradeEvent.getType(), tradeEvent.getParam());
+        questService.checkQuestNoId(player, tradeEvent.getType(), 1);
     }
 }

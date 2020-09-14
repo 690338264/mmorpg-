@@ -22,8 +22,4 @@ public class NpcTalkEvent extends QuestEvent {
     public int getNpcId() {
         return npcId;
     }
-
-    public int getParam() {
-        return 1;
-    }
 }

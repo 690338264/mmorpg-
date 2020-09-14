@@ -12,8 +12,4 @@ public class SectEvent extends QuestEvent {
     public QuestType getType() {
         return QuestType.SECT_ADD;
     }
-
-    public int getParam() {
-        return 1;
-    }
 }

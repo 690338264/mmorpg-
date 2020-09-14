@@ -21,6 +21,6 @@ public class PvpEventHandler {
     }
 
     private void pkWin(PvpEvent pvpEvent, Player player) {
-        questService.checkQuestNoId(player, pvpEvent.getType(), pvpEvent.getParam());
+        questService.checkQuestNoId(player, pvpEvent.getType(), 1);
     }
 }

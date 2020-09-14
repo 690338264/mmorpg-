@@ -21,6 +21,6 @@ public class SectEventHandler {
     }
 
     private void sectAdd(SectEvent sectEvent, Player player) {
-        questService.checkQuestNoId(player, sectEvent.getType(), sectEvent.getParam());
+        questService.checkQuestNoId(player, sectEvent.getType(), 1);
     }
 }

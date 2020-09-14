@@ -21,6 +21,6 @@ public class FriendAddEventHandler {
     }
 
     private void friendAdd(FriendEvent friendEvent, Player player) {
-        questService.checkQuestNoId(player, friendEvent.getType(), friendEvent.getParam());
+        questService.checkQuestNoId(player, friendEvent.getType(), 1);
     }
 }

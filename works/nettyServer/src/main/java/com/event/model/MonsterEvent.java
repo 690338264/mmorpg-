@@ -22,8 +22,4 @@ public class MonsterEvent extends QuestEvent {
     public int getMonsterId() {
         return monsterId;
     }
-
-    public int getParam() {
-        return 1;
-    }
 }
