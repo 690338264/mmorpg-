@@ -12,6 +12,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "playerInfo")
 public class TPlayerInfo {
+    @Column(name = "userId")
+    private long userId;
     @Id
     @Column(name = "playerId")
     private long playerId;
@@ -28,10 +30,19 @@ public class TPlayerInfo {
     public TPlayerInfo() {
     }
 
-    public TPlayerInfo(long playerId, String name, int occupation) {
+    public TPlayerInfo(long userId, long playerId, String name, int occupation) {
+        this.userId = userId;
         this.playerId = playerId;
         this.name = name;
         this.occupation = occupation;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public Long getPlayerId() {
@@ -69,7 +80,8 @@ public class TPlayerInfo {
     @Override
     public String toString() {
         return "TPlayerInfo{" +
-                "playerId=" + playerId +
+                "userId=" + userId +
+                ", playerId=" + playerId +
                 ", name='" + name + '\'' +
                 ", occupation=" + occupation +
                 ", sectPosition=" + sectPosition +

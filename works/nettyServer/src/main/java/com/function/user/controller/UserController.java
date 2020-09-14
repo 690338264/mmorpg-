@@ -1,11 +1,12 @@
 package com.function.user.controller;
 
 import com.Cmd;
+import com.function.occ.excel.OccResource;
 import com.function.player.model.Player;
 import com.function.user.model.User;
 import com.function.user.service.UserService;
 import com.handler.ControllerManager;
-import com.jpa.entity.TPlayer;
+import com.jpa.entity.TPlayerInfo;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import util.Msg;
 import util.ParamNumCheck;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
 /**
@@ -49,15 +51,16 @@ public class UserController {
 
     private void playerList(ChannelHandlerContext ctx, Msg msg) {
         User user = userservice.getUserByCtx(ctx);
-        Map<Long, TPlayer> playerMap = userservice.listPlayer(user.getId());
-        if (playerMap.size() == 0) {
+        Map<Long, TPlayerInfo> playerInfoMap = userservice.listPlayer(user.getId());
+        if (playerInfoMap.size() == 0) {
             ctx.writeAndFlush("请先创建角色\n");
         } else {
-            for (Long playerId : playerMap.keySet()) {
-                ctx.writeAndFlush("角色id：" + playerId + '\n');
-                ctx.writeAndFlush("角色名称：" + playerMap.get(playerId).getName() + '\n');
-            }
-            ctx.writeAndFlush("---请选择您要登陆的角色---" + '\n');
+            StringBuilder context = new StringBuilder("角色列表\n");
+            playerInfoMap.forEach((playerId, playerInfo)
+                    -> context.append(MessageFormat.format("角色id:{0} 名称{1}  门派{2}\n",
+                    playerId, playerInfo.getName(),
+                    OccResource.getOccById(playerInfo.getOccupation()).getName())));
+            ctx.writeAndFlush(context);
         }
     }
 

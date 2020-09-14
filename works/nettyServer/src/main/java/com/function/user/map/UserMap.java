@@ -2,7 +2,7 @@ package com.function.user.map;
 
 import com.function.player.model.Player;
 import com.function.user.model.User;
-import com.jpa.entity.TPlayer;
+import com.jpa.entity.TPlayerInfo;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +20,7 @@ public class UserMap {
 
     private final Map<Long, Player> players = new HashMap<>();
 
-    private final Map<Long, Map<Long, TPlayer>> userPlayerMap = new HashMap<>();
+    private final Map<Long, Map<Long, TPlayerInfo>> userPlayerMap = new HashMap<>();
 
     public void putUserMap(Long userId, User user) {
         userMap.put(userId, user);
@@ -30,7 +30,7 @@ public class UserMap {
         return userMap.get(userId);
     }
 
-    public void putUserPlayerMap(Long userId, Map<Long, TPlayer> map) {
+    public void putUserPlayerMap(Long userId, Map<Long, TPlayerInfo> map) {
         userPlayerMap.put(userId, map);
     }
 
@@ -38,7 +38,7 @@ public class UserMap {
         return players.get(playerId);
     }
 
-    public Map<Long, TPlayer> getUserPlayerMap(Long userId) {
+    public Map<Long, TPlayerInfo> getUserPlayerMap(Long userId) {
         return userPlayerMap.get(userId);
     }
 

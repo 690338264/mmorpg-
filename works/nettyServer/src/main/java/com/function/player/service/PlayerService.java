@@ -75,26 +75,26 @@ public class PlayerService {
      * 角色创建
      */
     public void roleCreate(ChannelHandlerContext ctx, String roleName, Integer roleType, Long userId) {
-        TPlayer tPlayer = playerManager.newPlayer(roleName, roleType, userId);
         if (playerDAO.findByName(roleName) != null) {
             ctx.writeAndFlush("角色名已存在！\n");
             return;
         }
-        playerDAO.save(tPlayer);
-        TPlayer player = playerDAO.findByName(roleName);
-        if (player != null) {
-            TBag bag = bagManager.newBag(player);
-            bagDAO.save(bag);
-            userMap.getUserPlayerMap(userId).put(player.getRoleId(), player);
-            TPlayerInfo tplayerInfo = new TPlayerInfo(player.getRoleId(), player.getName(), player.getOccupation());
-            PlayerInfo playerInfo = new PlayerInfo(tplayerInfo);
-            playerManager.getPlayerInfoMap().put(player.getRoleId(), playerInfo);
-            playerInfoDAO.save(tplayerInfo);
-            ctx.writeAndFlush("角色创建成功，角色id:" + player.getRoleId() + "角色昵称为：" + player.getName() + '\n');
-        } else {
-            ctx.writeAndFlush("角色创建失败！\n");
+        TPlayer tPlayer = playerManager.newPlayer(roleName, roleType, userId);
+        synchronized (this) {
+            if (playerDAO.findByName(roleName) != null) {
+                ctx.writeAndFlush("角色名已存在！\n");
+                return;
+            }
+            playerDAO.saveAndFlush(tPlayer);
         }
-
+        TBag bag = bagManager.newBag(tPlayer);
+        bagDAO.save(bag);
+        TPlayerInfo tplayerInfo = new TPlayerInfo(tPlayer.getUserId(), tPlayer.getRoleId(), tPlayer.getName(), tPlayer.getOccupation());
+        userMap.getUserPlayerMap(userId).put(tPlayer.getRoleId(), tplayerInfo);
+        PlayerInfo playerInfo = new PlayerInfo(tplayerInfo);
+        playerManager.getPlayerInfoMap().put(tPlayer.getRoleId(), playerInfo);
+        playerInfoDAO.save(tplayerInfo);
+        ctx.writeAndFlush("角色创建成功，角色id:" + tPlayer.getRoleId() + "角色昵称为：" + tPlayer.getName() + '\n');
     }
 
 

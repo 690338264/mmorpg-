@@ -1,5 +1,6 @@
 package com.function.user.service;
 
+import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
 import com.function.player.model.SceneObjectTask;
 import com.function.player.service.PlayerData;
@@ -15,6 +16,7 @@ import com.function.user.model.User;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.dao.UserDAO;
 import com.jpa.entity.TPlayer;
+import com.jpa.entity.TPlayerInfo;
 import com.jpa.entity.TUser;
 import com.manager.ThreadPoolManager;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,7 +35,6 @@ import java.util.concurrent.ScheduledFuture;
  */
 @Slf4j
 @Component
-@SuppressWarnings("rawtypes")
 public class UserService {
 
     @Autowired
@@ -52,6 +53,8 @@ public class UserService {
     private SceneManager sceneManager;
     @Autowired
     private TeamService teamService;
+    @Autowired
+    private PlayerManager playerManager;
 
     public static int mpAdd = 5;
 
@@ -59,57 +62,51 @@ public class UserService {
      * 用户注册
      */
     public void register(ChannelHandlerContext ctx, String userName, String psw) {
-        TUser u = new TUser();
-        u.setName(userName);
-        u.setPsw(psw);
         if (usersDAO.findByName(userName) != null) {
             ctx.writeAndFlush("用户名已存在\n");
             return;
         }
-        usersDAO.save(u);
-        TUser newUser = usersDAO.findByName(userName);
-        if (newUser != null) {
-            ctx.writeAndFlush("注册成功,您的id为" + newUser.getId() + "用户名为" + newUser.getName() + '\n');
-        } else {
-            ctx.writeAndFlush("注册失败请重试!\n");
+        TUser tUser = new TUser();
+        synchronized (this) {
+            if (usersDAO.findByName(userName) != null) {
+                ctx.writeAndFlush("用户名已存在\n");
+                return;
+            }
+            tUser.setName(userName);
+            tUser.setPsw(psw);
+            usersDAO.saveAndFlush(tUser);
         }
+        ctx.writeAndFlush("注册成功,您的id为" + tUser.getId() + "用户名为" + tUser.getName() + '\n');
     }
 
     /**
      * 用户登录
      */
     public boolean login(long userId, String psw, ChannelHandlerContext ctx) {
-        if (userMap.getUserById(userId) != null) {
-            User user = userMap.getUserById(userId);
-            if (user.getPsw().equals(psw)) {
-                userMap.putUserctx(ctx, user);
-                return true;
-            } else {
-                return false;
-            }
-        }
         User user = new User();
         TUser logUser = usersDAO.findByIdAndPsw(userId, psw);
         if (logUser == null) {
             return false;
         }
         BeanUtils.copyProperties(logUser, user);
-
-        //查询用户角色
-        Map<Long, TPlayer> playerMap = new HashMap<>();
-        playerDAO.findByUserId(userId).forEach(player ->
-                playerMap.put(player.getRoleId(), player));
-        userMap.putUserPlayerMap(userId, playerMap);
-
+        if (userMap.getUserById(userId) == null) {
+            Map<Long, TPlayerInfo> playerInfoMap = new HashMap<>();
+            playerManager.getPlayerInfoMap().forEach((playerId, playerInfo) -> {
+                if (playerInfo.gettPlayerInfo().getUserId() == userId) {
+                    playerInfoMap.put(playerId, playerInfo.gettPlayerInfo());
+                }
+            });
+            userMap.putUserPlayerMap(userId, playerInfoMap);
+            userMap.putUserMap(userId, user);
+        }
         userMap.putUserctx(ctx, user);
-        userMap.putUserMap(userId, user);
         return true;
     }
 
     /**
      * 查看角色列表
      */
-    public Map<Long, TPlayer> listPlayer(Long id) {
+    public Map<Long, TPlayerInfo> listPlayer(Long id) {
         return userMap.getUserPlayerMap(id);
     }
 
@@ -118,16 +115,14 @@ public class UserService {
      */
     public void logPlayer(Long playerId, ChannelHandlerContext ctx) {
         ThreadPoolManager.immediateThread(() -> {
-
             User user = getUserByCtx(ctx);
-
-            TPlayer tplayer = userMap.getUserPlayerMap(user.getId()).get(playerId);
-            if (tplayer == null) {
+            if (!userMap.getUserPlayerMap(user.getId()).containsKey(playerId)) {
                 ctx.writeAndFlush("该角色不存在！\n");
                 return;
             }
-            Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(tplayer.getLoc());
-            Player player = getPlayer(tplayer, playerId, scene);
+            TPlayer tPlayer = playerDAO.findByRoleId(playerId);
+            Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(tPlayer.getLoc());
+            Player player = getPlayer(tPlayer, playerId, scene);
             scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).put(playerId, player);
 
             player.setChannelHandlerContext(ctx);
@@ -147,7 +142,7 @@ public class UserService {
         if (player.getTaskMap().get(SceneObjectTask.MP_ADD) != null) {
             return;
         }
-        ScheduledFuture s = ThreadPoolManager.loopThread(() -> {
+        ScheduledFuture<?> s = ThreadPoolManager.loopThread(() -> {
             if (player.getChannelHandlerContext() == null) {
                 player.getTaskMap().get(SceneObjectTask.MP_ADD).cancel(true);
                 player.getTaskMap().remove(SceneObjectTask.MP_ADD);
