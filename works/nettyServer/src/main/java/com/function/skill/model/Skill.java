@@ -1,12 +1,8 @@
 package com.function.skill.model;
 
-import com.function.buff.model.Buff;
 import com.function.skill.excel.SkillExcel;
 import com.function.skill.excel.SkillResource;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Catherine
@@ -15,11 +11,13 @@ import java.util.List;
 @Data
 public class Skill {
 
+    public Skill(int skillId) {
+        this.skillId = skillId;
+    }
+
     private int skillId;
 
     private long lastTime;
-
-    private List<Buff> buffList = new ArrayList<>();
 
     public SkillExcel getSkillExcel() {
         return SkillResource.getSkillById(skillId);

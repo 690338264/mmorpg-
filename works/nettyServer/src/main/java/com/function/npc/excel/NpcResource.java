@@ -27,7 +27,7 @@ public class NpcResource {
         for (int i = 0; i < num; i++) {
             NpcExcel npcExcel = (NpcExcel) excelManager.getMap().get(ClassName.Npc.name()).get(i);
             npcExcel.setType(SceneObjectType.NPC);
-            npcMap.put(npcExcel.getId(), npcExcel);
+            npcMap.put(npcExcel.getId().intValue(), npcExcel);
         }
     }
 

@@ -41,7 +41,7 @@ public class TradeService {
      */
     public void requestTrade(Player player, Long playerId) {
         Scene scene = player.getNowScene();
-        Player receiver = (Player) scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).get(playerId);
+        Player receiver = (Player) scene.getSceneObjectMap().get(SceneObjectType.PLAYER).get(playerId);
         if (receiver == null) {
             notifyScene.notifyPlayer(player, "发起交易失败，请面对面发起交易\n");
             return;

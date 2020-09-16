@@ -27,6 +27,10 @@ public class MonsterExcel {
      * 怪物攻击力
      */
     private int aggr;
+
+    private int speed;
+
+    private int def;
     /**
      * 怪物技能
      */

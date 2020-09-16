@@ -56,7 +56,7 @@ public class SceneService {
             notifyScene.notifyPlayer(player, "您还不能到达该处!\n");
             return;
         }
-        oldScene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).remove(player.getTPlayer().getRoleId());
+        oldScene.getSceneObjectMap().get(SceneObjectType.PLAYER).remove(player.getTPlayer().getRoleId());
         player.getTPlayer().setLoc(sceneId);
         Scene scene = addPlayer(type, sceneId, player);
         playerData.updatePlayer(player);
@@ -70,7 +70,7 @@ public class SceneService {
     public void aoi(Player player) {
         Scene scene = player.getNowScene();
         for (SceneObjectType type : SceneObjectType.values()) {
-            Map<Long, SceneObject> map = scene.getSceneObjectMap().get(type.getType());
+            Map<Long, SceneObject> map = scene.getSceneObjectMap().get(type);
             map.forEach((k, sceneObject) -> {
                 if (sceneObject.getType() == SceneObjectType.NPC) {
                     NpcExcel npc = (NpcExcel) sceneObject;
@@ -96,7 +96,7 @@ public class SceneService {
 
     public Scene addPlayer(int type, int sceneId, Player player) {
         Scene scene = sceneManager.get(type).get(sceneId);
-        scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).put(player.getTPlayer().getRoleId(), player);
+        scene.getSceneObjectMap().get(SceneObjectType.PLAYER).put(player.getTPlayer().getRoleId(), player);
         player.setNowScene(scene);
         return scene;
     }

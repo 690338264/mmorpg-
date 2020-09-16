@@ -24,7 +24,7 @@ public class Scene {
 
     private int type;
 
-    private Map<Integer, Map<Long, SceneObject>> sceneObjectMap = new ConcurrentHashMap<>();
+    private Map<SceneObjectType, Map<Long, SceneObject>> sceneObjectMap = new ConcurrentHashMap<>();
 
     private Map<Long, Monster> waitForRevive = new ConcurrentHashMap<>();
 

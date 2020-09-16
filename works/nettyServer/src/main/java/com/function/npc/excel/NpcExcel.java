@@ -4,6 +4,8 @@ import com.function.scene.model.SceneObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Map;
+
 /**
  * @author Catherine
  */
@@ -19,4 +21,14 @@ public class NpcExcel extends SceneObject {
     private String text;
 
     private Integer status;
+
+    @Override
+    public Long getId() {
+        return (long) id;
+    }
+
+    @Override
+    public Map<String, Object> getAttributeMap() {
+        return null;
+    }
 }

@@ -17,7 +17,7 @@ public class NpcService {
     private NotifyScene notifyScene;
 
     public void talkToNpc(Player player, Long npcId) {
-        NpcExcel npc = (NpcExcel) player.getNowScene().getSceneObjectMap().get(SceneObjectType.NPC.getType()).get(npcId);
+        NpcExcel npc = (NpcExcel) player.getNowScene().getSceneObjectMap().get(SceneObjectType.NPC).get(npcId);
         if (npc != null) {
             StringBuilder talk = new StringBuilder(npc.getName()).append("对你说").append(npc.getText()).append('\n');
             notifyScene.notifyPlayer(player, talk);

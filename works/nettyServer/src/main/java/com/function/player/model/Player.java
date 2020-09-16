@@ -8,12 +8,11 @@ import com.event.QuestEvent;
 import com.function.bag.model.Bag;
 import com.function.email.model.Email;
 import com.function.item.model.Item;
+import com.function.monster.model.Monster;
 import com.function.quest.model.Quest;
 import com.function.quest.model.QuestState;
 import com.function.quest.model.QuestType;
-import com.function.scene.model.Dungeon;
-import com.function.scene.model.Scene;
-import com.function.scene.model.SceneObject;
+import com.function.scene.model.*;
 import com.function.trade.model.TradeBoard;
 import com.jpa.entity.TPlayer;
 import com.jpa.entity.TPlayerInfo;
@@ -53,10 +52,6 @@ public class Player extends SceneObject {
 
     private Long teamId;
     /**
-     * 玩家当前mp
-     */
-    private int mp;
-    /**
      * 玩家初始mp
      */
     private int oriMp;
@@ -85,8 +80,40 @@ public class Player extends SceneObject {
     }
 
     @Override
-    public int getSceneId() {
-        return nowScene.getSceneId();
+    public Long getId() {
+        return tPlayer.getRoleId();
+    }
+
+    @Override
+    public void onDie() {
+        setState(SceneObjectState.DEATH);
+        Map<Long, SceneObject> monsterMap = nowScene.getSceneObjectMap().get(SceneObjectType.MONSTER);
+        monsterMap.forEach((monsterId, sceneObject) -> {
+            Monster monster = (Monster) sceneObject;
+            monster.getHurtList().remove(tPlayer.getRoleId());
+        });
+//                        monster.getHurtList().remove(player.getTPlayer().getRoleId());
+//                        if (monster.getBuffs().get(buffId) != null) {
+//                            monster.getBuffs().get(buffId).cancel(true);
+//                            monster.getBuffs().remove(buffId);
+//                        }
+        ThreadPoolManager.delayThread(() -> {
+            setHp(getOriHp());
+            setState(SceneObjectState.NORMAL);
+        }, 5000, tPlayer.getRoleId().intValue());
+        getBuffs().forEach((k, v) -> {
+            v.cancel(true);
+            getBuffs().remove(k);
+        });
+    }
+
+    @Override
+    public Map<String, Object> getAttributeMap() {
+        Map<String, Object> attributeMap = new HashMap<>();
+        attributeMap.put("atk", getAtk());
+        attributeMap.put("speed", speed);
+        attributeMap.put("def", def);
+        return attributeMap;
     }
 
     public void toJson() {

@@ -44,14 +44,14 @@ public class PlayerController {
         String[] params = ParamNumCheck.numCheck(player, msg, 3);
         int skill = Integer.parseInt(params[1]);
         long target = Long.parseLong(params[2]);
-        playerService.attack(player, skill, target, SceneObjectType.MONSTER.getType());
+        playerService.useSkill(player, skill, target, SceneObjectType.MONSTER);
     }
 
     private void pvp(Player player, Msg msg) {
         String[] params = ParamNumCheck.numCheck(player, msg, 3);
         int skill = Integer.parseInt(params[1]);
         long target = Long.parseLong(params[2]);
-        playerService.attack(player, skill, target, SceneObjectType.PLAYER.getType());
+        playerService.useSkill(player, skill, target, SceneObjectType.PLAYER);
     }
 
     private void playerState(Player player, Msg msg) {

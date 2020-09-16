@@ -1,6 +1,5 @@
 package com.function.item.service;
 
-import com.function.item.model.IItemEffect;
 import com.function.item.model.Item;
 import com.function.item.model.ItemType;
 import com.function.player.model.Player;

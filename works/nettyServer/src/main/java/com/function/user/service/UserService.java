@@ -123,7 +123,7 @@ public class UserService {
             TPlayer tPlayer = playerDAO.findByRoleId(playerId);
             Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(tPlayer.getLoc());
             Player player = getPlayer(tPlayer, playerId, scene);
-            scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).put(playerId, player);
+            scene.getSceneObjectMap().get(SceneObjectType.PLAYER).put(playerId, player);
 
             player.setChannelHandlerContext(ctx);
             playerMap.putPlayerCtx(ctx, player);
@@ -164,7 +164,7 @@ public class UserService {
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);
         Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(player.getNowScene().getId());
-        scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).remove(player.getTPlayer().getRoleId());
+        scene.getSceneObjectMap().get(SceneObjectType.PLAYER).remove(player.getTPlayer().getRoleId());
         player.setChannelHandlerContext(null);
         playerMap.getOfflinePlayer().put(player.getTPlayer().getRoleId(), System.currentTimeMillis());
     }

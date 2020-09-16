@@ -1,6 +1,5 @@
 package com.function.scene.model;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import com.function.player.model.SceneObjectTask;
 import com.function.skill.model.Skill;
 
@@ -15,13 +14,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * @create 2020-08-13 16:07
  */
 @SuppressWarnings("rawtypes")
-public class SceneObject {
+public abstract class SceneObject {
 
     private String name;
     /**
      * 当前hp
      */
     private int hp;
+
     /**
      * 当前攻击力
      */
@@ -34,26 +34,27 @@ public class SceneObject {
      * 原始Hp
      */
     private int oriHp;
+
+    private int mp;
     /**
      * 所在地
      */
-    private int sceneId;
-    @JSONField(serialize = false)
+    private Scene nowScene;
+
+    private SceneObjectState state = SceneObjectState.NORMAL;
+
     ReentrantLock lock = new ReentrantLock();
     /**
      * 线程任务列表
      */
-    @JSONField(serialize = false)
     private final Map<SceneObjectTask, ScheduledFuture> taskMap = new ConcurrentHashMap<>();
     /**
      * buff
      */
-    @JSONField(serialize = false)
     private final Map<Integer, ScheduledFuture> buffs = new ConcurrentHashMap<>();
     /**
      * 可用技能
      */
-    @JSONField(serialize = false)
     private final Map<Integer, Skill> canUseSkill = new HashMap<>();
 
     public String getName() {
@@ -96,12 +97,20 @@ public class SceneObject {
         this.oriHp = oriHp;
     }
 
-    public int getSceneId() {
-        return sceneId;
+    public int getMp() {
+        return mp;
     }
 
-    public void setSceneId(int sceneId) {
-        this.sceneId = sceneId;
+    public void setMp(int mp) {
+        this.mp = mp;
+    }
+
+    public Scene getNowScene() {
+        return nowScene;
+    }
+
+    public void setNowScene(Scene nowScene) {
+        this.nowScene = nowScene;
     }
 
     public ReentrantLock getLock() {
@@ -122,6 +131,32 @@ public class SceneObject {
 
     public Map<Integer, Skill> getCanUseSkill() {
         return canUseSkill;
+    }
+
+    public SceneObjectState getState() {
+        return state;
+    }
+
+    public void setState(SceneObjectState state) {
+        this.state = state;
+    }
+
+    /**
+     * 场景物体的id
+     *
+     * @return player/monster的id
+     */
+    public abstract Long getId();
+
+    /**
+     * 属性列表
+     */
+    public abstract Map<String, Object> getAttributeMap();
+
+    public void onDie() {
+    }
+
+    public void onBeAttack() {
     }
 
 }

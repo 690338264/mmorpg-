@@ -1,53 +1,33 @@
 package com.function.monster.service;
 
-import com.function.buff.service.BuffService;
 import com.function.monster.model.Monster;
 import com.function.player.model.Player;
-import com.function.player.model.SceneObjectTask;
 import com.function.player.service.PlayerService;
 import com.function.scene.model.Scene;
+import com.function.scene.model.SceneObjectState;
 import com.function.scene.model.SceneObjectType;
-import com.function.scene.service.NotifyScene;
-import com.function.skill.model.Skill;
 import com.function.user.map.UserMap;
-import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import util.RandomUtil;
 
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.concurrent.ScheduledFuture;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
  * @author Catherine
  */
 @Component
-@SuppressWarnings("rawtypes")
 public class MonsterService {
 
     @Autowired
-    private NotifyScene notifyScene;
-    @Autowired
     private PlayerService playerService;
     @Autowired
-    private BuffService buffService;
-    @Autowired
     private UserMap userMap;
-
-
-    /**
-     * 怪物死亡
-     */
-    public void monsterDeath(Long index, Scene scene) {
-        int type = SceneObjectType.MONSTER.getType();
-        Monster monster = (Monster) scene.getSceneObjectMap().get(type).get(index);
-        monster.setDeathTime(System.currentTimeMillis());
-        buffService.removeBuff(monster);
-        scene.getSceneObjectMap().get(type).remove(index);
-        scene.getWaitForRevive().put(monster.getId(), monster);
-        monster.getHurtList().clear();
-    }
+    public static final long HURT_BEAT = 3000;
 
     /**
      * 怪物复活
@@ -57,7 +37,8 @@ public class MonsterService {
             if (System.currentTimeMillis() - monster.getDeathTime() > monster.getMonsterExcel().getReviveTime()) {
                 scene.getWaitForRevive().remove(monsterId);
                 monster.setHp(monster.getOriHp());
-                scene.getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).put(monsterId, monster);
+                monster.setState(SceneObjectState.NORMAL);
+                scene.getSceneObjectMap().get(SceneObjectType.MONSTER).put(monsterId, monster);
             }
         });
 
@@ -67,24 +48,9 @@ public class MonsterService {
      * 怪物进行攻击
      */
     public void monsterAtk(Monster monster, Long playerId) {
-        Player player = userMap.getPlayers(playerId);
         Integer[] keys = monster.getCanUseSkill().keySet().toArray(new Integer[0]);
-        Random random = new Random();
-        Integer randomKey = keys[random.nextInt(keys.length)];
-        Skill skill = monster.getCanUseSkill().get(randomKey);
-        monster.getCanUseSkill().remove(randomKey);
-        int hurt = monster.getMonsterExcel().getAggr() * skill.getSkillExcel().getAtk();
-        player.setHp(player.getHp() - hurt);
-        ScheduledFuture skillCd = ThreadPoolManager.delayThread(() ->
-                monster.getCanUseSkill().put(randomKey, skill), skill.getSkillExcel().getCd(), monster.getExcelId());
-        monster.getTaskMap().put(SceneObjectTask.SKILL_CD, skillCd);
-        notifyScene.notifyPlayer(player, MessageFormat.format("您受到了{0}点伤害", hurt));
-        if (!playerService.playerDie(player)) {
-            notifyScene.notifyPlayer(player, MessageFormat.format("剩余血量为{0}\n", player.getHp()));
-            buffService.buff(monster.getId().intValue(), skill, player, monster, player.getNowScene());
-        } else {
-            monster.getHurtList().remove(player.getTPlayer().getRoleId());
-        }
+        int skillId = RandomUtil.ramInt(keys);
+        playerService.useSkill(monster, skillId, playerId, SceneObjectType.PLAYER);
     }
 
     /**
@@ -108,7 +74,7 @@ public class MonsterService {
     public void inScene(Monster monster) {
         monster.getHurtList().forEach((playerId, hurt) -> {
             Player player = userMap.getPlayers(playerId);
-            if (player.getNowScene().getSceneId() != monster.getSceneId()) {
+            if (player.getNowScene() != monster.getNowScene()) {
                 monster.getHurtList().remove(playerId);
             }
         });

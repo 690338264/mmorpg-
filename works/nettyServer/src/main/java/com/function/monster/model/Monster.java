@@ -2,10 +2,14 @@ package com.function.monster.model;
 
 import com.function.monster.excel.MonsterExcel;
 import com.function.monster.excel.MonsterResource;
+import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
+import com.function.scene.model.SceneObjectState;
+import com.function.scene.model.SceneObjectType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,6 +37,20 @@ public class Monster extends SceneObject {
     private Long deathTime;
 
     @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public Map<String, Object> getAttributeMap() {
+        Map<String, Object> attributeMap = new HashMap<>();
+        attributeMap.put("atk", getMonsterExcel().getAggr());
+        attributeMap.put("speed", getMonsterExcel().getSpeed());
+        attributeMap.put("def", getMonsterExcel().getDef());
+        return attributeMap;
+    }
+
+    @Override
     public int getOriHp() {
         return getMonsterExcel().getHp();
     }
@@ -46,4 +64,17 @@ public class Monster extends SceneObject {
         return MonsterResource.getMonById(excelId);
     }
 
+    @Override
+    public void onDie() {
+        setState(SceneObjectState.DEATH);
+        Scene scene = getNowScene();
+        setDeathTime(System.currentTimeMillis());
+        getBuffs().forEach((k, v) -> {
+            v.cancel(true);
+            getBuffs().remove(k);
+        });
+        scene.getSceneObjectMap().get(SceneObjectType.MONSTER).remove(id);
+        scene.getWaitForRevive().put(id, this);
+        getHurtList().clear();
+    }
 }

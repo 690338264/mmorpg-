@@ -2,6 +2,7 @@ package com.server;
 
 import com.Cmd;
 import com.function.player.model.Player;
+import com.function.scene.model.SceneObjectState;
 import com.handler.Controller;
 import com.handler.ControllerManager;
 import com.handler.LoggedInController;
@@ -45,6 +46,14 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
                     }, ctx.hashCode());
                 }
             } else {
+                if (player.getState() == SceneObjectState.DEATH) {
+                    ctx.writeAndFlush("阵亡请等待复活\n");
+                    return;
+                }
+                if (player.getState() == SceneObjectState.DIZZY) {
+                    ctx.writeAndFlush("眩晕中........\n");
+                    return;
+                }
                 ThreadPoolManager.immediateThread(() -> controller.handle(player, message), player.getTPlayer().getRoleId().intValue());
             }
         }

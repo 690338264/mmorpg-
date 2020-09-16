@@ -17,9 +17,6 @@ import com.function.quest.model.QuestState;
 import com.function.quest.model.QuestTimes;
 import com.function.quest.model.QuestType;
 import com.function.scene.model.SceneObjectType;
-import com.function.skill.excel.SkillExcel;
-import com.function.skill.excel.SkillResource;
-import com.function.skill.manager.SkillManager;
 import com.function.skill.model.Skill;
 import com.jpa.dao.BagDAO;
 import com.jpa.dao.EmailDAO;
@@ -56,8 +53,6 @@ public class PlayerData {
     @Autowired
     private EmailDAO emailDAO;
     @Autowired
-    private SkillManager skillManager;
-    @Autowired
     private PlayerInfoDAO playerInfoDAO;
 
     /**
@@ -93,8 +88,7 @@ public class PlayerData {
     public void initSkill(Player player) {
         OccExcel occExcel = OccResource.getOccById(player.getTPlayer().getOccupation());
         IntStream.range(0, occExcel.getSkillId().size()).forEach(i -> {
-            SkillExcel skillExcel = SkillResource.getSkillById(occExcel.getSkillId().get(i));
-            Skill skill = skillManager.initSkill(skillExcel);
+            Skill skill = new Skill(occExcel.getSkillId().get(i));
             player.getCanUseSkill().put(i + 1, skill);
         });
     }

@@ -26,10 +26,8 @@ public class SkillResource {
         for (int i = 0; i < num; i++) {
             SkillExcel skillExcel = (SkillExcel) excelManager.getMap().get(ClassName.Skill.name()).get(i);
             skillMap.put(skillExcel.getId(), skillExcel);
-            if (skillExcel.getBuff() != null) {
-                String[] buffs = skillExcel.getBuff().split(",");
-                Arrays.asList(buffs).forEach(buff -> skillExcel.getBuffId().add(Integer.parseInt(buff)));
-            }
+            String[] buffs = skillExcel.getBuff().split(",");
+            Arrays.asList(buffs).forEach(buff -> skillExcel.getBuffId().add(Integer.parseInt(buff)));
         }
     }
 

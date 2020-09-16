@@ -21,7 +21,7 @@ public class NotifyScene {
     private PlayerMap playerMap;
 
     public void notifyScene(Scene scene, String notify) {
-        Map<Long, SceneObject> players = scene.getSceneObjectMap().get(SceneObjectType.PLAYER.getType());
+        Map<Long, SceneObject> players = scene.getSceneObjectMap().get(SceneObjectType.PLAYER);
         players.forEach((playerId, sceneObject) -> {
             if (sceneObject.getType() == SceneObjectType.PLAYER) {
                 Player p = (Player) sceneObject;
@@ -38,18 +38,23 @@ public class NotifyScene {
                 notifyPlayer(teammate, notify));
     }
 
-    public void notifyPlayer(Player player, String notify) {
-        if (player.getChannelHandlerContext() != null) {
-            player.getChannelHandlerContext().writeAndFlush(notify);
+    public void notifyPlayer(SceneObject sceneObject, String notify) {
+        if (sceneObject.getClass() == Player.class) {
+            Player player = (Player) sceneObject;
+            if (player.getChannelHandlerContext() != null) {
+                player.getChannelHandlerContext().writeAndFlush(notify);
+            }
         }
 
     }
 
-    public void notifyPlayer(Player player, StringBuilder notify) {
-        if (player.getChannelHandlerContext() != null) {
-            player.getChannelHandlerContext().writeAndFlush(notify);
+    public void notifyPlayer(SceneObject sceneObject, StringBuilder notify) {
+        if (sceneObject.getClass() == Player.class) {
+            Player player = (Player) sceneObject;
+            if (player.getChannelHandlerContext() != null) {
+                player.getChannelHandlerContext().writeAndFlush(notify);
+            }
         }
-
     }
 
 }

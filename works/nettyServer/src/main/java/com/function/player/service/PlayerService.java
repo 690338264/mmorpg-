@@ -3,13 +3,13 @@ package com.function.player.service;
 import com.event.model.LevelUpEvent;
 import com.event.model.MoneyEvent;
 import com.event.model.MonsterEvent;
-import com.event.model.PvpEvent;
-import com.function.buff.service.BuffService;
+import com.function.buff.excel.BuffExcel;
+import com.function.buff.excel.BuffResource;
+import com.function.buff.service.BuffEffectsRealize;
 import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
 import com.function.item.service.ItemService;
 import com.function.monster.model.Monster;
-import com.function.monster.service.MonsterService;
 import com.function.player.manager.BagManager;
 import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
@@ -19,6 +19,7 @@ import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
 import com.function.scene.model.SceneObjectType;
 import com.function.scene.service.NotifyScene;
+import com.function.skill.manager.TargetSelector;
 import com.function.skill.model.Skill;
 import com.function.user.map.UserMap;
 import com.jpa.dao.BagDAO;
@@ -27,27 +28,20 @@ import com.jpa.dao.PlayerInfoDAO;
 import com.jpa.entity.TBag;
 import com.jpa.entity.TPlayer;
 import com.jpa.entity.TPlayerInfo;
-import com.manager.ThreadPoolManager;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Catherine
  */
 @Component
-@SuppressWarnings("rawtypes")
 public class PlayerService {
-
-    @Autowired
-    private MonsterService monsterService;
-    @Autowired
-    private BuffService buffService;
     @Autowired
     private PlayerData playerData;
     @Autowired
@@ -66,10 +60,11 @@ public class PlayerService {
     private UserMap userMap;
     @Autowired
     private PlayerInfoDAO playerInfoDAO;
+    @Autowired
+    private TargetSelector targetSelector;
+    @Autowired
+    private BuffEffectsRealize buffEffectsRealize;
 
-    public Long period = 5000L;
-
-    public Long playerRevive = 5000L;
 
     /**
      * 角色创建
@@ -113,118 +108,41 @@ public class PlayerService {
     }
 
     /**
-     * 攻击
+     * 释放技能
      */
-    public void attack(Player player, int skillId, Long target, int type) {
-
-        Scene scene = player.getNowScene();
-        SceneObject s = scene.getSceneObjectMap().get(type).get(target);
-        Skill skill = player.getCanUseSkill().get(skillId);
-        //判断目标是否死亡
-        if (s == null) {
-            player.getChannelHandlerContext().writeAndFlush("攻击目标无效，请重新选择！\n");
+    public void useSkill(SceneObject attacker, int skillId, long target, SceneObjectType type) {
+        if (!targetSelector.checkIfCan(attacker, skillId)) {
             return;
         }
-        if (type == SceneObjectType.PLAYER.getType() && s == player) {
-            notifyScene.notifyPlayer(player, "不能攻击自己哦！\n");
-            return;
-        }
-        if (skill == null) {
-            notifyScene.notifyPlayer(player, "无效技能\n");
-            return;
-        }
-        //判断技能CD
-        if (System.currentTimeMillis() - skill.getLastTime() < skill.getSkillExcel().getCd()) {
-            notifyScene.notifyPlayer(player, "技能冷却中\n");
-            return;
-        }
-        //判断玩家mp
-        if (player.getMp() < skill.getSkillExcel().getMp()) {
-            notifyScene.notifyPlayer(player, "mp不足，技能释放失败\n");
-            return;
-        }
-        //判断装备磨损度
-        for (Item equipment : player.getEquipMap().values()) {
-            if (equipment.getNowWear() <= 10) {
-                notifyScene.notifyPlayer(player, "装备损坏过于严重！请维修\n");
+        //获得目标
+        Map<Integer, List<SceneObject>> targets = targetSelector.chooseTarget(attacker, skillId, target, type);
+        for (List<SceneObject> value : targets.values()) {
+            if (value.isEmpty()) {
+                notifyScene.notifyPlayer(attacker, "目标无效!\n");
                 return;
             }
-            equipment.setNowWear(equipment.getNowWear() - 2);
         }
-        //造成的伤害
-        try {
-            s.getLock().lock();
-            int hurt = player.getAtk() * skill.getSkillExcel().getAtk();
-            s.setHp(s.getHp() - hurt);
-            player.setMp(player.getMp() - skill.getSkillExcel().getMp());
+        if (attacker.getType() == SceneObjectType.PLAYER) {
+            Skill skill = attacker.getCanUseSkill().get(skillId);
+            attacker.setMp(attacker.getMp() - skill.getSkillExcel().getMp());
             skill.setLastTime(System.currentTimeMillis());
-            //击杀
-            if (s.getHp() <= 0) {
-                //击杀怪物
-                if (s.getType() == SceneObjectType.MONSTER) {
-                    Monster monster = (Monster) s;
-                    killMonster(monster, scene, target, player);
-                    return;
-                }
 
-                if (s.getType() == SceneObjectType.PLAYER) {
-                    Player p = (Player) s;
-                    playerDie(p);
-                    notifyScene.notifyScene(scene, MessageFormat.format("玩家{0}击败玩家{1}\n",
-                            player.getTPlayer().getName(), p.getTPlayer().getName()));
-                    player.submitEvent(new PvpEvent());
-                }
-            } else {
-                //攻击
-                if (s.getType() == SceneObjectType.MONSTER) {
-                    Monster monster = (Monster) s;
-                    int oriHurt;
-                    int flag = 0;
-                    if (monster.getHurtList().isEmpty()) {
-                        flag = 1;
-                    }
-                    oriHurt = monster.getHurtList().getOrDefault(player.getTPlayer().getRoleId(), 0);
-                    monster.getHurtList().put(player.getTPlayer().getRoleId(), hurt + oriHurt);
-                    buffService.buff(monster.getId().intValue(), skill, monster, player, scene);
-                    notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]释放了技能[{1}]对怪物[{2}]产生伤害:{3}\n",
-                            player.getTPlayer().getName(), skill.getSkillExcel().getName(),
-                            monster.getMonsterExcel().getName(), hurt));
-                    if (flag == 1) {
-                        ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
-                            if (monster.getHurtList().isEmpty()) {
-                                monster.getTaskMap().get(SceneObjectTask.ATTACK).cancel(true);
-                                monster.getTaskMap().remove(SceneObjectTask.ATTACK);
-                            }
-                            Long hate = monsterService.hurtSort(monster);
-                            monsterService.monsterAtk(monster, hate);
-                        }, 0, period, monster.getExcelId());
-                        monster.getTaskMap().put(SceneObjectTask.ATTACK, scheduledFuture);
-                    }
-                    return;
-                }
-                //pvp
-                if (s.getType() == SceneObjectType.PLAYER) {
-                    Player beAttack = (Player) s;
-                    buffService.buff(beAttack.getTPlayer().getRoleId().intValue(), skill, beAttack, player, scene);
-                    notifyScene.notifyScene(scene, MessageFormat.format("{0}受到来自{1}的攻击 损失{2}点血\n",
-                            beAttack.getTPlayer().getName(), player.getTPlayer().getName(), hurt));
-                }
-            }
-        } finally {
-            s.getLock().unlock();
         }
-    }
+        targets.forEach((buffId, targetList) -> {
+            BuffExcel buffExcel = BuffResource.getBuffById(buffId);
+            buffEffectsRealize.effect(attacker, targetList, buffExcel);
+        });
 
+    }
 
     /**
      * 击杀怪物
      */
-    public void killMonster(Monster monster, Scene scene, Long target, Player player) {
+    public void killMonster(Monster monster, Scene scene, Player player) {
         if (!monster.getHurtList().isEmpty()) {
             monster.getTaskMap().get(SceneObjectTask.ATTACK).cancel(true);
             monster.getTaskMap().remove(SceneObjectTask.ATTACK);
         }
-        monsterService.monsterDeath(target, scene);
         notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]成功击杀怪物{1}\n",
                 player.getTPlayer().getName(), monster.getMonsterExcel().getName()));
         //物品掉落
@@ -270,19 +188,6 @@ public class PlayerService {
         } else {
             tPlayer.setExp(tPlayer.getExp() + exc);
         }
-    }
-
-    /**
-     * 玩家阵亡
-     */
-    public boolean playerDie(Player player) {
-        if (player.getHp() <= 0) {
-            notifyScene.notifyPlayer(player, "已阵亡！五秒后复活！\n");
-            ThreadPoolManager.delayThread(() -> player.setHp(player.getOriHp()), playerRevive, player.getChannelHandlerContext().hashCode());
-            buffService.removeBuff(player);
-            return true;
-        }
-        return false;
     }
 
     /**

@@ -13,9 +13,11 @@ public class BuffExcel {
 
     private String name;
 
-    private int hp;
+    private int type;
 
-    private int atk;
+    private String hp;
+
+    private String atk;
     /**
      * 状态持续时间
      */
@@ -25,9 +27,13 @@ public class BuffExcel {
      */
     private int times;
     /**
-     * 正/负面状态
+     * 目标类型（敌方/己方）
      */
-    private int state;
+    private int targetType;
+    /**
+     * 目标数量
+     */
+    private int targetNumber;
 
     private String describe;
 

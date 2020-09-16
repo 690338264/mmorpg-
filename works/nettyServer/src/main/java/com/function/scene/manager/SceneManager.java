@@ -59,9 +59,9 @@ public class SceneManager {
     public void dungeonStart(int sceneId, Dungeon dungeon) {
         Scene s = dungeon.getScene();
         ScheduledFuture scheduledFuture = ThreadPoolManager.loopThread(() -> {
-            if (dungeon.getScene().getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).isEmpty()) {
+            if (dungeon.getScene().getSceneObjectMap().get(SceneObjectType.MONSTER).isEmpty()) {
                 if (!dungeonService.nextBoss(dungeon)) {
-                    s.getSceneObjectMap().get(SceneObjectType.PLAYER.getType()).forEach((playerId, sceneObject) -> {
+                    s.getSceneObjectMap().get(SceneObjectType.PLAYER).forEach((playerId, sceneObject) -> {
                         Player player = (Player) sceneObject;
                         player.submitEvent(new DungeonEvent(s.getSceneId()));
                     });
@@ -91,7 +91,7 @@ public class SceneManager {
         s.setSceneId(sceneId);
         s.setType(type);
         for (SceneObjectType object : SceneObjectType.values()) {
-            s.getSceneObjectMap().put(object.getType(), new HashMap<>());
+            s.getSceneObjectMap().put(object, new HashMap<>());
         }
         sceneCache.get(type).put(s.getId(), s);
         return s;
@@ -110,10 +110,10 @@ public class SceneManager {
         monster.setId((long) index);
         monster.setHp(monster.getMonsterExcel().getHp());
         monster.setAtk(monster.getMonsterExcel().getAggr());
-        monster.setSceneId(s.getSceneId());
+        monster.setNowScene(s);
         monster.getCanUseSkill().putAll(monster.getMonsterExcel().getMonsterSkill());
         monster.setType(SceneObjectType.MONSTER);
-        s.getSceneObjectMap().get(SceneObjectType.MONSTER.getType()).put(monster.getId(), monster);
+        s.getSceneObjectMap().get(SceneObjectType.MONSTER).put(monster.getId(), monster);
         return true;
     }
 
@@ -123,6 +123,6 @@ public class SceneManager {
     public void createNpc(Scene scene) {
         SceneExcel sceneExcel = scene.getSceneExcel();
         sceneExcel.getNpcs().forEach((npcId)
-                -> scene.getSceneObjectMap().get(SceneObjectType.NPC.getType()).put((long) npcId, NpcResource.getNpcById(npcId)));
+                -> scene.getSceneObjectMap().get(SceneObjectType.NPC).put((long) npcId, NpcResource.getNpcById(npcId)));
     }
 }

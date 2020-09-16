@@ -1,5 +1,6 @@
-package com.function.item.model;
+package com.function.item.service;
 
+import com.function.item.model.Item;
 import com.function.player.model.Player;
 
 /**
