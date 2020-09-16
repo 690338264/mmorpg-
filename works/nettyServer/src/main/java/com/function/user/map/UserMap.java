@@ -2,11 +2,17 @@ package com.function.user.map;
 
 import com.function.player.model.Player;
 import com.function.user.model.User;
+import com.jpa.dao.UserDAO;
 import com.jpa.entity.TPlayerInfo;
+import com.jpa.entity.TUser;
 import io.netty.channel.ChannelHandlerContext;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,6 +20,8 @@ import java.util.Map;
  */
 @Component
 public class UserMap {
+    @Autowired
+    private UserDAO userDAO;
     private final Map<ChannelHandlerContext, User> userCtxMap = new HashMap<>();
 
     private final Map<Long, User> userMap = new HashMap<>();
@@ -21,10 +29,6 @@ public class UserMap {
     private final Map<Long, Player> players = new HashMap<>();
 
     private final Map<Long, Map<Long, TPlayerInfo>> userPlayerMap = new HashMap<>();
-
-    public void putUserMap(Long userId, User user) {
-        userMap.put(userId, user);
-    }
 
     public User getUserById(Long userId) {
         return userMap.get(userId);
@@ -50,11 +54,25 @@ public class UserMap {
         return userCtxMap.get(ctx);
     }
 
+    public Map<Long, User> getUserMap() {
+        return userMap;
+    }
+
     public void remove(ChannelHandlerContext ctx) {
         userCtxMap.remove(ctx);
     }
 
     public Map<Long, Player> getPlayers() {
         return players;
+    }
+
+    @PostConstruct
+    public void initUserMap() {
+        List<TUser> users = userDAO.findAll();
+        users.forEach(tUser -> {
+            User user = new User();
+            BeanUtils.copyProperties(tUser, user);
+            userMap.put(tUser.getId(), user);
+        });
     }
 }

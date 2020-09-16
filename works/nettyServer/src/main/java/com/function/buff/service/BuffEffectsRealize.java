@@ -56,7 +56,6 @@ public class BuffEffectsRealize {
             subHp.subHp(attacker, target, hurt);
 
         });
-
     }
 
     /**
@@ -103,6 +102,7 @@ public class BuffEffectsRealize {
             if (target.getState() == SceneObjectState.DEATH) {
                 return;
             }
+            checkBuffAndRemove(target, buff);
             notifyScene.notifyScene(attacker.getNowScene(), MessageFormat.format("{0}受到buff{1}:{2}\n",
                     target.getName(), buffExcel.getName(), buffExcel.getDescribe()));
             target.setAtk(target.getAtk() + atkChange);
@@ -115,7 +115,23 @@ public class BuffEffectsRealize {
     }
 
     private void vertigoBuff(SceneObject attacker, List<SceneObject> targets, BuffExcel buffExcel) {
-
+        targets.forEach(target -> {
+            if (target.getState() == SceneObjectState.DEATH) {
+                return;
+            }
+            Buff buff = new Buff(buffExcel.getId());
+            checkBuffAndRemove(target, buff);
+            target.setState(SceneObjectState.DIZZY);
+            notifyScene.notifyScene(attacker.getNowScene(), MessageFormat.format("{0}受到buff{1}:{2}\n",
+                    target.getName(), buffExcel.getName(), buffExcel.getDescribe()));
+            ScheduledFuture<?> buffTask = ThreadPoolManager.delayThread(() -> {
+                if (target.getState() == SceneObjectState.DEATH) {
+                    return;
+                }
+                target.setState(SceneObjectState.NORMAL);
+            }, buffExcel.getLast(), target.getId().intValue());
+            target.getBuffs().put(buff.getId(), buffTask);
+        });
     }
 
     /**

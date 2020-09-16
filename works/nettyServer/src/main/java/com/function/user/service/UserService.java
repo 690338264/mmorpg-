@@ -62,19 +62,26 @@ public class UserService {
      * 用户注册
      */
     public void register(ChannelHandlerContext ctx, String userName, String psw) {
-        if (usersDAO.findByName(userName) != null) {
-            ctx.writeAndFlush("用户名已存在\n");
-            return;
+        for (User user : userMap.getUserMap().values()) {
+            if (user.getName().equals(userName)) {
+                ctx.writeAndFlush("用户名已存在\n");
+                return;
+            }
         }
         TUser tUser = new TUser();
         synchronized (this) {
-            if (usersDAO.findByName(userName) != null) {
-                ctx.writeAndFlush("用户名已存在\n");
-                return;
+            for (User user : userMap.getUserMap().values()) {
+                if (user.getName().equals(userName)) {
+                    ctx.writeAndFlush("用户名已存在\n");
+                    return;
+                }
             }
             tUser.setName(userName);
             tUser.setPsw(psw);
             usersDAO.saveAndFlush(tUser);
+            User user = new User();
+            BeanUtils.copyProperties(tUser, user);
+            userMap.getUserMap().put(tUser.getId(), user);
         }
         ctx.writeAndFlush("注册成功,您的id为" + tUser.getId() + "用户名为" + tUser.getName() + '\n');
     }
@@ -83,13 +90,11 @@ public class UserService {
      * 用户登录
      */
     public boolean login(long userId, String psw, ChannelHandlerContext ctx) {
-        User user = new User();
-        TUser logUser = usersDAO.findByIdAndPsw(userId, psw);
-        if (logUser == null) {
+        User user = userMap.getUserById(userId);
+        if (user == null || !user.getPsw().equals(psw)) {
             return false;
         }
-        BeanUtils.copyProperties(logUser, user);
-        if (userMap.getUserById(userId) == null) {
+        if (userMap.getUserPlayerMap(userId) == null) {
             Map<Long, TPlayerInfo> playerInfoMap = new HashMap<>();
             playerManager.getPlayerInfoMap().forEach((playerId, playerInfo) -> {
                 if (playerInfo.gettPlayerInfo().getUserId() == userId) {
@@ -97,7 +102,6 @@ public class UserService {
                 }
             });
             userMap.putUserPlayerMap(userId, playerInfoMap);
-            userMap.putUserMap(userId, user);
         }
         userMap.putUserctx(ctx, user);
         return true;

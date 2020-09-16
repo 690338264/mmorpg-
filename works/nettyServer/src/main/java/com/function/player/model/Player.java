@@ -92,11 +92,6 @@ public class Player extends SceneObject {
             Monster monster = (Monster) sceneObject;
             monster.getHurtList().remove(tPlayer.getRoleId());
         });
-//                        monster.getHurtList().remove(player.getTPlayer().getRoleId());
-//                        if (monster.getBuffs().get(buffId) != null) {
-//                            monster.getBuffs().get(buffId).cancel(true);
-//                            monster.getBuffs().remove(buffId);
-//                        }
         ThreadPoolManager.delayThread(() -> {
             setHp(getOriHp());
             setState(SceneObjectState.NORMAL);

@@ -111,6 +111,7 @@ public class SceneManager {
         monster.setHp(monster.getMonsterExcel().getHp());
         monster.setAtk(monster.getMonsterExcel().getAggr());
         monster.setNowScene(s);
+        monster.setMp(monster.getMonsterExcel().getMp());
         monster.getCanUseSkill().putAll(monster.getMonsterExcel().getMonsterSkill());
         monster.setType(SceneObjectType.MONSTER);
         s.getSceneObjectMap().get(SceneObjectType.MONSTER).put(monster.getId(), monster);

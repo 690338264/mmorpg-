@@ -70,15 +70,19 @@ public class PlayerService {
      * 角色创建
      */
     public void roleCreate(ChannelHandlerContext ctx, String roleName, Integer roleType, Long userId) {
-        if (playerDAO.findByName(roleName) != null) {
-            ctx.writeAndFlush("角色名已存在！\n");
-            return;
+        for (PlayerInfo playerInfo : playerManager.getPlayerInfoMap().values()) {
+            if (playerInfo.gettPlayerInfo().getName().equals(roleName)) {
+                ctx.writeAndFlush("角色名已存在！\n");
+                return;
+            }
         }
         TPlayer tPlayer = playerManager.newPlayer(roleName, roleType, userId);
         synchronized (this) {
-            if (playerDAO.findByName(roleName) != null) {
-                ctx.writeAndFlush("角色名已存在！\n");
-                return;
+            for (PlayerInfo playerInfo : playerManager.getPlayerInfoMap().values()) {
+                if (playerInfo.gettPlayerInfo().getName().equals(roleName)) {
+                    ctx.writeAndFlush("角色名已存在！\n");
+                    return;
+                }
             }
             playerDAO.saveAndFlush(tPlayer);
         }
