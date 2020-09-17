@@ -1,6 +1,6 @@
 package com.function.trade.service;
 
-import com.event.model.TradeBeginEvent;
+import com.event.model.playerEvent.TradeBeginEvent;
 import com.function.item.model.Item;
 import com.function.item.model.ItemType;
 import com.function.item.service.ItemService;
@@ -73,8 +73,8 @@ public class TradeService {
         player.setTradeBoard(trade);
         notifyScene.notifyPlayer(player, "开始交易\n");
         notifyScene.notifyPlayer(trade.getInitiator(), "玩家接受交易 请开始交易\n");
-        player.submitEvent(new TradeBeginEvent());
-        trade.getInitiator().submitEvent(new TradeBeginEvent());
+        player.asynchronousSubmitEvent(new TradeBeginEvent());
+        trade.getInitiator().asynchronousSubmitEvent(new TradeBeginEvent());
     }
 
     /**

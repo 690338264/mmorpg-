@@ -1,6 +1,6 @@
 package com.function.npc.service;
 
-import com.event.model.NpcTalkEvent;
+import com.event.model.playerEvent.NpcTalkEvent;
 import com.function.npc.excel.NpcExcel;
 import com.function.player.model.Player;
 import com.function.scene.model.SceneObjectType;
@@ -25,6 +25,6 @@ public class NpcService {
             StringBuilder noNpc = new StringBuilder("目标指向错误！\n");
             notifyScene.notifyPlayer(player, noNpc);
         }
-        player.submitEvent(new NpcTalkEvent(npcId.intValue()));
+        player.asynchronousSubmitEvent(new NpcTalkEvent(npcId.intValue()));
     }
 }

@@ -1,5 +1,7 @@
 package com.event;
 
+import com.manager.ThreadPoolManager;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,10 +21,17 @@ public class EventManager {
         listenerMap.get(eventClass).add(eventHandler);
     }
 
-    public static <E extends BasePlayerEvent> List<EventHandler> getEventList(E event) {
+    public static <E extends BasePlayerEvent> List<EventHandler> getPlayerEventList(E event) {
         return listenerMap.get(event.getClass());
-
     }
 
-
+    public static <E extends IEvent> void submitEvent(E event) {
+        listenerMap.get(event.getClass()).forEach(eventHandler -> {
+            try {
+                ThreadPoolManager.immediateThread(() -> eventHandler.handle(event), event.hashCode());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 }

@@ -1,9 +1,9 @@
-package com.event.handler;
+package com.event.handler.questEventHandler;
 
+import com.event.BaseQuestEventHandler;
 import com.event.EventHandler;
 import com.event.EventManager;
-import com.event.QuestEvent;
-import com.event.model.PvpWinEvent;
+import com.event.model.playerEvent.PvpWinEvent;
 import com.function.quest.model.QuestType;
 import com.function.quest.service.QuestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @create 2020-09-13 19:28
  */
 @Component
-public class QuestOnPvpWinEventHandler extends QuestEvent implements EventHandler<PvpWinEvent> {
+public class BaseQuestOnPvpWinEventHandlerHandler extends BaseQuestEventHandler implements EventHandler<PvpWinEvent> {
     @Autowired
     private QuestService questService;
 

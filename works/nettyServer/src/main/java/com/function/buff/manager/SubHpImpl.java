@@ -1,6 +1,6 @@
 package com.function.buff.manager;
 
-import com.event.model.PvpWinEvent;
+import com.event.model.playerEvent.PvpWinEvent;
 import com.function.monster.model.Monster;
 import com.function.monster.service.MonsterService;
 import com.function.player.model.Player;
@@ -49,7 +49,7 @@ public class SubHpImpl {
                     }
                     if (attacker.getType() == SceneObjectType.PLAYER) {
                         Player player = (Player) attacker;
-                        player.submitEvent(new PvpWinEvent());
+                        player.asynchronousSubmitEvent(new PvpWinEvent());
                         notifyScene.notifyScene(attacker.getNowScene(),
                                 MessageFormat.format("{0}击败了{1}\n", attacker.getName(), target.getName()));
                         return;

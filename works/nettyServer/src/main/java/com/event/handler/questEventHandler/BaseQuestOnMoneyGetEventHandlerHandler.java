@@ -1,9 +1,9 @@
-package com.event.handler;
+package com.event.handler.questEventHandler;
 
+import com.event.BaseQuestEventHandler;
 import com.event.EventHandler;
 import com.event.EventManager;
-import com.event.QuestEvent;
-import com.event.model.MoneyGetEvent;
+import com.event.model.playerEvent.MoneyGetEvent;
 import com.function.quest.model.QuestType;
 import com.function.quest.service.QuestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @create 2020-09-10 19:35
  */
 @Component
-public class QuestOnMoneyGetEventHandler extends QuestEvent implements EventHandler<MoneyGetEvent> {
+public class BaseQuestOnMoneyGetEventHandlerHandler extends BaseQuestEventHandler implements EventHandler<MoneyGetEvent> {
     @Autowired
     private QuestService questService;
 

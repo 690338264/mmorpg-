@@ -1,9 +1,9 @@
-package com.event.handler;
+package com.event.handler.questEventHandler;
 
+import com.event.BaseQuestEventHandler;
 import com.event.EventHandler;
 import com.event.EventManager;
-import com.event.QuestEvent;
-import com.event.model.DungeonPassEvent;
+import com.event.model.playerEvent.DungeonPassEvent;
 import com.function.quest.model.QuestType;
 import com.function.quest.service.QuestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @create 2020-09-13 19:15
  */
 @Component
-public class QuestOnDungeonPassEventHandler extends QuestEvent implements EventHandler<DungeonPassEvent> {
+public class BaseQuestOnDungeonPassEventHandlerHandler extends BaseQuestEventHandler implements EventHandler<DungeonPassEvent> {
     @Autowired
     private QuestService questService;
 

@@ -131,11 +131,28 @@ public class Player extends SceneObject {
 
     }
 
-    public <E extends BasePlayerEvent> void submitEvent(E event) {
+    public <E extends BasePlayerEvent> void asynchronousSubmitEvent(E event) {
         event.setPlayer(this);
-        List<EventHandler> handlerList = EventManager.getEventList(event);
-        handlerList.forEach((eventHandler
-                -> ThreadPoolManager.immediateThread(()
-                -> eventHandler.handle(event), tPlayer.getRoleId().intValue())));
+        List<EventHandler> handlerList = EventManager.getPlayerEventList(event);
+        handlerList.forEach((eventHandler -> {
+            try {
+                ThreadPoolManager.immediateThread(() -> eventHandler.handle(event), tPlayer.getRoleId().intValue());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }));
     }
+
+    public <E extends BasePlayerEvent> void synchronousSubmitEvent(E event) {
+        event.setPlayer(this);
+        List<EventHandler> handlerList = EventManager.getPlayerEventList(event);
+        handlerList.forEach((eventHandler -> {
+            try {
+                eventHandler.handle(event);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }));
+    }
+
 }

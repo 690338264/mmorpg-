@@ -27,6 +27,7 @@ import com.jpa.entity.TEmail;
 import com.jpa.entity.TPlayer;
 import com.jpa.entity.TPlayerInfo;
 import com.jpa.manager.JpaManager;
+import com.manager.UpdateThreadManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -193,14 +194,19 @@ public class PlayerData {
      * 存储玩家数据
      */
     public void updatePlayer(Player player) {
-        ScheduledFuture update = jpaManager.update(player.getTaskMap().get(SceneObjectTask.UPDATE_PLAYER), () -> {
+        UpdateThreadManager.putIntoThreadPool(player.getClass(), player.getTPlayer().getRoleId(), () -> {
             player.toJson();
             playerDAO.save(player.getTPlayer());
             player.getTaskMap().remove(SceneObjectTask.UPDATE_PLAYER);
-        }, player.getTPlayer().getRoleId().intValue());
-        if (update != null) {
-            player.getTaskMap().put(SceneObjectTask.UPDATE_PLAYER, update);
-        }
+//        ScheduledFuture update = jpaManager.update(player.getTaskMap().get(SceneObjectTask.UPDATE_PLAYER), () -> {
+//            player.toJson();
+//            playerDAO.save(player.getTPlayer());
+//            player.getTaskMap().remove(SceneObjectTask.UPDATE_PLAYER);
+//        }, player.getTPlayer().getRoleId().intValue());
+//        if (update != null) {
+//            player.getTaskMap().put(SceneObjectTask.UPDATE_PLAYER, update);
+//        }
+        });
     }
 
     public void updatePlayerInfo(PlayerInfo playerInfo) {

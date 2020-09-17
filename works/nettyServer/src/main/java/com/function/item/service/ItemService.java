@@ -1,6 +1,6 @@
 package com.function.item.service;
 
-import com.event.model.ItemGetEvent;
+import com.event.model.playerEvent.ItemGetEvent;
 import com.function.bag.model.Bag;
 import com.function.bag.service.BagService;
 import com.function.item.model.Item;
@@ -100,7 +100,7 @@ public class ItemService {
                     StringBuilder put = new StringBuilder("[")
                             .append(value.getItemById().getName()).append("]已放入背包\n");
                     notifyScene.notifyPlayer(player, put);
-                    player.submitEvent(new ItemGetEvent(item.getId(), item.getNum()));
+                    player.asynchronousSubmitEvent(new ItemGetEvent(item.getId(), item.getNum()));
                     return true;
                 }
             }
@@ -125,7 +125,7 @@ public class ItemService {
                 bagService.updateBag(player);
                 StringBuilder put = new StringBuilder("[").append(item.getItemById().getName()).append("]已放入背包\n");
                 notifyScene.notifyPlayer(player, put);
-                player.submitEvent(new ItemGetEvent(item.getId(), item.getNum()));
+                player.asynchronousSubmitEvent(new ItemGetEvent(item.getId(), item.getNum()));
                 return true;
             }
         }

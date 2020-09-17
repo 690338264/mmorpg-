@@ -1,4 +1,4 @@
-package com.event.model;
+package com.event.model.playerEvent;
 
 import com.event.BasePlayerEvent;
 

@@ -1,8 +1,8 @@
 package com.function.player.service;
 
-import com.event.model.LevelUpEvent;
-import com.event.model.MoneyGetEvent;
-import com.event.model.MonsterKillEvent;
+import com.event.model.playerEvent.LevelUpEvent;
+import com.event.model.playerEvent.MoneyGetEvent;
+import com.event.model.playerEvent.MonsterKillEvent;
 import com.function.buff.excel.BuffExcel;
 import com.function.buff.excel.BuffResource;
 import com.function.buff.service.BuffEffectsRealize;
@@ -156,7 +156,7 @@ public class PlayerService {
         notifyScene.notifyPlayer(player, MessageFormat.format("获得{0}经验\n",
                 monster.getMonsterExcel().getExc()));
         getExc(player, monster.getMonsterExcel().getExc());
-        player.submitEvent(new MonsterKillEvent(monster.getExcelId()));
+        player.asynchronousSubmitEvent(new MonsterKillEvent(monster.getExcelId()));
         playerData.updatePlayer(player);
     }
 
@@ -179,7 +179,7 @@ public class PlayerService {
         TPlayer tPlayer = player.getTPlayer();
         tPlayer.setMoney(tPlayer.getMoney() + money);
         notifyScene.notifyPlayer(player, MessageFormat.format("获得{0}金币\n", money));
-        player.submitEvent(new MoneyGetEvent(money));
+        player.asynchronousSubmitEvent(new MoneyGetEvent(money));
     }
 
     /**
@@ -201,7 +201,7 @@ public class PlayerService {
         TPlayer tPlayer = player.getTPlayer();
         exc = exc - (tPlayer.getLevel() * player.getLevelUp() - tPlayer.getExp());
         tPlayer.setLevel(tPlayer.getLevel() + 1);
-        player.submitEvent(new LevelUpEvent());
+        player.asynchronousSubmitEvent(new LevelUpEvent());
         notifyScene.notifyPlayer(player, MessageFormat.format("恭喜你升级！您现在的等级为{0}\n", tPlayer.getLevel()));
         tPlayer.setExp(0);
         getExc(player, exc);

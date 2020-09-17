@@ -1,9 +1,9 @@
-package com.event.handler;
+package com.event.handler.questEventHandler;
 
+import com.event.BaseQuestEventHandler;
 import com.event.EventHandler;
 import com.event.EventManager;
-import com.event.QuestEvent;
-import com.event.model.FriendAddEvent;
+import com.event.model.playerEvent.FriendAddEvent;
 import com.function.quest.model.QuestType;
 import com.function.quest.service.QuestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @create 2020-09-13 16:18
  */
 @Component
-public class QuestOnFriendAddEventHandler extends QuestEvent implements EventHandler<FriendAddEvent> {
+public class BaseQuestOnFriendAddEventHandlerHandler extends BaseQuestEventHandler implements EventHandler<FriendAddEvent> {
     @Autowired
     private QuestService questService;
 

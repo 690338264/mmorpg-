@@ -28,7 +28,7 @@ public class PlayerManager {
 
     private final Map<Long, PlayerInfo> playerInfoMap = new ConcurrentHashMap<>();
 
-    private static final long OUTLINE_TIME = 3600 * 60 * 24;
+    private static final long OUTLINE_TIME = 1000 * 60 * 60;
 
     private static final long JUMP = 5000;
 

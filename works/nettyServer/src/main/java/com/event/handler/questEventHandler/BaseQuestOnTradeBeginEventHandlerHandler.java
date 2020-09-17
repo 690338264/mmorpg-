@@ -1,9 +1,9 @@
-package com.event.handler;
+package com.event.handler.questEventHandler;
 
+import com.event.BaseQuestEventHandler;
 import com.event.EventHandler;
 import com.event.EventManager;
-import com.event.QuestEvent;
-import com.event.model.TradeBeginEvent;
+import com.event.model.playerEvent.TradeBeginEvent;
 import com.function.quest.model.QuestType;
 import com.function.quest.service.QuestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @create 2020-09-13 19:31
  */
 @Component
-public class QuestOnTradeBeginEventHandler extends QuestEvent implements EventHandler<TradeBeginEvent> {
+public class BaseQuestOnTradeBeginEventHandlerHandler extends BaseQuestEventHandler implements EventHandler<TradeBeginEvent> {
     @Autowired
     private QuestService questService;
 
