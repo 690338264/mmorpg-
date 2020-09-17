@@ -4,7 +4,8 @@ import com.event.BasePlayerEvent;
 
 /**
  * @author Catherine
- * @create 2020-09-13 19:16
+ * @create 2020-09-13 19:31
  */
-public class TeamEvent extends BasePlayerEvent {
+public class TradeBeginEvent extends BasePlayerEvent {
+
 }

@@ -13,7 +13,7 @@ public enum QuestType {
     ITEM_GET(5),
     MONSTER_KILL(6),
     DUNGEON_PASS(7),
-    TEAM_MAKE(8),
+    TEAM_JOIN(8),
     SECT_ADD(9),
     PK_WIN(10),
     TRADE(11),

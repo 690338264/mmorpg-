@@ -1,6 +1,6 @@
 package com.function.scene.manager;
 
-import com.event.model.DungeonEvent;
+import com.event.model.DungeonPassEvent;
 import com.function.monster.model.Monster;
 import com.function.monster.service.MonsterService;
 import com.function.npc.excel.NpcResource;
@@ -63,7 +63,7 @@ public class SceneManager {
                 if (!dungeonService.nextBoss(dungeon)) {
                     s.getSceneObjectMap().get(SceneObjectType.PLAYER).forEach((playerId, sceneObject) -> {
                         Player player = (Player) sceneObject;
-                        player.submitEvent(new DungeonEvent(s.getSceneId()));
+                        player.submitEvent(new DungeonPassEvent(s.getSceneId()));
                     });
                     notifyScene.notifyScene(s, "副本挑战成功,即将关闭!\n");
                     dungeonService.destroy(dungeon);
