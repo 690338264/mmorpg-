@@ -2,9 +2,9 @@ package com.function.player.model;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.event.BasePlayerEvent;
 import com.event.EventHandler;
 import com.event.EventManager;
-import com.event.QuestEvent;
 import com.function.bag.model.Bag;
 import com.function.email.model.Email;
 import com.function.item.model.Item;
@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
 public class Player extends SceneObject {
+
     private TPlayer tPlayer;
     private ChannelHandlerContext channelHandlerContext;
     /**
@@ -130,11 +131,11 @@ public class Player extends SceneObject {
 
     }
 
-    public <E extends QuestEvent> void submitEvent(E event) {
-        Player player = this;
+    public <E extends BasePlayerEvent> void submitEvent(E event) {
+        event.setPlayer(this);
         List<EventHandler> handlerList = EventManager.getEventList(event);
         handlerList.forEach((eventHandler
                 -> ThreadPoolManager.immediateThread(()
-                -> eventHandler.handle(event, player), tPlayer.getRoleId().intValue())));
+                -> eventHandler.handle(event), tPlayer.getRoleId().intValue())));
     }
 }

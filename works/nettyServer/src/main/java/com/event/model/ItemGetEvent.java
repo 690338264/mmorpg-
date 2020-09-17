@@ -1,17 +1,12 @@
 package com.event.model;
 
-import com.event.QuestEvent;
-import com.function.quest.model.QuestType;
+import com.event.BasePlayerEvent;
 
 /**
  * @author Catherine
  * @create 2020-09-13 19:01
  */
-public class ItemGetEvent extends QuestEvent {
-    @Override
-    public QuestType getType() {
-        return QuestType.ITEM_GET;
-    }
+public class ItemGetEvent extends BasePlayerEvent {
 
     public ItemGetEvent(int itemId, int param) {
         this.itemId = itemId;

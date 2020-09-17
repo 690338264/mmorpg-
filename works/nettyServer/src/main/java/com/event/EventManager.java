@@ -12,16 +12,27 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EventManager {
 
-    private static final Map<Class<? extends QuestEvent>, List<EventHandler>> listenerMap = new ConcurrentHashMap<>();
+    private static final Map<Class<? extends IEvent>, List<EventHandler>> listenerMap = new ConcurrentHashMap<>();
 
-    public static <E extends QuestEvent> void putEvent(Class<? extends QuestEvent> eventClass, EventHandler<E> eventHandler) {
+//    public static <E extends IEvent> void putEvent(Class<? extends QuestEvent> eventClass, EventHandler<E> eventHandler) {
+//        listenerMap.computeIfAbsent(eventClass, key -> new CopyOnWriteArrayList<>());
+//        listenerMap.get(eventClass).add(eventHandler);
+//    }
+
+    public static void putEvent(Class<? extends IEvent> eventClass, EventHandler eventHandler) {
         listenerMap.computeIfAbsent(eventClass, key -> new CopyOnWriteArrayList<>());
         listenerMap.get(eventClass).add(eventHandler);
     }
 
-    public static <E extends QuestEvent> List<EventHandler> getEventList(E event) {
+    public static <T extends QuestEvent> List<EventHandler> getEventList(T event) {
 
         return listenerMap.get(event.getClass());
+    }
+
+
+    public static <T extends BasePlayerEvent> List<EventHandler> getEventList(T event) {
+        return listenerMap.get(event.getClass());
+
     }
 
 

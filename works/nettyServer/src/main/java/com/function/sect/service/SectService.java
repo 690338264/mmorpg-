@@ -2,7 +2,7 @@ package com.function.sect.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.event.model.SectEvent;
+import com.event.model.SectAddEvent;
 import com.function.item.model.Item;
 import com.function.item.model.ItemType;
 import com.function.item.service.ItemService;
@@ -98,7 +98,7 @@ public class SectService {
         playerData.updatePlayer(player);
         playerData.updatePlayerInfo(playerInfo);
         notifyScene.notifyPlayer(player, MessageFormat.format("创建公会成功,公会id:{0}\n", tSect.getSectId()));
-        player.submitEvent(new SectEvent());
+        player.submitEvent(new SectAddEvent());
     }
 
     /**
@@ -174,7 +174,7 @@ public class SectService {
             request.getTPlayer().setSectPosition(SectPosition.NORMAL_MEMBER.getType());
             playerData.updatePlayer(request);
             notifyScene.notifyPlayer(request, "加入公会\n");
-            request.submitEvent(new SectEvent());
+            request.submitEvent(new SectAddEvent());
         } else {
             playerUnLine(sect, playerId);
         }
@@ -367,7 +367,7 @@ public class SectService {
             }));
             player.setOnDoingQuest(JSON.parseObject(tPlayer.getOnDoingQuest(), new TypeReference<Map<QuestType, Map<Integer, Quest>>>() {
             }));
-            player.submitEvent(new SectEvent());
+            player.submitEvent(new SectAddEvent());
             tPlayer.setSectId(sect.gettSect().getSectId());
             tPlayer.setSectPosition(SectPosition.NORMAL_MEMBER.getType());
             playerData.updatePlayer(player);

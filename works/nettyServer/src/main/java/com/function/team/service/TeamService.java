@@ -134,6 +134,8 @@ public class TeamService {
             return;
         }
         team.getInvite().put(playerId, System.currentTimeMillis());
+        notifyScene.notifyPlayer(invite, "收到一条小队邀请\n");
+        notifyScene.notifyPlayer(player, "要请发送成功\n");
     }
 
     /**

@@ -1,8 +1,8 @@
 package com.function.player.service;
 
 import com.event.model.LevelUpEvent;
-import com.event.model.MoneyEvent;
-import com.event.model.MonsterEvent;
+import com.event.model.MoneyGetEvent;
+import com.event.model.MonsterKillEvent;
 import com.function.buff.excel.BuffExcel;
 import com.function.buff.excel.BuffResource;
 import com.function.buff.service.BuffEffectsRealize;
@@ -156,7 +156,7 @@ public class PlayerService {
         notifyScene.notifyPlayer(player, MessageFormat.format("获得{0}经验\n",
                 monster.getMonsterExcel().getExc()));
         getExc(player, monster.getMonsterExcel().getExc());
-        player.submitEvent(new MonsterEvent(monster.getExcelId()));
+        player.submitEvent(new MonsterKillEvent(monster.getExcelId()));
         playerData.updatePlayer(player);
     }
 
@@ -179,7 +179,7 @@ public class PlayerService {
         TPlayer tPlayer = player.getTPlayer();
         tPlayer.setMoney(tPlayer.getMoney() + money);
         notifyScene.notifyPlayer(player, MessageFormat.format("获得{0}金币\n", money));
-        player.submitEvent(new MoneyEvent(money));
+        player.submitEvent(new MoneyGetEvent(money));
     }
 
     /**

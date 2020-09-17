@@ -4,7 +4,7 @@ import com.event.BasePlayerEvent;
 
 /**
  * @author Catherine
- * @create 2020-09-13 19:16
+ * @create 2020-09-13 19:24
  */
-public class TeamEvent extends BasePlayerEvent {
+public class SectAddEvent extends BasePlayerEvent {
 }

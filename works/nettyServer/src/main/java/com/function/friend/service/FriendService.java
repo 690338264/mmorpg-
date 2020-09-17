@@ -2,7 +2,7 @@ package com.function.friend.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.event.model.FriendEvent;
+import com.event.model.FriendAddEvent;
 import com.function.player.manager.PlayerManager;
 import com.function.player.model.Player;
 import com.function.player.service.PlayerData;
@@ -100,7 +100,7 @@ public class FriendService {
             return;
         }
         player.getFriend().put(friendId, player.getFriendRequest().get(friendId));
-        player.submitEvent(new FriendEvent());
+        player.submitEvent(new FriendAddEvent());
         player.getFriendRequest().remove(friendId);
         playerData.updatePlayer(player);
 
@@ -108,7 +108,7 @@ public class FriendService {
         if (userMap.getPlayers().containsKey(friendId)) {
             Player friend = userMap.getPlayers(friendId);
             friend.getFriend().put(playerId, otherAdd);
-            friend.submitEvent(new FriendEvent());
+            friend.submitEvent(new FriendAddEvent());
             playerData.updatePlayer(friend);
         } else {
             TPlayer tPlayer = playerDAO.findByRoleId(playerId);
@@ -121,7 +121,7 @@ public class FriendService {
             friend.setOnDoingQuest(JSON.parseObject(tPlayer.getOnDoingQuest(), new TypeReference<Map<QuestType, Map<Integer, Quest>>>() {
             }));
             friend.getFriend().put(playerId, otherAdd);
-            friend.submitEvent(new FriendEvent());
+            friend.submitEvent(new FriendAddEvent());
             playerData.updatePlayer(friend);
         }
         notifyScene.notifyPlayer(player, "添加成功\n");
