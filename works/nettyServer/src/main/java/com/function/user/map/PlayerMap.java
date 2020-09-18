@@ -17,7 +17,7 @@ public class PlayerMap {
 
     private final Map<Long, ChannelHandlerContext> ctxPlayer = new HashMap<>();
 
-    private final Map<Long, Long> offlinePlayer = new HashMap<>();
+    private final Map<Long, Long> playerLastUpdate = new HashMap<>();
 
     public void putPlayerCtx(ChannelHandlerContext ctx, Player player) {
         playerCtxMap.put(ctx, player);
@@ -32,8 +32,8 @@ public class PlayerMap {
         return ctxPlayer.get(playerId);
     }
 
-    public Map<Long, Long> getOfflinePlayer() {
-        return offlinePlayer;
+    public Map<Long, Long> getPlayerLastUpdate() {
+        return playerLastUpdate;
     }
 
     public Map<ChannelHandlerContext, Player> getPlayerCtxMap() {

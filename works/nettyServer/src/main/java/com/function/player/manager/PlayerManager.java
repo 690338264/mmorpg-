@@ -51,10 +51,10 @@ public class PlayerManager {
 
     @PostConstruct
     private void check() {
-        ThreadPoolManager.loopThread(() -> playerMap.getOfflinePlayer().forEach((playerId, time) -> {
+        ThreadPoolManager.loopThread(() -> playerMap.getPlayerLastUpdate().forEach((playerId, time) -> {
             if (System.currentTimeMillis() - time > OUTLINE_TIME) {
                 userMap.getPlayers().remove(playerId);
-                playerMap.getOfflinePlayer().remove(playerId);
+                playerMap.getPlayerLastUpdate().remove(playerId);
             }
         }), 0, JUMP, getClass().hashCode());
     }

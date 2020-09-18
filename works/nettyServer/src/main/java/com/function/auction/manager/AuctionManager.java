@@ -5,15 +5,14 @@ import com.function.auction.model.AuctionType;
 import com.function.auction.service.AuctionService;
 import com.jpa.dao.AuctionDAO;
 import com.jpa.entity.TAuction;
-import com.jpa.manager.JpaManager;
 import com.manager.ThreadPoolManager;
+import com.manager.UpdateThreadManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Catherine
@@ -25,8 +24,6 @@ public class AuctionManager {
     private AuctionService auctionService;
     @Autowired
     private AuctionDAO auctionDAO;
-    @Autowired
-    private JpaManager jpaManager;
     private final Map<Long, Auction> fixedPriceMode = new ConcurrentHashMap<>();
     private final Map<Long, Auction> auctionMode = new ConcurrentHashMap<>();
     private static final long JUMP = 1000;
@@ -69,12 +66,10 @@ public class AuctionManager {
     }
 
     public void updateAuction(Auction auction) {
-        ScheduledFuture<?> update = jpaManager.update(auction.getUpdate(), () -> {
+        UpdateThreadManager.putIntoThreadPool(auction.getClass(), auction.gettAuction().getAuctionId(), () -> {
             auction.toJson();
             auctionDAO.save(auction.gettAuction());
-            auction.setUpdate(null);
-        }, auction.gettAuction().getAuctionId().intValue());
-        auction.setUpdate(update);
+        });
     }
 
     public Map<Long, Auction> getFixedPriceMode() {

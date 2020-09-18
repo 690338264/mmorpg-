@@ -61,6 +61,8 @@ public class Player extends SceneObject {
     private int speed;
     private int levelUp = 2000;
 
+    private boolean isInit = false;
+
     private TradeBoard tradeBoard;
 
     private Map<Integer, Item> equipMap = new HashMap<>();

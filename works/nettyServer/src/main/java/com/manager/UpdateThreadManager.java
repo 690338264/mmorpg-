@@ -14,11 +14,11 @@ import java.util.concurrent.TimeUnit;
 public class UpdateThreadManager {
 
     public static final int UPDATE_TIME = 6000;
-
-    public static Map<String, Runnable> updateMap = new ConcurrentHashMap<>();
+    private static final Map<String, Runnable> updateMap = new ConcurrentHashMap<>();
+    private static final ScheduledExecutorService updateThreadPool;
 
     static {
-        ScheduledExecutorService updateThreadPool = Executors.newScheduledThreadPool(500);
+        updateThreadPool = Executors.newScheduledThreadPool(500);
         updateThreadPool.scheduleWithFixedDelay(() -> updateMap.forEach((key, runnable) -> {
             updateThreadPool.execute(runnable);
             updateMap.remove(key);

@@ -4,42 +4,33 @@ import com.function.bag.model.Bag;
 import com.function.item.model.Item;
 import com.function.item.model.ItemType;
 import com.function.player.model.Player;
-import com.function.player.model.SceneObjectTask;
 import com.function.scene.service.NotifyScene;
 import com.jpa.dao.BagDAO;
-import com.jpa.manager.JpaManager;
+import com.manager.UpdateThreadManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Catherine
  */
 @Component
-@SuppressWarnings("rawtypes")
 public class BagService {
     @Autowired
     private BagDAO bagDAO;
     @Autowired
     private NotifyScene notifyScene;
-    @Autowired
-    private JpaManager jpaManager;
-
     /**
      * 更新背包
      */
     public void updateBag(Player player) {
-        ScheduledFuture update = jpaManager.update(player.getTaskMap().get(SceneObjectTask.UPDATE_BAG), () -> {
-            player.getBag().toJson();
-            bagDAO.save(player.getBag().getTBag());
-            player.getTaskMap().remove(SceneObjectTask.UPDATE_BAG);
-        }, player.getTPlayer().getRoleId().intValue());
-        if (update != null) {
-            player.getTaskMap().putIfAbsent(SceneObjectTask.UPDATE_BAG, update);
-        }
+        Bag bag = player.getBag();
+        UpdateThreadManager.putIntoThreadPool(bag.getClass(), bag.getTBag().getPlayerId(), () -> {
+            bag.toJson();
+            bagDAO.save(bag.getTBag());
+        });
     }
 
     /**
@@ -101,5 +92,4 @@ public class BagService {
         player.getBag().setItemMap(items);
         updateBag(player);
     }
-
 }

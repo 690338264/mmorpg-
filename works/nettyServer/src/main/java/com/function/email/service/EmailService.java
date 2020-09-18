@@ -1,6 +1,5 @@
 package com.function.email.service;
 
-import com.alibaba.fastjson.JSON;
 import com.function.email.model.Email;
 import com.function.email.model.EmailState;
 import com.function.item.model.Item;
@@ -12,14 +11,12 @@ import com.function.user.map.UserMap;
 import com.jpa.dao.EmailDAO;
 import com.jpa.entity.TEmail;
 import com.jpa.entity.TPlayerInfo;
-import com.jpa.manager.JpaManager;
-import com.manager.ThreadPoolManager;
+import com.manager.UpdateThreadManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import java.util.stream.IntStream;
 
 /**
@@ -27,7 +24,6 @@ import java.util.stream.IntStream;
  * @create 2020-09-02 15:45
  */
 @Component
-@SuppressWarnings("rawtypes")
 public class EmailService {
     @Autowired
     private ItemService itemService;
@@ -39,8 +35,6 @@ public class EmailService {
     private EmailDAO emailDAO;
     @Autowired
     private PlayerManager playerManager;
-    @Autowired
-    private JpaManager jpaManager;
 
     /**
      * 发送邮件仅文字
@@ -110,6 +104,7 @@ public class EmailService {
     public Email createEmail(long senderId, Long playerId, String text) {
         Email email = new Email();
         TEmail tEmail = new TEmail();
+        emailDAO.saveAndFlush(tEmail);
         tEmail.setState(EmailState.UNREAD.getOut());
         tEmail.setPlayerId(playerId);
         tEmail.setSender(senderId);
@@ -123,11 +118,8 @@ public class EmailService {
         if (player != null) {
             player.getEmails().add(email);
             notifyScene.notifyPlayer(player, "您收到一封邮件，请及时查收\n");
-            updateEmail(email);
-        } else {
-            email.gettEmail().setGift(JSON.toJSONString(email.getGifts()));
-            ThreadPoolManager.immediateThread(() -> emailDAO.save(email.gettEmail()), playerId.intValue());
         }
+        updateEmail(email);
     }
 
     public Player findPlayer(Long playerId) {
@@ -136,11 +128,9 @@ public class EmailService {
     }
 
     public void updateEmail(Email email) {
-        ScheduledFuture update = jpaManager.update(email.getUpdate(), () -> {
+        UpdateThreadManager.putIntoThreadPool(email.getClass(), email.gettEmail().getEmailId(), () -> {
             email.toJson();
             emailDAO.save(email.gettEmail());
-            email.setUpdate(null);
-        }, email.gettEmail().getSender().intValue());
-        email.setUpdate(update);
+        });
     }
 }

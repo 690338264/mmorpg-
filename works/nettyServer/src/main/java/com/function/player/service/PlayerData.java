@@ -10,7 +10,6 @@ import com.function.occ.excel.OccExcel;
 import com.function.occ.excel.OccResource;
 import com.function.player.model.Player;
 import com.function.player.model.PlayerInfo;
-import com.function.player.model.SceneObjectTask;
 import com.function.quest.excel.QuestResource;
 import com.function.quest.model.Quest;
 import com.function.quest.model.QuestState;
@@ -18,6 +17,7 @@ import com.function.quest.model.QuestTimes;
 import com.function.quest.model.QuestType;
 import com.function.scene.model.SceneObjectType;
 import com.function.skill.model.Skill;
+import com.function.user.map.PlayerMap;
 import com.jpa.dao.BagDAO;
 import com.jpa.dao.EmailDAO;
 import com.jpa.dao.PlayerDAO;
@@ -26,16 +26,15 @@ import com.jpa.entity.TBag;
 import com.jpa.entity.TEmail;
 import com.jpa.entity.TPlayer;
 import com.jpa.entity.TPlayerInfo;
-import com.jpa.manager.JpaManager;
 import com.manager.UpdateThreadManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledFuture;
 import java.util.stream.IntStream;
 
 /**
@@ -43,18 +42,20 @@ import java.util.stream.IntStream;
  * @create 2020-08-06 19:45
  */
 @Component
-@SuppressWarnings("rawtypes")
 public class PlayerData {
     @Autowired
     private BagDAO bagDAO;
     @Autowired
     private PlayerDAO playerDAO;
     @Autowired
-    private JpaManager jpaManager;
-    @Autowired
     private EmailDAO emailDAO;
     @Autowired
     private PlayerInfoDAO playerInfoDAO;
+    @Autowired
+    private PlayerMap playerMap;
+
+    public PlayerData() {
+    }
 
     /**
      * 初始化角色属性
@@ -197,23 +198,16 @@ public class PlayerData {
         UpdateThreadManager.putIntoThreadPool(player.getClass(), player.getTPlayer().getRoleId(), () -> {
             player.toJson();
             playerDAO.save(player.getTPlayer());
-            player.getTaskMap().remove(SceneObjectTask.UPDATE_PLAYER);
-//        ScheduledFuture update = jpaManager.update(player.getTaskMap().get(SceneObjectTask.UPDATE_PLAYER), () -> {
-//            player.toJson();
-//            playerDAO.save(player.getTPlayer());
-//            player.getTaskMap().remove(SceneObjectTask.UPDATE_PLAYER);
-//        }, player.getTPlayer().getRoleId().intValue());
-//        if (update != null) {
-//            player.getTaskMap().put(SceneObjectTask.UPDATE_PLAYER, update);
-//        }
+            long playerId = player.getTPlayer().getRoleId();
+            if (Objects.isNull(playerMap.getCtxPlayer(playerId))) {
+                playerMap.getPlayerLastUpdate().put(playerId, System.currentTimeMillis());
+            }
         });
     }
 
     public void updatePlayerInfo(PlayerInfo playerInfo) {
-        ScheduledFuture update = jpaManager.update(playerInfo.getUpdate(), () -> {
+        UpdateThreadManager.putIntoThreadPool(playerInfo.getClass(), playerInfo.gettPlayerInfo().getPlayerId(), () -> {
             playerInfoDAO.save(playerInfo.gettPlayerInfo());
-            playerInfo.setUpdate(null);
-        }, playerInfo.gettPlayerInfo().getPlayerId().intValue());
-        playerInfo.setUpdate(update);
+        });
     }
 }

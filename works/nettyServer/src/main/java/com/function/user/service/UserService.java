@@ -124,19 +124,23 @@ public class UserService {
                 ctx.writeAndFlush("该角色不存在！\n");
                 return;
             }
+            if (userMap.getPlayers().containsKey(playerId)) {
+                Player player = userMap.getPlayers().get(playerId);
+                if (!player.isInit()) {
+                    init(player);
+                    player.setInit(true);
+                }
+                playerMap.getPlayerLastUpdate().remove(player.getTPlayer().getRoleId());
+                getIntoScene(player, ctx);
+                return;
+            }
+            Player player = new Player();
             TPlayer tPlayer = playerDAO.findByRoleId(playerId);
-            Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(tPlayer.getLoc());
-            Player player = getPlayer(tPlayer, playerId, scene);
-            scene.getSceneObjectMap().get(SceneObjectType.PLAYER).put(playerId, player);
-
-            player.setChannelHandlerContext(ctx);
-            playerMap.putPlayerCtx(ctx, player);
-            playerMap.getOfflinePlayer().remove(playerId);
-            mpResume(player);
-            //通知场景
-            notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]进入场景\n", player.getTPlayer().getName()));
+            player.setTPlayer(tPlayer);
+            init(player);
+            player.setInit(true);
+            getIntoScene(player, ctx);
         }, playerId.intValue());
-
     }
 
     /**
@@ -163,28 +167,29 @@ public class UserService {
      */
     public void logout(Player player) {
         ChannelHandlerContext ctx = player.getChannelHandlerContext();
-        playerData.updatePlayer(player);
         teamService.leaveTeam(player);
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);
         Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(player.getNowScene().getId());
         scene.getSceneObjectMap().get(SceneObjectType.PLAYER).remove(player.getTPlayer().getRoleId());
         player.setChannelHandlerContext(null);
-        playerMap.getOfflinePlayer().put(player.getTPlayer().getRoleId(), System.currentTimeMillis());
+        playerMap.getPlayerLastUpdate().put(player.getTPlayer().getRoleId(), System.currentTimeMillis());
     }
 
+    public void init(Player player) {
+        playerData.initPlayer(player);
+        int sceneId = player.getTPlayer().getLoc();
+        Scene scene = sceneManager.get(SceneType.PUBLIC.getType()).get(sceneId);
+        player.setNowScene(scene);
+    }
 
-    public Player getPlayer(TPlayer tPlayer, long playerId, Scene scene) {
-        if (userMap.getPlayers(playerId) == null) {
-            Player player = new Player();
-            player.setTPlayer(tPlayer);
-            player.setNowScene(scene);
-            playerData.initPlayer(player);
-            userMap.getPlayers().put(playerId, player);
-            return player;
-        } else {
-            return userMap.getPlayers(playerId);
-        }
+    public void getIntoScene(Player player, ChannelHandlerContext ctx) {
+        player.setChannelHandlerContext(ctx);
+        playerMap.putPlayerCtx(ctx, player);
+        mpResume(player);
+        //通知场景
+        player.getNowScene().getSceneObjectMap().get(SceneObjectType.PLAYER).put(player.getTPlayer().getRoleId(), player);
+        notifyScene.notifyScene(player.getNowScene(), MessageFormat.format("玩家[{0}]进入场景\n", player.getTPlayer().getName()));
     }
 
     public User getUserByCtx(ChannelHandlerContext ctx) {
@@ -194,6 +199,4 @@ public class UserService {
     public Player getPlayerByCtx(ChannelHandlerContext ctx) {
         return playerMap.getPlayerCtx(ctx);
     }
-
-
 }

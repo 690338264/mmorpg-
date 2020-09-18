@@ -5,7 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.function.item.model.Item;
 import com.function.sect.model.Sect;
 import com.jpa.dao.SectDAO;
-import com.jpa.manager.JpaManager;
+import com.manager.UpdateThreadManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,19 +13,15 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 
 /**
  * @author Catherine
  * @create 2020-09-05 03:08
  */
 @Component
-@SuppressWarnings("rawtypes")
 public class SectManager {
     @Autowired
     private SectDAO sectDAO;
-    @Autowired
-    private JpaManager jpaManager;
     private final Map<Long, Sect> sectMap = new ConcurrentHashMap<>();
 
     public Map<Long, Sect> getSectMap() {
@@ -47,11 +43,9 @@ public class SectManager {
     }
 
     public void updateSect(Sect sect) {
-        ScheduledFuture update = jpaManager.update(sect.getUpdate(), () -> {
+        UpdateThreadManager.putIntoThreadPool(sect.getClass(), sect.gettSect().getSectId(), () -> {
             sect.toJson();
             sectDAO.save(sect.gettSect());
-            sect.setUpdate(null);
-        }, sect.gettSect().getSectId().intValue());
-        sect.setUpdate(update);
+        });
     }
 }
