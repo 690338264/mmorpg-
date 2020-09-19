@@ -27,8 +27,8 @@ public class BagService {
      */
     public void updateBag(Player player) {
         Bag bag = player.getBag();
+        bag.toJson();
         UpdateThreadManager.putIntoThreadPool(bag.getClass(), bag.getTBag().getPlayerId(), () -> {
-            bag.toJson();
             bagDAO.save(bag.getTBag());
         });
     }

@@ -12,8 +12,6 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 import util.Msg;
 
-import java.net.InetAddress;
-
 /**
  * @author Catherine
  */
@@ -62,7 +60,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("RamoteAddress:" + ctx.channel().remoteAddress() + "active!");
-        ctx.writeAndFlush("Welcome to " + InetAddress.getLocalHost().getHostName() + "service!\n");
+        ctx.writeAndFlush("欢迎来到美丽的大荒!\n");
         super.channelActive(ctx);
     }
 

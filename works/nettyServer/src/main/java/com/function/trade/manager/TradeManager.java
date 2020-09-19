@@ -40,7 +40,7 @@ public class TradeManager {
                     Player recipient = trade.getRecipient();
                     long lastTime = System.currentTimeMillis() - trade.getStartTime();
                     if (lastTime > TRADE_LAST || initiator.getNowScene() != recipient.getNowScene()) {
-                        if (!trade.getIsTrading().get()) {
+                        if (trade.getIsTrading().compareAndSet(false, true)) {
                             tradeService.cancelTrade(trade);
                             tradeBoardMap.remove(playerId);
                         }

@@ -43,8 +43,8 @@ public class SectManager {
     }
 
     public void updateSect(Sect sect) {
+        sect.toJson();
         UpdateThreadManager.putIntoThreadPool(sect.getClass(), sect.gettSect().getSectId(), () -> {
-            sect.toJson();
             sectDAO.save(sect.gettSect());
         });
     }

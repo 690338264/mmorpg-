@@ -66,8 +66,8 @@ public class AuctionManager {
     }
 
     public void updateAuction(Auction auction) {
+        auction.toJson();
         UpdateThreadManager.putIntoThreadPool(auction.getClass(), auction.gettAuction().getAuctionId(), () -> {
-            auction.toJson();
             auctionDAO.save(auction.gettAuction());
         });
     }

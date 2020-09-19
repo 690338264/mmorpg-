@@ -128,8 +128,8 @@ public class EmailService {
     }
 
     public void updateEmail(Email email) {
+        email.toJson();
         UpdateThreadManager.putIntoThreadPool(email.getClass(), email.gettEmail().getEmailId(), () -> {
-            email.toJson();
             emailDAO.save(email.gettEmail());
         });
     }

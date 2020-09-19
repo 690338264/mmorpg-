@@ -132,8 +132,8 @@ public class SectService {
                 sect.gettSect().getSectId(), sect.gettSect().getName(), sect.getMembers().size()));
         sect.getMembers().forEach((playerId) -> {
             TPlayerInfo memberInfo = playerManager.getPlayerInfoMap().get(playerId).gettPlayerInfo();
-            notifyScene.notifyPlayer(player, MessageFormat.format("职位[{0}]姓名:{1},门派:{2}\n",
-                    SectPosition.values()[memberInfo.getSectPosition() - 1].getRole(),
+            notifyScene.notifyPlayer(player, MessageFormat.format("{0}职位[{1}]姓名:{2},门派:{3}\n",
+                    playerId, SectPosition.values()[memberInfo.getSectPosition() - 1].getRole(),
                     memberInfo.getName(), OccResource.getOccById(memberInfo.getOccupation()).getName()));
         });
         notifyScene.notifyPlayer(player, "申请列表:\n");
@@ -253,6 +253,11 @@ public class SectService {
      * 设置职位
      */
     public void setPosition(Player player, Long playerId, int position) {
+        Sect sect = sectManager.getSectMap().get(player.getTPlayer().getSectId());
+        if (!sect.getMembers().contains(playerId)) {
+            notifyScene.notifyPlayer(player, "没有该成员\n");
+            return;
+        }
         if (player.getTPlayer().getSectPosition() > position) {
             notifyScene.notifyPlayer(player, "没有该权利\n");
             return;

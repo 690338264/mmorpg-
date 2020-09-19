@@ -3,7 +3,6 @@ package com;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-
 /**
  * @author Catherine
  */
@@ -15,6 +14,8 @@ public class EchoClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext cxt, Object msg) {
         //记录已接受消息的转储
         System.out.println(msg.toString());
+        MainView.OUTPUT.append(msg.toString() + "\n");
+        MainView.OUTPUT.setCaretPosition(MainView.OUTPUT.getDocument().getLength());
     }
 
     /**

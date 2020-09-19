@@ -184,11 +184,13 @@ public class UserService {
     }
 
     public void getIntoScene(Player player, ChannelHandlerContext ctx) {
+        long playerId = player.getTPlayer().getRoleId();
+        userMap.getPlayers().put(playerId, player);
         player.setChannelHandlerContext(ctx);
         playerMap.putPlayerCtx(ctx, player);
         mpResume(player);
         //通知场景
-        player.getNowScene().getSceneObjectMap().get(SceneObjectType.PLAYER).put(player.getTPlayer().getRoleId(), player);
+        player.getNowScene().getSceneObjectMap().get(SceneObjectType.PLAYER).put(playerId, player);
         notifyScene.notifyScene(player.getNowScene(), MessageFormat.format("玩家[{0}]进入场景\n", player.getTPlayer().getName()));
     }
 

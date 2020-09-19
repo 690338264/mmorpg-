@@ -150,9 +150,10 @@ public class TradeService {
         }
         tradeBoard.getStateMap().putIfAbsent(player.getTPlayer().getRoleId(), true);
         if (tradeBoard.getStateMap().size() == TRADE_PEOPLE) {
-            tradeBoard.getIsTrading().set(true);
-            startTrading(tradeBoard);
-            tradeBoard.getIsTrading().set(false);
+            if (tradeBoard.getIsTrading().compareAndSet(false, true)) {
+                startTrading(tradeBoard);
+                tradeBoard.getIsTrading().set(false);
+            }
         }
     }
 

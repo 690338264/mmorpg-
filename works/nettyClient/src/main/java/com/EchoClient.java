@@ -38,6 +38,10 @@ public class EchoClient {
 
     private static final int Port = 8000;
 
+    static {
+        MainView mainView = new MainView();
+    }
+
     public void run() {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         Bootstrap b = new Bootstrap();

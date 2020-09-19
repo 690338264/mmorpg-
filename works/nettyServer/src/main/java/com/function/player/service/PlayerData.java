@@ -195,8 +195,8 @@ public class PlayerData {
      * 存储玩家数据
      */
     public void updatePlayer(Player player) {
+        player.toJson();
         UpdateThreadManager.putIntoThreadPool(player.getClass(), player.getTPlayer().getRoleId(), () -> {
-            player.toJson();
             playerDAO.save(player.getTPlayer());
             long playerId = player.getTPlayer().getRoleId();
             if (Objects.isNull(playerMap.getCtxPlayer(playerId))) {

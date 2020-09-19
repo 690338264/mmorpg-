@@ -82,8 +82,13 @@ public class SubHpImpl {
                         monster.getTaskMap().get(SceneObjectTask.ATTACK).cancel(true);
                         monster.getTaskMap().remove(SceneObjectTask.ATTACK);
                     }
-                    Long hate = monsterService.hurtSort(monster);
-                    monsterService.monsterAtk(monster, hate);
+                    try {
+                        Long hate = monsterService.hurtSort(monster);
+                        monsterService.monsterAtk(monster, hate);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }, 0, MonsterService.HURT_BEAT, monster.getExcelId());
                 return;
             }

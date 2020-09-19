@@ -10,148 +10,148 @@ import java.util.Map;
 
 public enum Cmd {
     //用户注册
-    USER_CREATE("user_create", 1000),
+    USER_CREATE("用户注册", 1000),
     //用户登录
-    USER_LOGIN("user_login", 1001),
+    USER_LOGIN("用户登录", 1001),
     //角色列表
-    USER_LISTPLAYER("user_listPlayer", 1002),
+    USER_LISTPLAYER("角色列表", 1002),
     //角色创建
-    PLAYER_CREATE("player_create", 1003),
+    PLAYER_CREATE("角色创建", 1003),
     //角色登录
-    PLAYER_LOG("player_log", 1004),
+    PLAYER_LOG("角色登录", 1004),
     //查看场景
-    AOI("aoi", 1005),
+    AOI("查看场景", 1005),
     //和NPC谈话
-    TALK_TO("talk_to", 1006),
+    TALK_TO("和Npc谈话", 1006),
     //查看相邻地图
-    WHERE_CAN_GO("where_can_go", 1007),
+    WHERE_CAN_GO("查看相邻地图", 1007),
     //转移场景
-    MOVE_TO("move_to", 1008),
+    MOVE_TO("转移场景", 1008),
     //攻击
-    ATTACK("attack", 1009),
+    ATTACK("攻击", 1009),
     //查看背包
-    BAG_LIST("bag_list", 1010),
+    BAG_LIST("查看背包", 1010),
     //整理背包
-    BAG_INORDER("bag_inorder", 1011),
+    BAG_INORDER("整理背包", 1011),
     //使用物品
-    ITEM_USE("item_use", 10102),
+    ITEM_USE("使用物品", 10102),
     //丢弃物品
-    ITEM_DROP("item_drop", 10103),
+    ITEM_DROP("丢弃物品", 10103),
     //拖下装备
-    EQUIP_OFF("equip_off", 10104),
+    EQUIP_OFF("脱下装备", 10104),
     //修理装备
-    EQUIP_FIX("equip_fix", 10105),
+    EQUIP_FIX("修理装备", 10105),
     //查看商店系统
-    SHOW_SHOP("show_shop", 1012),
+    SHOW_SHOP("查看商店", 1012),
     //买东西
-    BUY("buy", 10121),
+    BUY("买东西", 10121),
     //卖东西
-    SELL("sell", 10122),
+    SELL("卖东西", 10122),
     //私聊玩家
-    WHISPER("whisper", 1013),
+    WHISPER("私聊玩家", 1013),
     //全服喊话
-    SPEAK("speak", 1014),
+    SPEAK("全服喊话", 1014),
     //收件箱
-    LIST_EMAIL("list_email", 1015),
+    LIST_EMAIL("收件箱", 1015),
     //查看邮件
-    CHECK_EMAIL("check_email", 10151),
+    CHECK_EMAIL("查看邮件", 10151),
     //发送邮件
-    SEND_EMAIL("send_email", 10152),
+    SEND_EMAIL("发送邮件", 10152),
     //收取礼物
-    RECEIVE_EMAIL("receive", 10153),
+    RECEIVE_EMAIL("收取礼物", 10153),
     //查看已有小队
-    LIST_TEAM("list_team", 1016),
+    LIST_TEAM("查看已有小队", 1016),
     //创建小队
-    CREATE_TEAM("create_team", 10160),
+    CREATE_TEAM("创建小队", 10160),
     //查看自己所在小队
-    CHECK_TEAM("check_team", 10161),
+    CHECK_TEAM("查看自己所在小队", 10161),
     //邀请加入小队
-    INVITE_PLAYER("invite_player", 10162),
+    INVITE_PLAYER("邀请加入小队", 10162),
     //申请加入小队
-    APPLY_TEAM("apply_team", 10163),
+    APPLY_TEAM("申请加入小队", 10163),
     //同意申请
-    AGREE_APPLY("agree_apply", 10164),
+    AGREE_APPLY("同意申请", 10164),
     //接受组队邀请
-    ACCEPT_TEAM("accept_team", 10165),
+    ACCEPT_TEAM("接受组队邀请", 10165),
     //退出小队
-    LEAVE_TEAM("leave_team", 10166),
+    LEAVE_TEAM("退出小队", 10166),
     //查看副本列表
-    LIST_DUNGEON("list_dungeon", 1017),
+    LIST_DUNGEON("查看副本列表", 1017),
     //申请个人副本
-    PERSONAL_DUNGEON("apply_personal", 10170),
+    PERSONAL_DUNGEON("申请个人副本", 10170),
     //申请小队副本
-    TEAM_DUNGEON("team_dungeon", 10171),
+    TEAM_DUNGEON("申请小队副本", 10171),
     //进入副本
-    INTO_DUNGEON("into_dungeon", 10172),
+    INTO_DUNGEON("进入副本", 10172),
     //创建交易
-    CREATE_TRADE("create_trade", 10180),
+    CREATE_TRADE("创建交易", 10180),
     //同意交易
-    AGREE_TRADE("agree_trade", 10181),
+    AGREE_TRADE("同意交易", 10181),
     //提交物品
-    PUT_CHANGE("put_change", 10182),
+    PUT_CHANGE("提交物品", 10182),
     //提交金币
-    PUT_MONEY("put_money", 10183),
+    PUT_MONEY("提交金币", 10183),
     //查看交易面板
-    LIST_TRADE("list_trade", 10184),
+    LIST_TRADE("查看交易面板", 10184),
     //提交交易
-    COMMIT_TRADE("commit_trade", 10185),
+    COMMIT_TRADE("提交交易", 10185),
     //取消交易
-    CANCEL_TRADE("cancel_trade", 10186),
+    CANCEL_TRADE("取消交易", 10186),
     //攻击玩家
     PVP("pvp", 1019),
     //查看自己所在工会
-    CHECK_SECT("check_sect", 1020),
+    CHECK_SECT("查看自己所在公会", 1020),
     //建立公会
-    CREATE_SECT("create_sect", 10200),
+    CREATE_SECT("建立公会", 10200),
     //申请加入公会
-    REQUEST_JOIN("request", 10201),
+    REQUEST_JOIN("申请加入公会", 10201),
     //接受申请
-    ACCEPT_SECT("accept", 10202),
+    ACCEPT_SECT("接受申请", 10202),
     //拒绝申请
-    REJECT_SECT("reject", 10203),
+    REJECT_SECT("拒绝申请", 10203),
     //从公会仓库拿东西
-    GET_WAREHOUSE("get_warehouse", 10204),
+    GET_WAREHOUSE("从公会仓库拿东西", 10204),
     //向公会仓库捐献东西
-    PUT_WAREHOUSE("put_warehouse", 10205),
+    PUT_WAREHOUSE("向公会仓库捐东西", 10205),
     //更改职位
-    SET_POSITION("set_position", 10206),
+    SET_POSITION("更改职位", 10206),
     //退出公会
-    QUIT_SECT("quit_sect", 10207),
+    QUIT_SECT("退出公会", 10207),
     //列出所有工会
-    LIST_SECT("list_sect", 10208),
+    LIST_SECT("列出所有工会", 10208),
     //列出一口价拍卖
-    LIST_FIXED("list_fixed", 10210),
+    LIST_FIXED("列出一口价拍卖", 10210),
     //列出竞价拍卖
-    LIST_COMPETITION("list_competition", 10211),
+    LIST_COMPETITION("列出竞价拍卖", 10211),
     //创建拍卖
-    CREATE_AUCTION("create_auction", 10212),
+    CREATE_AUCTION("创建拍卖", 10212),
     //购买一口价
-    BUY_FIXED("buy_fixed", 10213),
+    BUY_FIXED("购买一口价", 10213),
     //参与竞拍
-    JOIN_COMPETITION("buy_competition", 10214),
+    JOIN_COMPETITION("参与竞拍", 10214),
     //好友列表
-    LIST_FRIEND("list_friend", 10220),
+    LIST_FRIEND("好友列表", 10220),
     //添加好友
-    ADD_FRIEND("add_friend", 10221),
+    ADD_FRIEND("添加好友", 10221),
     //接受好友申请
-    ACCEPT_FRIEND("accept_friend", 10222),
+    ACCEPT_FRIEND("接受好友申请", 10222),
     //拒绝好友申请
-    REFUSE_FRIEND("refuse_friend", 10223),
+    REFUSE_FRIEND("拒绝好友申请", 10223),
     //查看任务列表
-    LIST_QUEST("list_quest", 10230),
+    LIST_QUEST("查看任务列表", 10230),
     //接受任务
-    ACCEPT_QUEST("accept_quest", 10231),
+    ACCEPT_QUEST("接受任务", 10231),
     //放弃任务
-    GIVE_UP_QUEST("give_up_quest", 10232),
+    GIVE_UP_QUEST("放弃任务", 10232),
     //提交任务
-    COMMIT_QUEST("commit_quest", 10233),
+    COMMIT_QUEST("提交任务", 10233),
     //查看人物状态属性
-    PLAYER_STATE("player_state", 8888),
+    PLAYER_STATE("查看人物状态", 8888),
 
     //查看已穿戴装备
-    EQUIP_LIST("equip_list", 7777),
+    EQUIP_LIST("查看已穿戴的装备", 7777),
 
-    LOG_OUT("log_out", 6666),
+    LOG_OUT("退出登录", 6666),
 
     UNKNOWN("unknown", 9999);
 
