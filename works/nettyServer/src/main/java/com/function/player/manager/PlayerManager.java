@@ -41,7 +41,7 @@ public class PlayerManager {
         player.setName(roleName);
         player.setOccupation(roleType);
         player.setUserId(userId);
-        player.setLoc(1000000);
+        player.setLoc(1);
         player.setExp(1);
         player.setLevel(1);
         player.setMoney(0);

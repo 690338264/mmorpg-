@@ -112,6 +112,7 @@ public class TeamService {
         }
         team.getApply().put(player.getTPlayer().getRoleId(), System.currentTimeMillis());
         Player leader = team.getMembers().get(team.getLeaderId());
+        notifyScene.notifyPlayer(player, "申请发送成功\n");
         notifyScene.notifyPlayer(leader, "收到一条小队加入申请\n");
     }
 
@@ -134,8 +135,8 @@ public class TeamService {
             return;
         }
         team.getInvite().put(playerId, System.currentTimeMillis());
-        notifyScene.notifyPlayer(invite, "收到一条小队邀请\n");
-        notifyScene.notifyPlayer(player, "要请发送成功\n");
+        notifyScene.notifyPlayer(invite, MessageFormat.format("收到来自[{0}]队伍的组队邀请\n", player.getTeamId()));
+        notifyScene.notifyPlayer(player, "邀请发送成功\n");
     }
 
     /**

@@ -31,6 +31,7 @@ import com.jpa.entity.TPlayerInfo;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import util.RandomUtil;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -134,7 +135,9 @@ public class PlayerService {
         }
         targets.forEach((buffId, targetList) -> {
             BuffExcel buffExcel = BuffResource.getBuffById(buffId);
-            buffEffectsRealize.effect(attacker, targetList, buffExcel);
+            if (RandomUtil.ifDo(buffExcel.getRate())) {
+                buffEffectsRealize.effect(attacker, targetList, buffExcel);
+            }
         });
 
     }

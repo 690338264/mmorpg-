@@ -18,6 +18,7 @@ import com.function.scene.service.NotifyScene;
 import com.function.sect.manager.SectManager;
 import com.function.sect.model.Sect;
 import com.function.sect.model.SectPosition;
+import com.function.user.map.PlayerMap;
 import com.function.user.map.UserMap;
 import com.jpa.dao.PlayerDAO;
 import com.jpa.dao.SectDAO;
@@ -54,6 +55,8 @@ public class SectService {
     private PlayerManager playerManager;
     @Autowired
     private PlayerData playerData;
+    @Autowired
+    private PlayerMap playerMap;
 
     private static final int MAX_SIZE = 60;
 
@@ -375,6 +378,8 @@ public class SectService {
             player.asynchronousSubmitEvent(new SectAddEvent());
             tPlayer.setSectId(sect.gettSect().getSectId());
             tPlayer.setSectPosition(SectPosition.NORMAL_MEMBER.getType());
+            userMap.getPlayers().put(playerId, player);
+            playerMap.getPlayerLastUpdate().put(playerId, System.currentTimeMillis());
             playerData.updatePlayer(player);
         }, playerId.intValue());
     }

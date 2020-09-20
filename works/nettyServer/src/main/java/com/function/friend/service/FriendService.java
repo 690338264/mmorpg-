@@ -122,6 +122,8 @@ public class FriendService {
             }));
             friend.getFriend().put(playerId, otherAdd);
             friend.asynchronousSubmitEvent(new FriendAddEvent());
+            userMap.getPlayers().put(friendId, friend);
+            playerMap.getPlayerLastUpdate().put(friendId, System.currentTimeMillis());
             playerData.updatePlayer(friend);
         }
         notifyScene.notifyPlayer(player, "添加成功\n");

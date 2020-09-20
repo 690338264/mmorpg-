@@ -48,6 +48,9 @@ public class MonsterService {
      * 怪物进行攻击
      */
     public void monsterAtk(Monster monster, Long playerId) {
+        if (monster.getState() == SceneObjectState.DIZZY) {
+            return;
+        }
         Integer[] keys = monster.getCanUseSkill().keySet().toArray(new Integer[0]);
         int skillId = RandomUtil.ramInt(keys);
         playerService.useSkill(monster, skillId, playerId, SceneObjectType.PLAYER);

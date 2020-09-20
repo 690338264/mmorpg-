@@ -16,6 +16,7 @@ import com.function.quest.model.Quest;
 import com.function.quest.model.QuestState;
 import com.function.quest.model.QuestType;
 import com.function.scene.service.NotifyScene;
+import com.function.user.map.PlayerMap;
 import com.function.user.map.UserMap;
 import com.jpa.dao.AuctionDAO;
 import com.jpa.dao.PlayerDAO;
@@ -53,6 +54,8 @@ public class AuctionService {
     private EmailService emailService;
     @Autowired
     private PlayerService playerService;
+    @Autowired
+    private PlayerMap playerMap;
     private final static float FEE = 0.80f;
 
     /**
@@ -109,7 +112,7 @@ public class AuctionService {
         try {
             Auction auction = auctionManager.getFixedPriceMode().get(auctionId);
             int cost = auction.gettAuction().getHighestMoney();
-            if (!auction.getIsSelling().get()) {
+            if (auction.getIsSelling().get()) {
                 notifyScene.notifyPlayer(player, "购买失败!\n");
                 return;
             }
@@ -221,6 +224,8 @@ public class AuctionService {
             playerUnLine.setOnDoingQuest(JSON.parseObject(tPlayer.getOnDoingQuest(), new TypeReference<Map<QuestType, Map<Integer, Quest>>>() {
             }));
             playerService.getMoney(playerUnLine, money);
+            userMap.getPlayers().put(playerId, playerUnLine);
+            playerMap.getPlayerLastUpdate().put(playerId, System.currentTimeMillis());
             playerData.updatePlayer(playerUnLine);
         }, playerId.intValue());
     }

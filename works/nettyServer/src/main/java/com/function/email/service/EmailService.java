@@ -42,6 +42,7 @@ public class EmailService {
     public void sendOnlyText(Player player, Long playerId, String text) {
         Email email = createEmail(player.getTPlayer().getRoleId(), playerId, text);
         toReceiver(playerId, email);
+        notifyScene.notifyPlayer(player, "发送成功\n");
     }
 
     /**
@@ -57,6 +58,7 @@ public class EmailService {
             email.getGifts().add(itemService.takeOutItem(item, num.get(i)));
         });
         toReceiver(playerId, email);
+        notifyScene.notifyPlayer(player, "发送成功\n");
     }
 
     /**
@@ -129,8 +131,7 @@ public class EmailService {
 
     public void updateEmail(Email email) {
         email.toJson();
-        UpdateThreadManager.putIntoThreadPool(email.getClass(), email.gettEmail().getEmailId(), () -> {
-            emailDAO.save(email.gettEmail());
-        });
+        UpdateThreadManager.putIntoThreadPool(email.getClass(), email.gettEmail().getEmailId(), () ->
+                emailDAO.save(email.gettEmail()));
     }
 }

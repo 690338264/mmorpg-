@@ -1,6 +1,5 @@
 package com.function.trade.manager;
 
-import com.function.player.model.Player;
 import com.function.trade.model.TradeBoard;
 import com.function.trade.service.TradeService;
 import com.manager.ThreadPoolManager;
@@ -26,7 +25,7 @@ public class TradeManager {
 
     private static final long TRADE_LAST = 300000;
 
-    private static final long JUMP = 1000;
+    private static final long JUMP = 5000;
 
     public Map<Long, TradeBoard> getTradeBoardMap() {
         return tradeBoardMap;
@@ -36,13 +35,10 @@ public class TradeManager {
     private void check() {
         ThreadPoolManager.loopThread(
                 () -> tradeBoardMap.forEach((playerId, trade) -> {
-                    Player initiator = trade.getInitiator();
-                    Player recipient = trade.getRecipient();
                     long lastTime = System.currentTimeMillis() - trade.getStartTime();
-                    if (lastTime > TRADE_LAST || initiator.getNowScene() != recipient.getNowScene()) {
+                    if (lastTime > TRADE_LAST) {
                         if (trade.getIsTrading().compareAndSet(false, true)) {
                             tradeService.cancelTrade(trade);
-                            tradeBoardMap.remove(playerId);
                         }
                     }
                 }), 0, JUMP, getClass().hashCode()

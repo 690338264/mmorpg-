@@ -1,5 +1,6 @@
 package com.function.scene.service;
 
+import com.event.model.playerEvent.RemoveSceneEvent;
 import com.function.monster.model.Monster;
 import com.function.npc.excel.NpcExcel;
 import com.function.player.model.Player;
@@ -60,6 +61,7 @@ public class SceneService {
         player.getTPlayer().setLoc(sceneId);
         Scene scene = addPlayer(type, sceneId, player);
         playerData.updatePlayer(player);
+        player.asynchronousSubmitEvent(new RemoveSceneEvent());
         notifyScene.notifyScene(scene, MessageFormat.format("欢迎玩家{0}来到场景\n", player.getTPlayer().getName()));
         notifyScene.notifyPlayer(player, MessageFormat.format("您已到达{0}\n", scene.getSceneExcel().getName()));
     }

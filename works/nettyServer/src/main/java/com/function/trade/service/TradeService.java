@@ -42,12 +42,12 @@ public class TradeService {
     public void requestTrade(Player player, Long playerId) {
         Scene scene = player.getNowScene();
         Player receiver = (Player) scene.getSceneObjectMap().get(SceneObjectType.PLAYER).get(playerId);
-        if (receiver == null) {
-            notifyScene.notifyPlayer(player, "发起交易失败，请面对面发起交易\n");
-            return;
-        }
         if (player.getTradeBoard() != null || tradeManager.getTradeBoardMap().containsKey(playerId)) {
             notifyScene.notifyPlayer(player, "可能仍在交易中\n");
+            return;
+        }
+        if (receiver == null) {
+            notifyScene.notifyPlayer(player, "发起交易失败，请面对面发起交易\n");
             return;
         }
         if (player == receiver) {
@@ -96,6 +96,7 @@ public class TradeService {
         } else {
             itemList.add(item);
         }
+        listTradeBoard(player);
         notifyScene.notifyPlayer(player, "物品添加成功\n");
 
     }
@@ -115,6 +116,7 @@ public class TradeService {
         tPlayer.setMoney(tPlayer.getMoney() + tradeBoard.getMoneyMap().get(tPlayer.getRoleId()));
         tradeBoard.getMoneyMap().put(tPlayer.getRoleId(), money);
         notifyScene.notifyPlayer(player, "交易金币更新成功\n");
+        listTradeBoard(player);
     }
 
     /**
@@ -131,7 +133,7 @@ public class TradeService {
         tradeBoard.getChangeMap().get(initiatorId).forEach((item) ->
                 notifyScene.notifyPlayer(player, MessageFormat.format("{0} [{1}]\n",
                         item.getItemById().getName(), item.getNum())));
-        notifyScene.notifyPlayer(player, MessageFormat.format("金币:{0}\n接收者:\n",
+        notifyScene.notifyPlayer(player, MessageFormat.format("金币:{0}\n接收者:\n物品:\n",
                 tradeBoard.getMoneyMap().get(initiatorId)));
         tradeBoard.getChangeMap().get(recipientId).forEach((item) ->
                 notifyScene.notifyPlayer(player, MessageFormat.format("{0} [{1}]\n",
