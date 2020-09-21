@@ -21,7 +21,6 @@ import com.function.sect.model.SectPosition;
 import com.function.user.map.PlayerMap;
 import com.function.user.map.UserMap;
 import com.jpa.dao.PlayerDAO;
-import com.jpa.dao.SectDAO;
 import com.jpa.entity.TPlayer;
 import com.jpa.entity.TPlayerInfo;
 import com.jpa.entity.TSect;
@@ -32,6 +31,7 @@ import org.springframework.stereotype.Component;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Catherine
@@ -41,8 +41,6 @@ import java.util.Map;
 public class SectService {
     @Autowired
     private NotifyScene notifyScene;
-    @Autowired
-    private SectDAO sectDAO;
     @Autowired
     private SectManager sectManager;
     @Autowired
@@ -59,6 +57,8 @@ public class SectService {
     private PlayerMap playerMap;
 
     private static final int MAX_SIZE = 60;
+
+    public static AtomicLong incSectId = new AtomicLong();
 
 
     /**
@@ -81,18 +81,25 @@ public class SectService {
             notifyScene.notifyPlayer(player, "您已加入公会\n");
             return;
         }
-        TSect tSect = new TSect(name);
-        try {
-            sectDAO.saveAndFlush(tSect);
-        } catch (Exception e) {
+        if (sectManager.getSectNameSet().contains(name)) {
             notifyScene.notifyPlayer(player, "会名重复\n");
             return;
         }
-        Sect sect = new Sect(tSect);
+        TSect tSect = new TSect(name);
+        Sect newSect = new Sect(tSect);
+        synchronized (this) {
+            if (sectManager.getSectNameSet().contains(name)) {
+                notifyScene.notifyPlayer(player, "会名重复\n");
+                return;
+            }
+            sectManager.getSectNameSet().add(name);
+        }
+        sectManager.getSectMap().put(incSectId.incrementAndGet(), newSect);
         //公会数据持久化
-        sect.getMembers().add(player.getTPlayer().getRoleId());
-        sectManager.getSectMap().put(tSect.getSectId(), sect);
-        sectManager.updateSect(sect);
+        newSect.getMembers().add(player.getTPlayer().getRoleId());
+        tSect.setSectId(incSectId.longValue());
+        sectManager.getSectMap().put(tSect.getSectId(), newSect);
+        sectManager.updateSect(newSect);
         //人物数据持久化
         player.getTPlayer().setSectId(tSect.getSectId());
         player.getTPlayer().setSectPosition(SectPosition.PRESIDENT.getType());

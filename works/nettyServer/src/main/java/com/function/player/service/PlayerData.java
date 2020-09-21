@@ -198,11 +198,12 @@ public class PlayerData {
         player.toJson();
         UpdateThreadManager.putIntoThreadPool(player.getClass(), player.getTPlayer().getRoleId(), () -> {
             playerDAO.save(player.getTPlayer());
-            long playerId = player.getTPlayer().getRoleId();
-            if (Objects.isNull(playerMap.getCtxPlayer(playerId))) {
-                playerMap.getPlayerLastUpdate().put(playerId, System.currentTimeMillis());
-            }
         });
+        long playerId = player.getTPlayer().getRoleId();
+        if (Objects.isNull(playerMap.getCtxPlayer(playerId))) {
+            playerMap.getPlayerLastUpdate().put(playerId, System.currentTimeMillis());
+        }
+
     }
 
     public void updatePlayerInfo(PlayerInfo playerInfo) {

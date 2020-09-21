@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class UpdateThreadManager {
 
-    public static final int UPDATE_TIME = 6000;
+    public static final int UPDATE_TIME = 10000;
     private static final Map<String, Runnable> updateMap = new ConcurrentHashMap<>();
     private static final ScheduledExecutorService updateThreadPool;
 

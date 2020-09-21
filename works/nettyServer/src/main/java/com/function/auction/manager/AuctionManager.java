@@ -37,12 +37,12 @@ public class AuctionManager {
         });
         ThreadPoolManager.loopThread(() -> {
             fixedPriceMode.forEach((id, auction) -> {
-                if (System.currentTimeMillis() > auction.gettAuction().getFinishTime()) {
+                if (System.currentTimeMillis() > auction.gettAuction().getFinishTime() && auction.getIsSelling().compareAndSet(false, true)) {
                     auctionService.cancelAuction(auction);
                 }
             });
             auctionMode.forEach((id, auction) -> {
-                if (System.currentTimeMillis() > auction.gettAuction().getFinishTime()) {
+                if (System.currentTimeMillis() > auction.gettAuction().getFinishTime() && auction.getIsSelling().compareAndSet(false, true)) {
                     if (auction.gettAuction().getBidder() == null) {
                         auctionService.cancelAuction(auction);
                     } else {
@@ -67,9 +67,8 @@ public class AuctionManager {
 
     public void updateAuction(Auction auction) {
         auction.toJson();
-        UpdateThreadManager.putIntoThreadPool(auction.getClass(), auction.gettAuction().getAuctionId(), () -> {
-            auctionDAO.save(auction.gettAuction());
-        });
+        UpdateThreadManager.putIntoThreadPool(auction.getClass(), auction.gettAuction().getAuctionId(), () ->
+                auctionDAO.save(auction.gettAuction()));
     }
 
     public Map<Long, Auction> getFixedPriceMode() {

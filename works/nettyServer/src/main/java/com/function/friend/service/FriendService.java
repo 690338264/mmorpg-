@@ -67,6 +67,10 @@ public class FriendService {
             notifyScene.notifyPlayer(player, "已经是好友了！\n");
             return;
         }
+        if (player.getFriendRequest().containsKey(applyId)) {
+            notifyScene.notifyPlayer(player, "ta已请求添加你为好友\n");
+            return;
+        }
         if (userMap.getPlayers().containsKey(applyId)) {
             Player beApply = userMap.getPlayers().get(applyId);
             if (beApply.getFriendRequest().containsKey(playerId)) {
@@ -110,10 +114,11 @@ public class FriendService {
             friend.getFriend().put(playerId, otherAdd);
             friend.asynchronousSubmitEvent(new FriendAddEvent());
             playerData.updatePlayer(friend);
+            notifyScene.notifyPlayer(friend, MessageFormat.format("[{0}]{1}同意您的好友请求\n", playerId, player.getName()));
         } else {
-            TPlayer tPlayer = playerDAO.findByRoleId(playerId);
+            TPlayer tPlayer = playerDAO.findByRoleId(friendId);
             Player friend = new Player();
-            player.setTPlayer(tPlayer);
+            friend.setTPlayer(tPlayer);
             friend.setFriend(JSON.parseObject(tPlayer.getFriend(), new TypeReference<Map<Long, TPlayerInfo>>() {
             }));
             friend.setQuestMap(JSON.parseObject(tPlayer.getQuest(), new TypeReference<Map<QuestState, List<Integer>>>() {

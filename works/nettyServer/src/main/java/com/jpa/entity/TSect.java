@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Table(name = "sect", uniqueConstraints = {@UniqueConstraint(columnNames = "name")})
 public class TSect {
     @Id
-    @GeneratedValue
     @Column(name = "sectId")
     private Long sectId;
     @Column(name = "name")

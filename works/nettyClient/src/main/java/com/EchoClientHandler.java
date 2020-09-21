@@ -15,6 +15,13 @@ public class EchoClientHandler extends ChannelInboundHandlerAdapter {
         //记录已接受消息的转储
         System.out.println(msg.toString());
         MainView.OUTPUT.append(msg.toString() + "\n");
+//        MainView.PLAYER_INFO.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (MainView.PLAYER_INFO.equals(e.getSource())){
+//                cxt.writeAndFlush("8888\n");}
+//            }
+//        });
         MainView.OUTPUT.setCaretPosition(MainView.OUTPUT.getDocument().getLength());
     }
 
@@ -35,4 +42,5 @@ public class EchoClientHandler extends ChannelInboundHandlerAdapter {
         System.out.println("Client close");
         super.channelInactive(ctx);
     }
+
 }

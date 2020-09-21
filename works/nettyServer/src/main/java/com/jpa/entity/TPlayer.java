@@ -55,7 +55,7 @@ public class TPlayer {
     private String onDoingQuest;
 
     @Column(name = "quest", columnDefinition = "TEXT")
-    private String quest = "{}";
+    private String quest;
 
     public Long getUserId() {
         return userId;

@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
@@ -40,13 +42,16 @@ public class QuestService {
     @Autowired
     private PlayerService playerService;
 
+    /**
+     * 查看任务
+     */
     public void showQuest(Player player) {
         StringBuilder context = new StringBuilder("正在进行中的任务\n");
         player.getOnDoingQuest().forEach(((questType, questMap)
                 -> questMap.forEach((questId, quest)
                 -> {
-            context.append(MessageFormat.format("{0}：{1}\n",
-                    quest.getQuestById().getName(), quest.getQuestById().getText()));
+            context.append(MessageFormat.format("[{0}]{1}：{2}\n",
+                    questId, quest.getQuestById().getName(), quest.getQuestById().getText()));
             IntStream.range(0, quest.getCfgList().size()).forEach((index)
                     -> context.append(MessageFormat.format("进度{0}/{1}\n",
                     quest.getProgress().get(index), quest.getCfgList().get(index).getValue())));
@@ -133,11 +138,14 @@ public class QuestService {
      */
     public void checkQuestNoId(Player player, QuestType questType, int param) {
         player.getOnDoingQuest().computeIfAbsent(questType, key -> new ConcurrentHashMap<>());
-        player.getOnDoingQuest().get(questType).forEach((questId, quest) -> {
+        Iterator<Map.Entry<Integer, Quest>> iterator = player.getOnDoingQuest().get(questType).entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Quest> entry = iterator.next();
+            Quest quest = entry.getValue();
             int progress = quest.getProgress().get(0);
             quest.getProgress().set(0, progress + param);
-            checkIfCanComplete(player, quest, questType);
-        });
+            checkIfCanComplete(player, quest, iterator);
+        }
         playerData.updatePlayer(player);
     }
 
@@ -146,18 +154,24 @@ public class QuestService {
      */
     public void checkQuestWithId(Player player, QuestType questType, int id, int num) {
         player.getOnDoingQuest().computeIfAbsent(questType, key -> new ConcurrentHashMap<>());
-        player.getOnDoingQuest().get(questType).forEach((questId, quest) -> {
+        Iterator<Map.Entry<Integer, Quest>> iterator = player.getOnDoingQuest().get(questType).entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Quest> entry = iterator.next();
+            Quest quest = entry.getValue();
             IntStream.range(0, quest.getCfgList().size()).forEach((index) -> {
                 if (quest.getCfgList().get(index).getId() == id) {
                     int nowProgress = quest.getProgress().get(index);
                     quest.getProgress().set(index, nowProgress + num);
                 }
             });
-            checkIfCanComplete(player, quest, questType);
-        });
+            checkIfCanComplete(player, quest, iterator);
+        }
         playerData.updatePlayer(player);
     }
 
+    /**
+     * 等级是否可接受别的任务
+     */
     public void checkCanAcceptByLevel(Player player) {
         QuestResource.getQuestExcelMap().forEach((questId, questExcel) -> {
             if (questExcel.getLevel() <= player.getTPlayer().getLevel()) {
@@ -169,6 +183,9 @@ public class QuestService {
         });
     }
 
+    /**
+     * 是否可接受后置任务
+     */
     public void checkCanAcceptByQuest(Player player, int questId) {
         QuestExcel questExcel = QuestResource.getQuestById(questId);
         if (player.getTPlayer().getLevel() >= questExcel.getLevel()) {
@@ -176,6 +193,9 @@ public class QuestService {
         }
     }
 
+    /**
+     * 是否已经完成
+     */
     public boolean checkIfHasComplete(Player player, int questId) {
         player.getQuestMap().computeIfAbsent(QuestState.COMPLETE, key -> new CopyOnWriteArrayList<>());
         player.getQuestMap().computeIfAbsent(QuestState.SUBMIT, key -> new CopyOnWriteArrayList<>());
@@ -195,12 +215,12 @@ public class QuestService {
     /**
      * 检查任务是否完成
      */
-    public void checkIfCanComplete(Player player, Quest quest, QuestType questType) {
+    public void checkIfCanComplete(Player player, Quest quest, Iterator<?> iterator) {
         for (int index = 0; index < quest.getCfgList().size(); index++) {
             if (quest.getProgress().get(index) < quest.getCfgList().get(index).getValue()) {
                 return;
             }
-            putMakeQuestComplete(player, quest, questType);
+            putMakeQuestComplete(player, quest, iterator);
             Integer posQuest = quest.getQuestById().getPosQuest();
             if (posQuest != null) {
                 checkCanAcceptByQuest(player, posQuest);
@@ -213,8 +233,8 @@ public class QuestService {
     /**
      * 把任务转移到已完成未提交的列表里
      */
-    public void putMakeQuestComplete(Player player, Quest quest, QuestType questType) {
-        player.getOnDoingQuest().get(questType).remove(quest.getId());
+    public void putMakeQuestComplete(Player player, Quest quest, Iterator<?> iterator) {
+        iterator.remove();
         player.getQuestMap().computeIfAbsent(QuestState.COMPLETE, key -> new CopyOnWriteArrayList<>());
         player.getQuestMap().get(QuestState.COMPLETE).add(quest.getId());
     }

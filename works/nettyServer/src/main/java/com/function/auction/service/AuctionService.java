@@ -112,11 +112,10 @@ public class AuctionService {
         try {
             Auction auction = auctionManager.getFixedPriceMode().get(auctionId);
             int cost = auction.gettAuction().getHighestMoney();
-            if (auction.getIsSelling().get()) {
+            if (!auction.getIsSelling().compareAndSet(false, true)) {
                 notifyScene.notifyPlayer(player, "购买失败!\n");
                 return;
             }
-            auction.getIsSelling().set(true);
             if (!itemService.subMoney(player, cost)) {
                 auction.getIsSelling().set(false);
                 return;
@@ -138,9 +137,7 @@ public class AuctionService {
     public void joinCompetition(Player player, long auctionId, int money) {
         try {
             Auction auction = auctionManager.getAuctionMode().get(auctionId);
-            if (!auction.getIsSelling().get()) {
-                auction.getIsSelling().set(true);
-            } else {
+            if (!auction.getIsSelling().compareAndSet(false, true)) {
                 notifyScene.notifyPlayer(player, "出价失败\n");
                 return;
             }
@@ -188,10 +185,6 @@ public class AuctionService {
      * 取消拍卖  商品回退
      */
     public void cancelAuction(Auction auction) {
-        if (auction.getIsSelling().get()) {
-            return;
-        }
-        auction.getIsSelling().set(true);
         Item item = auction.getItem();
 
         long auctioneer = auction.gettAuction().getAuctioneer();
