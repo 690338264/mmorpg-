@@ -3,7 +3,7 @@ package com.event.handler.questEventHandler;
 import com.event.BaseQuestEventHandler;
 import com.event.EventHandler;
 import com.event.EventManager;
-import com.event.model.playerEvent.MoneyGetEvent;
+import com.event.model.playerEvent.SectAddEvent;
 import com.function.quest.model.QuestType;
 import com.function.quest.service.QuestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,24 +11,24 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Catherine
- * @create 2020-09-10 19:35
+ * @create 2020-09-13 19:23
  */
 @Component
-public class BaseQuestOnMoneyGetEventHandlerHandler extends BaseQuestEventHandler implements EventHandler<MoneyGetEvent> {
+public class BaseQuestOnSectAddEventHandler extends BaseQuestEventHandler implements EventHandler<SectAddEvent> {
     @Autowired
     private QuestService questService;
 
     {
-        EventManager.putEvent(MoneyGetEvent.class, this);
+        EventManager.putEvent(SectAddEvent.class, this);
     }
 
     @Override
     public QuestType getType() {
-        return QuestType.MONEY_GET;
+        return QuestType.SECT_ADD;
     }
 
     @Override
-    public void handle(MoneyGetEvent event) {
-        questService.checkQuestNoId(event.getPlayer(), getType(), event.getMoney());
+    public void handle(SectAddEvent event) {
+        questService.checkQuestNoId(event.getPlayer(), getType(), 1);
     }
 }

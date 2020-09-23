@@ -58,7 +58,7 @@ public class SceneService {
         player.getTPlayer().setLoc(sceneId);
         Scene scene = addPlayer(type, sceneId, player);
         playerData.updatePlayer(player);
-        player.asynchronousSubmitEvent(new RemoveSceneEvent());
+        player.asynchronousSubmitEvent(new RemoveSceneEvent(oldScene));
         notifyScene.notifyScene(scene, MessageFormat.format("欢迎玩家{0}来到场景\n", player.getTPlayer().getName()));
         notifyScene.notifyPlayer(player, MessageFormat.format("您已到达{0}\n", scene.getSceneExcel().getName()));
     }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @create 2020-09-13 19:28
  */
 @Component
-public class BaseQuestOnPvpWinEventHandlerHandler extends BaseQuestEventHandler implements EventHandler<PvpWinEvent> {
+public class BaseQuestOnPvpWinEventHandler extends BaseQuestEventHandler implements EventHandler<PvpWinEvent> {
     @Autowired
     private QuestService questService;
 

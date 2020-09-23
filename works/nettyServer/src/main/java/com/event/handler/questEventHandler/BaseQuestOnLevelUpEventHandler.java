@@ -3,7 +3,7 @@ package com.event.handler.questEventHandler;
 import com.event.BaseQuestEventHandler;
 import com.event.EventHandler;
 import com.event.EventManager;
-import com.event.model.playerEvent.ItemGetEvent;
+import com.event.model.playerEvent.LevelUpEvent;
 import com.function.quest.model.QuestType;
 import com.function.quest.service.QuestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,24 +11,25 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Catherine
- * @create 2020-09-13 19:01
+ * @create 2020-09-12 21:13
  */
 @Component
-public class BaseQuestOnItemGetEventHandlerHandler extends BaseQuestEventHandler implements EventHandler<ItemGetEvent> {
+public class BaseQuestOnLevelUpEventHandler extends BaseQuestEventHandler implements EventHandler<LevelUpEvent> {
     @Autowired
     private QuestService questService;
 
     {
-        EventManager.putEvent(ItemGetEvent.class, this);
+        EventManager.putEvent(LevelUpEvent.class, this);
     }
 
     @Override
     public QuestType getType() {
-        return QuestType.ITEM_GET;
+        return QuestType.LEVEL_UP;
     }
 
     @Override
-    public void handle(ItemGetEvent event) {
-        questService.checkQuestWithId(event.getPlayer(), getType(), event.getItemId(), event.getParam());
+    public void handle(LevelUpEvent event) {
+        questService.checkQuestNoId(event.getPlayer(), getType(), 1);
+        questService.checkCanAcceptByLevel(event.getPlayer());
     }
 }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @create 2020-09-13 16:18
  */
 @Component
-public class BaseQuestOnFriendAddEventHandlerHandler extends BaseQuestEventHandler implements EventHandler<FriendAddEvent> {
+public class BaseQuestOnFriendAddEventHandler extends BaseQuestEventHandler implements EventHandler<FriendAddEvent> {
     @Autowired
     private QuestService questService;
 
