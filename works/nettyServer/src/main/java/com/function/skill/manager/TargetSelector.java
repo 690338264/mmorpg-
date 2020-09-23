@@ -3,6 +3,7 @@ package com.function.skill.manager;
 import com.function.buff.excel.BuffExcel;
 import com.function.buff.excel.BuffResource;
 import com.function.buff.model.BuffType;
+import com.function.buff.model.EffectType;
 import com.function.item.model.Item;
 import com.function.player.model.Player;
 import com.function.scene.model.Scene;
@@ -10,6 +11,7 @@ import com.function.scene.model.SceneObject;
 import com.function.scene.model.SceneObjectType;
 import com.function.scene.service.NotifyScene;
 import com.function.skill.model.Skill;
+import com.function.summon.model.Summon;
 import com.function.team.manager.TeamManager;
 import com.function.team.model.Team;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +49,7 @@ public class TargetSelector {
             return false;
         }
         //判断mp
-        if (attacker.getMp() < skill.getSkillExcel().getMp()) {
+        if (attacker.getType() == SceneObjectType.PLAYER && attacker.getMp() < skill.getSkillExcel().getMp()) {
             notifyScene.notifyPlayer(attacker, "mp不够\n");
             return false;
         }
@@ -76,9 +78,11 @@ public class TargetSelector {
             targets.computeIfAbsent(buffId, key -> new ArrayList<>());
             BuffExcel buffExcel = BuffResource.getBuffById(buffId);
             if (buffExcel.getTargetType() == BuffType.FRIEND.getType()) {
-                if (attacker.getClass() == Player.class) {
-                    addTeamMate(attacker, targets.get(buffId));
-                    return;
+                if (attacker.getClass() == Summon.class || attacker.getClass() == Player.class) {
+                    if (buffExcel.getType() != EffectType.SUMMON.getType()) {
+                        addTeamMate(attacker, targets.get(buffId));
+                        return;
+                    }
                 }
                 targets.get(buffId).add(attacker);
                 return;

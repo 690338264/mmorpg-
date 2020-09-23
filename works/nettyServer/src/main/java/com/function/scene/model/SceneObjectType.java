@@ -14,6 +14,8 @@ public enum SceneObjectType {
 
     //玩家
     PLAYER(3),
+
+    SUMMON(4),
     ;
     int type;
 

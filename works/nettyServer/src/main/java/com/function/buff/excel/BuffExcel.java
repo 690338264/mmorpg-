@@ -38,4 +38,6 @@ public class BuffExcel {
     private String describe;
 
     private double rate;
+
+    private Integer summon;
 }

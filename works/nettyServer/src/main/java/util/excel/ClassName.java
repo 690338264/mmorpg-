@@ -13,6 +13,8 @@ public enum ClassName {
     Scene(5),
     Skill(6),
     Quest(7),
+    Monster(8),
+    Summon(9),
     ;
     Integer type;
 

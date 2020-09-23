@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -91,7 +90,7 @@ public class SceneManager {
         s.setSceneId(sceneId);
         s.setType(type);
         for (SceneObjectType object : SceneObjectType.values()) {
-            s.getSceneObjectMap().put(object, new HashMap<>());
+            s.getSceneObjectMap().put(object, new ConcurrentHashMap<>());
         }
         sceneCache.get(type).put(s.getId(), s);
         return s;

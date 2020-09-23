@@ -14,6 +14,7 @@ public enum EffectType {
     //眩晕
     VERTIGO(4),
     //
+    SUMMON(5),
     ;
     int type;
 

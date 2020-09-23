@@ -4,9 +4,12 @@ import com.function.buff.excel.BuffExcel;
 import com.function.buff.manager.SubHpImpl;
 import com.function.buff.model.Buff;
 import com.function.buff.model.EffectType;
+import com.function.player.model.SceneObjectTask;
 import com.function.scene.model.SceneObject;
 import com.function.scene.model.SceneObjectState;
+import com.function.scene.model.SceneObjectType;
 import com.function.scene.service.NotifyScene;
+import com.function.summon.model.Summon;
 import com.manager.ThreadPoolManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,6 +39,7 @@ public class BuffEffectsRealize {
         buffEffectMap.put(EffectType.HP_BUFF.getType(), this::buffForHp);
         buffEffectMap.put(EffectType.ATK_BUFF.getType(), this::buffForAtk);
         buffEffectMap.put(EffectType.VERTIGO.getType(), this::vertigoBuff);
+        buffEffectMap.put(EffectType.SUMMON.getType(), this::summonBuff);
     }
 
     public void effect(SceneObject attacker, List<SceneObject> targets, BuffExcel buffExcel) {
@@ -114,6 +118,9 @@ public class BuffEffectsRealize {
         });
     }
 
+    /**
+     * 眩晕buff
+     */
     private void vertigoBuff(SceneObject attacker, List<SceneObject> targets, BuffExcel buffExcel) {
         targets.forEach(target -> {
             if (target.getState() == SceneObjectState.DEATH) {
@@ -131,6 +138,29 @@ public class BuffEffectsRealize {
                 target.setState(SceneObjectState.NORMAL);
             }, buffExcel.getLast(), target.getId().intValue());
             target.getBuffs().put(buff.getId(), buffTask);
+        });
+    }
+
+    /**
+     * 召唤召唤兽buff
+     */
+    private void summonBuff(SceneObject attacker, List<SceneObject> targets, BuffExcel buffExcel) {
+        targets.forEach(target -> {
+            if (target.getState() == SceneObjectState.DEATH) {
+                return;
+            }
+            Map<Long, SceneObject> summonMap = attacker.getNowScene().getSceneObjectMap().get(SceneObjectType.SUMMON);
+            if (summonMap.containsKey(attacker.getId())) {
+                summonMap.get(attacker.getId()).onDie();
+            }
+            Summon summon = new Summon(buffExcel.getSummon());
+            summon.setId(attacker.getId());
+            summon.setNowScene(attacker.getNowScene());
+            summonMap.put(attacker.getId(), summon);
+            ScheduledFuture<?> task = ThreadPoolManager.delayThread(summon::onDie, buffExcel.getLast(), summon.getId().intValue());
+            summon.getTaskMap().put(SceneObjectTask.CANCEL, task);
+            notifyScene.notifyScene(attacker.getNowScene(), MessageFormat.format("[{0}]召唤出召唤兽[{1}]\n",
+                    attacker.getName(), summon.getById().getName()));
         });
     }
 

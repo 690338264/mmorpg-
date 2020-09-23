@@ -21,7 +21,6 @@ public class PlayerController {
 
     @Autowired
     private PlayerService playerService;
-
     @Autowired
     private UserService userService;
 

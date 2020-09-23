@@ -92,10 +92,17 @@ public class Player extends SceneObject {
             Monster monster = (Monster) sceneObject;
             monster.getHurtList().remove(tPlayer.getRoleId());
         });
+
+        Map<Long, SceneObject> summonMap = getNowScene().getSceneObjectMap().get(SceneObjectType.SUMMON);
+        if (summonMap.containsKey(getId())) {
+            summonMap.get(getId()).onDie();
+        }
+
         ThreadPoolManager.delayThread(() -> {
             setHp(getOriHp());
             setState(SceneObjectState.NORMAL);
         }, 5000, tPlayer.getRoleId().intValue());
+
         getBuffs().forEach((k, v) -> {
             v.cancel(true);
             getBuffs().remove(k);

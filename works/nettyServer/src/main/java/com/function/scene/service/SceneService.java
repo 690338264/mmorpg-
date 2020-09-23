@@ -8,10 +8,7 @@ import com.function.player.service.PlayerData;
 import com.function.scene.excel.SceneExcel;
 import com.function.scene.excel.SceneResource;
 import com.function.scene.manager.SceneManager;
-import com.function.scene.model.Scene;
-import com.function.scene.model.SceneObject;
-import com.function.scene.model.SceneObjectType;
-import com.function.scene.model.SceneType;
+import com.function.scene.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,6 +68,7 @@ public class SceneService {
      */
     public void aoi(Player player) {
         Scene scene = player.getNowScene();
+        Map<Long, SceneObject> summonMap = scene.getSceneObjectMap().get(SceneObjectType.SUMMON);
         for (SceneObjectType type : SceneObjectType.values()) {
             Map<Long, SceneObject> map = scene.getSceneObjectMap().get(type);
             map.forEach((k, sceneObject) -> {
@@ -82,7 +80,10 @@ public class SceneService {
                 }
                 if (sceneObject.getType() == SceneObjectType.PLAYER) {
                     Player p = (Player) sceneObject;
-                    String die = p.getHp() <= 0 ? "[阵亡]" : "";
+                    String die = p.getState() == SceneObjectState.DEATH ? "[阵亡]" : "";
+                    if (summonMap.containsKey(p.getId())) {
+                        die = die + MessageFormat.format("召唤兽[{0}]", summonMap.get(p.getId()).getName());
+                    }
                     notifyScene.notifyPlayer(player, MessageFormat.format("玩家:{0}:[{1}]等级为{2}  {3}\n",
                             p.getTPlayer().getRoleId(), p.getTPlayer().getName(), p.getTPlayer().getLevel(), die));
                     return;

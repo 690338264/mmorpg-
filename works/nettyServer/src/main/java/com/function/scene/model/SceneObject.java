@@ -150,6 +150,8 @@ public abstract class SceneObject {
 
     /**
      * 属性列表
+     *
+     * @return 属性列表
      */
     public abstract Map<String, Object> getAttributeMap();
 

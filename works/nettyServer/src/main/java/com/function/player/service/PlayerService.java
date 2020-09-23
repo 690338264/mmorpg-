@@ -5,6 +5,7 @@ import com.event.model.playerEvent.MoneyGetEvent;
 import com.event.model.playerEvent.MonsterKillEvent;
 import com.function.buff.excel.BuffExcel;
 import com.function.buff.excel.BuffResource;
+import com.function.buff.model.BuffType;
 import com.function.buff.service.BuffEffectsRealize;
 import com.function.item.excel.ItemExcel;
 import com.function.item.model.Item;
@@ -21,6 +22,7 @@ import com.function.scene.model.SceneObjectType;
 import com.function.scene.service.NotifyScene;
 import com.function.skill.manager.TargetSelector;
 import com.function.skill.model.Skill;
+import com.function.summon.service.SummonService;
 import com.function.user.map.UserMap;
 import com.jpa.dao.BagDAO;
 import com.jpa.dao.PlayerDAO;
@@ -65,6 +67,8 @@ public class PlayerService {
     private TargetSelector targetSelector;
     @Autowired
     private BuffEffectsRealize buffEffectsRealize;
+    @Autowired
+    private SummonService summonService;
 
 
     /**
@@ -137,6 +141,9 @@ public class PlayerService {
             BuffExcel buffExcel = BuffResource.getBuffById(buffId);
             if (RandomUtil.ifDo(buffExcel.getRate())) {
                 buffEffectsRealize.effect(attacker, targetList, buffExcel);
+            }
+            if (attacker.getType() == SceneObjectType.PLAYER && buffExcel.getTargetType() == BuffType.TO_ENEMY.getType()) {
+                summonService.attackMonster((Player) attacker, target);
             }
         });
 

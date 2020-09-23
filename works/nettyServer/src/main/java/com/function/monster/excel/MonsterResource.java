@@ -5,6 +5,7 @@ import com.function.skill.model.Skill;
 import com.manager.ExcelManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import util.excel.ClassName;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -23,9 +24,9 @@ public class MonsterResource {
 
     @PostConstruct
     private void init() {
-        int num = excelManager.getMap().get("Monster").size();
+        int num = excelManager.getMap().get(ClassName.Monster.name()).size();
         for (int i = 0; i < num; i++) {
-            MonsterExcel monster = (MonsterExcel) excelManager.getMap().get("Monster").get(i);
+            MonsterExcel monster = (MonsterExcel) excelManager.getMap().get(ClassName.Monster.name()).get(i);
             monsterMap.put(monster.getId(), monster);
             String str = monster.getSkill();
             String[] strs = str.split(",");

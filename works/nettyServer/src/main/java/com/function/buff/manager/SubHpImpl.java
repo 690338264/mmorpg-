@@ -35,11 +35,19 @@ public class SubHpImpl {
         Scene scene = attacker.getNowScene();
         try {
             target.getLock().lock();
+            if (target.getHp() <= 0) {
+                return;
+            }
             if (target.getHp() - hurt <= 0) {
                 target.setHp(0);
                 target.onDie();
                 if (target.getType() == SceneObjectType.MONSTER) {
                     Monster monster = (Monster) target;
+                    if (attacker.getType() == SceneObjectType.SUMMON) {
+                        Player player = (Player) scene.getSceneObjectMap().get(SceneObjectType.PLAYER).get(attacker.getId());
+                        playerService.killMonster(monster, scene, player);
+                        return;
+                    }
                     playerService.killMonster(monster, scene, (Player) attacker);
                     return;
                 }

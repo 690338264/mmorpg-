@@ -2,6 +2,7 @@ package com.function.monster.model;
 
 import com.function.monster.excel.MonsterExcel;
 import com.function.monster.excel.MonsterResource;
+import com.function.player.model.SceneObjectTask;
 import com.function.scene.model.Scene;
 import com.function.scene.model.SceneObject;
 import com.function.scene.model.SceneObjectState;
@@ -69,12 +70,22 @@ public class Monster extends SceneObject {
         setState(SceneObjectState.DEATH);
         Scene scene = getNowScene();
         setDeathTime(System.currentTimeMillis());
+
         getBuffs().forEach((k, v) -> {
             v.cancel(true);
             getBuffs().remove(k);
         });
+
         scene.getSceneObjectMap().get(SceneObjectType.MONSTER).remove(id);
         scene.getWaitForRevive().put(id, this);
+
+        Map<Long, SceneObject> summonMap = scene.getSceneObjectMap().get(SceneObjectType.SUMMON);
+        getHurtList().forEach((attackerId, hurt) -> {
+            if (summonMap.containsKey(attackerId)) {
+                summonMap.get(attackerId).getTaskMap().get(SceneObjectTask.ATTACK).cancel(true);
+                summonMap.get(attackerId).getTaskMap().remove(SceneObjectTask.ATTACK);
+            }
+        });
         getHurtList().clear();
     }
 }
