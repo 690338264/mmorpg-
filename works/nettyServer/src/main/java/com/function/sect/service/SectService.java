@@ -230,13 +230,17 @@ public class SectService {
         if (item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
             item = itemService.copyItem(item, num);
         }
-        if (putItem(item, sect)) {
-            sectManager.updateSect(sect);
-            notifyScene.notifyPlayer(player, "捐献成功！\n");
-        } else {
-            notifyScene.notifyPlayer(player, "公会仓库已满\n");
-            itemService.getItem(item, player);
-        }
+        Item copyItem = item;
+        ThreadPoolManager.immediateThread(() -> {
+            if (putItem(copyItem, sect)) {
+                sectManager.updateSect(sect);
+                notifyScene.notifyPlayer(player, "捐献成功！\n");
+            } else {
+                notifyScene.notifyPlayer(player, "公会仓库已满\n");
+                itemService.getItem(copyItem, player);
+            }
+        }, sect.gettSect().getSectId().intValue());
+
     }
 
     /**
@@ -298,18 +302,20 @@ public class SectService {
         if (sect == null) {
             return;
         }
-        Item item = sect.getWareHouse().get(index);
-        if (!removeItem(index, num, sect)) {
-            notifyScene.notifyPlayer(player, "获取失败\n");
-            return;
-        }
-        if (item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
-            item = itemService.copyItem(item, num);
-        }
-        if (!itemService.getItem(item, player)) {
-            putItem(item, sect);
-            notifyScene.notifyPlayer(player, "获取失败\n");
-        }
+        ThreadPoolManager.immediateThread(() -> {
+            Item item = sect.getWareHouse().get(index);
+            if (!removeItem(index, num, sect)) {
+                notifyScene.notifyPlayer(player, "获取失败\n");
+                return;
+            }
+            if (item.getItemById().getType() == ItemType.MEDICINAL.getType()) {
+                item = itemService.copyItem(item, num);
+            }
+            if (!itemService.getItem(item, player)) {
+                putItem(item, sect);
+                notifyScene.notifyPlayer(player, "获取失败\n");
+            }
+        }, sect.gettSect().getSectId().intValue());
     }
 
     /**

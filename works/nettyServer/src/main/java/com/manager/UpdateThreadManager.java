@@ -13,16 +13,22 @@ import java.util.concurrent.TimeUnit;
  */
 public class UpdateThreadManager {
 
-    public static final int UPDATE_TIME = 10000;
+    private static final int UPDATE_TIME = 10000;
     private static final Map<String, Runnable> updateMap = new ConcurrentHashMap<>();
+    private static final Map<String, Runnable> cacheMap = new ConcurrentHashMap<>();
     private static final ScheduledExecutorService updateThreadPool;
 
     static {
         updateThreadPool = Executors.newScheduledThreadPool(500);
-        updateThreadPool.scheduleWithFixedDelay(() -> updateMap.forEach((key, runnable) -> {
-            updateThreadPool.execute(runnable);
-            updateMap.remove(key);
-        }), 0, UPDATE_TIME, TimeUnit.MILLISECONDS);
+        updateThreadPool.scheduleWithFixedDelay(() -> {
+            cacheMap.putAll(updateMap);
+            cacheMap.forEach((key, runnable) -> {
+                updateMap.remove(key);
+                updateThreadPool.execute(runnable);
+            });
+            cacheMap.clear();
+        }, 0, UPDATE_TIME, TimeUnit.MILLISECONDS);
+
     }
 
     public static void putIntoThreadPool(Class<?> className, long id, Runnable runnable) {

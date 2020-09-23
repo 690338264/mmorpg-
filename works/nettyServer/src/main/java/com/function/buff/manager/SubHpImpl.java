@@ -33,43 +33,46 @@ public class SubHpImpl {
 
     public void subHp(SceneObject attacker, SceneObject target, int hurt) {
         Scene scene = attacker.getNowScene();
-        target.getLock().lock();
-        if (target.getHp() - hurt <= 0) {
-            target.setHp(0);
-            target.onDie();
-            if (target.getType() == SceneObjectType.MONSTER) {
-                Monster monster = (Monster) target;
-                playerService.killMonster(monster, scene, (Player) attacker);
-                return;
-            }
-            if (target.getType() == SceneObjectType.PLAYER) {
-                if (attacker.getType() == SceneObjectType.MONSTER) {
-                    notifyScene.notifyPlayer(target, MessageFormat.format("{0}阵亡\n", target.getName()));
+        try {
+            target.getLock().lock();
+            if (target.getHp() - hurt <= 0) {
+                target.setHp(0);
+                target.onDie();
+                if (target.getType() == SceneObjectType.MONSTER) {
+                    Monster monster = (Monster) target;
+                    playerService.killMonster(monster, scene, (Player) attacker);
                     return;
                 }
-                if (attacker.getType() == SceneObjectType.PLAYER) {
-                    Player player = (Player) attacker;
-                    player.asynchronousSubmitEvent(new PvpWinEvent());
-                    notifyScene.notifyScene(attacker.getNowScene(),
-                            MessageFormat.format("{0}击败了{1}\n", attacker.getName(), target.getName()));
+                if (target.getType() == SceneObjectType.PLAYER) {
+                    if (attacker.getType() == SceneObjectType.MONSTER) {
+                        notifyScene.notifyPlayer(target, MessageFormat.format("{0}阵亡\n", target.getName()));
+                        return;
+                    }
+                    if (attacker.getType() == SceneObjectType.PLAYER) {
+                        Player player = (Player) attacker;
+                        player.asynchronousSubmitEvent(new PvpWinEvent());
+                        notifyScene.notifyScene(attacker.getNowScene(),
+                                MessageFormat.format("{0}击败了{1}\n", attacker.getName(), target.getName()));
+                        return;
+                    }
+                }
+                return;
+            }
+            if (target.getHp() - hurt > target.getOriHp()) {
+                target.setHp(target.getOriHp());
+                return;
+            }
+            if (attacker.getType() == SceneObjectType.MONSTER) {
+                Monster monster = (Monster) attacker;
+                if (!monster.getHurtList().containsKey(target.getId())) {
                     return;
                 }
             }
-            return;
+            target.setHp(target.getHp() - hurt);
+            addHate(attacker, target, hurt);
+        } finally {
+            target.getLock().unlock();
         }
-        if (target.getHp() - hurt > target.getOriHp()) {
-            target.setHp(target.getOriHp());
-            return;
-        }
-        if (attacker.getType() == SceneObjectType.MONSTER) {
-            Monster monster = (Monster) attacker;
-            if (!monster.getHurtList().containsKey(target.getId())) {
-                return;
-            }
-        }
-        target.setHp(target.getHp() - hurt);
-        addHate(attacker, target, hurt);
-        target.getLock().unlock();
     }
 
     public void addHate(SceneObject attacker, SceneObject target, int hurt) {
@@ -88,7 +91,6 @@ public class SubHpImpl {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
                 }, 0, MonsterService.HURT_BEAT, monster.getExcelId());
                 return;
             }

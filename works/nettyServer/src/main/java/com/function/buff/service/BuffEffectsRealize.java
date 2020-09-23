@@ -51,8 +51,8 @@ public class BuffEffectsRealize {
             if (target.getState() == SceneObjectState.DEATH) {
                 return;
             }
-            notifyScene.notifyScene(attacker.getNowScene(), MessageFormat.format("{0}对{1}进行攻击,造成了{2}点伤害\n",
-                    attacker.getName(), target.getName(), hurt));
+            notifyScene.notifyScene(attacker.getNowScene(), MessageFormat.format("[{0}]{1}对{2}进行攻击,造成了{3}点伤害\n",
+                    attacker.getId(), attacker.getName(), target.getName(), hurt));
             subHp.subHp(attacker, target, hurt);
 
         });
@@ -81,8 +81,8 @@ public class BuffEffectsRealize {
                     target.getBuffs().remove(buff.getId());
                 }
                 //扣血
-                notifyScene.notifyScene(target.getNowScene(), MessageFormat.format("{0}hp{1}\n",
-                        target.getName(), hpChange > 0 ? "-" + hpChange : -hpChange));
+                notifyScene.notifyScene(target.getNowScene(), MessageFormat.format("{0} hp {1}\n",
+                        target.getName(), hpChange > 0 ? "-" + hpChange : "+" + -hpChange));
                 subHp.subHp(attacker, target, hpChange);
                 buff.setRemainTimes(buff.getRemainTimes() - 1);
             }, time, time, target.getId().intValue());

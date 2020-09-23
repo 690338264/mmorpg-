@@ -1,7 +1,6 @@
 package com.function.player.model;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.annotation.JSONField;
 import com.event.BasePlayerEvent;
 import com.event.EventHandler;
 import com.event.EventManager;
@@ -12,7 +11,10 @@ import com.function.monster.model.Monster;
 import com.function.quest.model.Quest;
 import com.function.quest.model.QuestState;
 import com.function.quest.model.QuestType;
-import com.function.scene.model.*;
+import com.function.scene.model.Dungeon;
+import com.function.scene.model.SceneObject;
+import com.function.scene.model.SceneObjectState;
+import com.function.scene.model.SceneObjectType;
 import com.function.trade.model.TradeBoard;
 import com.jpa.entity.TPlayer;
 import com.jpa.entity.TPlayerInfo;
@@ -37,11 +39,6 @@ public class Player extends SceneObject {
 
     private TPlayer tPlayer;
     private ChannelHandlerContext channelHandlerContext;
-    /**
-     * 玩家当前场景
-     */
-    @JSONField(serialize = false)
-    private Scene nowScene;
     /**
      * 玩家所在副本
      */
@@ -90,7 +87,7 @@ public class Player extends SceneObject {
     @Override
     public void onDie() {
         setState(SceneObjectState.DEATH);
-        Map<Long, SceneObject> monsterMap = nowScene.getSceneObjectMap().get(SceneObjectType.MONSTER);
+        Map<Long, SceneObject> monsterMap = getNowScene().getSceneObjectMap().get(SceneObjectType.MONSTER);
         monsterMap.forEach((monsterId, sceneObject) -> {
             Monster monster = (Monster) sceneObject;
             monster.getHurtList().remove(tPlayer.getRoleId());

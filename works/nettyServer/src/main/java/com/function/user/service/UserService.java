@@ -126,6 +126,10 @@ public class UserService {
             }
             if (userMap.getPlayers().containsKey(playerId)) {
                 Player player = userMap.getPlayers().get(playerId);
+                if (player.getChannelHandlerContext() != null) {
+                    player.getChannelHandlerContext().writeAndFlush("该账号已在别处登录\n");
+                    logout(player);
+                }
                 if (!player.isInit()) {
                     init(player);
                     player.setInit(true);

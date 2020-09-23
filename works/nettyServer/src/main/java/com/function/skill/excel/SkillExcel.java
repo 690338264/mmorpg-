@@ -19,8 +19,6 @@ public class SkillExcel {
      */
     private int mp;
 
-    private int atk;
-
     private long cd;
 
     private String buff;

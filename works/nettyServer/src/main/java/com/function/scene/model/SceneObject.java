@@ -43,7 +43,7 @@ public abstract class SceneObject {
 
     private SceneObjectState state = SceneObjectState.NORMAL;
 
-    ReentrantLock lock = new ReentrantLock();
+    private ReentrantLock lock = new ReentrantLock(true);
     /**
      * 线程任务列表
      */

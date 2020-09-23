@@ -83,7 +83,7 @@ public class TargetSelector {
                 targets.get(buffId).add(attacker);
                 return;
             }
-            if (attacker.getId() == targetId) {
+            if (attacker.getId() == targetId && attacker.getType() == type) {
                 return;
             }
             if (!ifLegal(scene, targetId, type)) {
