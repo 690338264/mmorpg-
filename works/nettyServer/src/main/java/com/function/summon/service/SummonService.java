@@ -22,8 +22,12 @@ import java.util.concurrent.ScheduledFuture;
 public class SummonService {
     @Autowired
     private PlayerService playerService;
+    private static final long JUMP = 4000;
 
-    public void attackMonster(Player player, long target) {
+    /**
+     * 召唤兽攻击怪物
+     */
+    public void attackMonster(Player player, long target, SceneObjectType type) {
         Map<Long, SceneObject> summonMap = player.getNowScene().getSceneObjectMap().get(SceneObjectType.SUMMON);
         Long id = player.getTPlayer().getRoleId();
         Summon summon = (Summon) summonMap.get(id);
@@ -31,8 +35,8 @@ public class SummonService {
             ScheduledFuture<?> task = ThreadPoolManager.loopThread(() -> {
                 Integer[] keys = summon.getById().getSummonSkill().keySet().toArray(new Integer[0]);
                 int skillId = RandomUtil.ramInt(keys);
-                playerService.useSkill(summon, skillId, target, SceneObjectType.MONSTER);
-            }, 0, 4000, id.intValue());
+                playerService.useSkill(summon, skillId, target, type);
+            }, 0, JUMP, id.intValue());
             summon.getTaskMap().put(SceneObjectTask.ATTACK, task);
         }
     }

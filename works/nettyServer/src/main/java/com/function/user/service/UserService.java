@@ -171,6 +171,9 @@ public class UserService {
      */
     public void logout(Player player) {
         ChannelHandlerContext ctx = player.getChannelHandlerContext();
+        if (player.getNowScene().getSceneObjectMap().get(SceneObjectType.SUMMON).containsKey(player.getId())) {
+            player.getNowScene().getSceneObjectMap().get(SceneObjectType.SUMMON).get(player.getId()).onDie();
+        }
         teamService.leaveTeam(player);
         playerMap.remove(ctx, player.getTPlayer().getRoleId());
         userMap.remove(ctx);

@@ -86,6 +86,6 @@ public class Monster extends SceneObject {
                 summonMap.get(attackerId).getTaskMap().remove(SceneObjectTask.ATTACK);
             }
         });
-        getHurtList().clear();
+//        getHurtList().clear();
     }
 }

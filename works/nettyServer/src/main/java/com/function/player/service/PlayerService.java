@@ -143,7 +143,7 @@ public class PlayerService {
                 buffEffectsRealize.effect(attacker, targetList, buffExcel);
             }
             if (attacker.getType() == SceneObjectType.PLAYER && buffExcel.getTargetType() == BuffType.TO_ENEMY.getType()) {
-                summonService.attackMonster((Player) attacker, target);
+                summonService.attackMonster((Player) attacker, target, type);
             }
         });
 
@@ -153,10 +153,16 @@ public class PlayerService {
      * 击杀怪物
      */
     public void killMonster(Monster monster, Scene scene, Player player) {
-        if (!monster.getHurtList().isEmpty()) {
-            monster.getTaskMap().get(SceneObjectTask.ATTACK).cancel(true);
-            monster.getTaskMap().remove(SceneObjectTask.ATTACK);
+        try {
+            if (!monster.getHurtList().isEmpty()) {
+                monster.getTaskMap().get(SceneObjectTask.ATTACK).cancel(true);
+                monster.getTaskMap().remove(SceneObjectTask.ATTACK);
+                monster.getHurtList().clear();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         notifyScene.notifyScene(scene, MessageFormat.format("玩家[{0}]成功击杀怪物{1}\n",
                 player.getTPlayer().getName(), monster.getMonsterExcel().getName()));
         //物品掉落
